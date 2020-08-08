@@ -1,0 +1,3 @@
+./regFile.sv
+./corePckg.sv
+
