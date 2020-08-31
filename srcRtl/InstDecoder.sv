@@ -17,17 +17,18 @@ module InstDecoder
 		input logic [31:0] iInst
 		);
 
-	//	
-	//	tOpcodeEnum opcode;
+	
 	logic [2:0] funct3;
 	logic [6:0] funct7;
 	logic [cRegSelBitW-1:0] destAddr;
 	logic [cRegSelBitW-1:0] src1Addr;
 	logic [cRegSelBitW-1:0] src2Addr;
-	logic [31:0] instruction;
-	tOpLoad opLoad;
-	
-	
+	logic [31:0] insti1;
+	tDecodedInst dInst;
+//	tOpLoad opLoad;
+//	tOpImmedi opImmedi;
+//	tOpAuIPC opAuIPC;
+//	tOpStore opStore;
 	
 	always_ff @(posedge iCLk) // opcode and input flops
 	begin
@@ -37,24 +38,46 @@ module InstDecoder
 		destAddr 	<= iInst[11:7];
 		funct3 	  	<= iInst[14:12];
 		funct7	  	<= iInst[31:25];
-		instruction <= iInst;
+		instruction <= insti1;
 	end
 	
 	always_ff @(posedge iClk) // instructionDecode
 	begin
-		opLoad <= {{3'b000},{cRegSelBitW,{1'b0}},{cRegSelBitW,{1'b0}},{12{1'b0}},1'b0};
+		dInst <= {default:0};
 		case (opcode)
-			opLoad: 
+			eOpLoad: 
 			begin
-				opLoad.size <= funct3;
-				opLoad.destAddr <= destAddr;
-				opLoad.srcAddr <= src1Addr;
-				opLoad.dv <= 1'b1;
+				dInst.funct3 <= {funct3,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};// TODO sign extension
+				dInst.imm.dv <= 1'b1;
 			end
-			opFence:
+			eOpFence:
+			begin
+				// nothing done right now.
+			end
+			eOpImmedi:
+			begin
+				dInst.funct3 <= {funct3,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; // TODO sign extension
+				dInst.imm.dv <= 1'b1;
+			end
+			eOpAuIpc:
+			begin
+				dInst.rd <= {destAddr,1'b1};
+				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
+				dInst.imm.dv <= 1'b1;
+				
+			end
+			
+			eOpStore:
 			begin
 				
 			end
+			
 			default: 
 			begin
 				

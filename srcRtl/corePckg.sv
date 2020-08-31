@@ -22,26 +22,77 @@ package corePckg;
 	
 	//	parameter logic [6:0] cRtype =  7'b0110011;
 	typedef enum logic [6:0]{
-		opLoad   = 7'h03,
-		opFence  = 7'h0f,
-		opImmedi = 7'h13,
-		opAuIpc  = 7'h17,
-		opStore  = 7'h23,
-		opRtype  = 7'h33,
-		opLui 	 = 7'h37,
-		opBranch = 7'h63,
-		opJalr   = 7'h67,
-		opJal 	 = 7'h6f,
-		opCntrlSt= 7'h73
+		eOpLoad   = 7'h03,
+		eOpFence  = 7'h0f,
+		eOpImmedi = 7'h13,
+		eOpAuIpc  = 7'h17,
+		eOpStore  = 7'h23,
+		eOpRtype  = 7'h33,
+		eOpLui 	 = 7'h37,
+		eOpBranch = 7'h63,
+		eOpJalr   = 7'h67,
+		eOpJal 	 = 7'h6f,
+		eOpCntrlSt= 7'h73
 	}tOpcodeEnum;
 		
-	typedef struct packed{
-		logic [2:0] size;
-		logic [cRegSelBitW-1:0] destAddr;
-		logic [cRegSelBitW-1:0] srcAddr;
-		logic [11:0] imm;
+//	typedef struct packed{// includes 5 operation
+//		logic [2:0] loadType;
+//		logic [cRegSelBitW-1:0] destAddr;
+//		logic [cRegSelBitW-1:0] srcAddr;
+//		logic [11:0] imm;
+//		logic dv;
+//	} tOpLoad;
+//	
+//	typedef struct packed{ // includes 9 operation
+//		logic [2:0] imType;
+//		logic [cRegSelBitW-1:0] destAddr;
+//		logic [cRegSelBitW-1:0] srcAddr;
+//		logic [11:0] imm;// can be all immediates or shamt+ selection
+//		logic dv;
+//	} tOpImmediate;
+//	
+//	typedef struct packed{
+//		logic [19:0] imm;
+//		logic [cRegSelBitW-1:0] destAddr;
+//		logic dv;
+//	}tOpAuIPC;
+//	
+//	typedef struct packed{
+//		logic [2:0] storeType;
+//		logic [cRegSelBitW-1:0] src1Addr;
+//		logic [cRegSelBitW-1:0] src2Addr;
+//		logic [11:0] imm;
+//		logic dv;
+//	}tOpStore;
+	typedef struct packed {
+		logic[cRegSelBitW-1:0] addr;
 		logic dv;
-	} tOpLoad;
+	}tRegister;
+	
+	typedef struct packed {
+		logic[2:0] value;
+		logic dv;
+	}tFunct3;
+	
+	typedef struct packed {
+		logic[6:0] value;
+		logic dv;
+	}tFunct7;
+	
+	typedef struct packed {
+		logic[31:0] value;
+		logic dv;
+	}tImmedi;
+	
+	typedef struct packed {
+		tRegister rs1;
+		tRegister rs2;
+		tRegister rd;
+		tFunct3 funct3;
+		tFunct7 funct7;
+		tImmedi imm;
+	}tDecodedInst;
+	
 
 endpackage
 
