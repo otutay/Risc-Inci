@@ -14,7 +14,8 @@ module InstDecoder
 		(
 		input logic iClk,
 		input logic iRst,
-		input logic [31:0] iInst
+		input logic [31:0] iInst,
+		output tDecodedInst oDecoded 
 		);
 
 	
@@ -25,10 +26,10 @@ module InstDecoder
 	logic [cRegSelBitW-1:0] src2Addr;
 	logic [31:0] insti1;
 	tDecodedInst dInst;
-//	tOpLoad opLoad;
-//	tOpImmedi opImmedi;
-//	tOpAuIPC opAuIPC;
-//	tOpStore opStore;
+	//	tOpLoad opLoad;
+	//	tOpImmedi opImmedi;
+	//	tOpAuIPC opAuIPC;
+	//	tOpStore opStore;
 	
 	always_ff @(posedge iCLk) // opcode and input flops
 	begin
@@ -47,9 +48,9 @@ module InstDecoder
 		case (opcode)
 			eOpLoad: 
 			begin
-				dInst.funct3 <= {funct3,1'b1};
-				dInst.rd <= {destAddr,1'b1};
 				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.funct3 <= {funct3,1'b1};
 				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};// TODO sign extension
 				dInst.imm.dv <= 1'b1;
 			end
@@ -59,11 +60,11 @@ module InstDecoder
 			end
 			eOpImmedi:
 			begin
-				dInst.funct3 <= {funct3,1'b1};
-				dInst.rd <= {destAddr,1'b1};
 				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.funct3 <= {funct3,1'b1};
 				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; // TODO sign extension
-				dInst.imm.dv <= 1'b1;
+				dInst.imm.dv <= 1'b1; // TODO shift operations are decoded in alu
 			end
 			eOpAuIpc:
 			begin
@@ -75,9 +76,58 @@ module InstDecoder
 			
 			eOpStore:
 			begin
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rs2 <= {src2Addr,1'b1};
+				dInst.funct3 <=  {funct3,1'b1};
+				dInst.imm.value <= {{20{1'b0}},insti1[31:25],insti1[11:7]}; // TODO sign extension 
+				dInst.imm.dv <= 1'b1;
+			end
+			eOpRType:
+			begin
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rs2 <= {src2Addr,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.funct3 <=  {funct3,1'b1};
+				dInst.funct7 <=  {funct7,1'b1};
+			end
+			eOpLui:
+			begin
+				dInst.rd <= {destAddr,1'b1};
+				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
+				dInst.imm.dv <= 1'b1;
+			end
+			eOpBranch:
+			begin
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rs2 <= {src2Addr,1'b1};
+				dInst.funct3 <=  {funct3,1'b1};
+				dInst.imm.value[12] <= insti1[31];
+				dInst.imm.value[10:5] <= insti1[30:25];
+				dInst.imm.value[4:1] <=  insti1[11:8];
+				dInst.imm.value[11] <=  insti1[7];
+				dInst.imm.dv <= 1'b1;
+			end
+			eOpJalr:
+			begin
+				dInst.rs1 <= {src1Addr,1'b1};
+				dInst.rd <= {destAddr,1'b1};
+				dInst.funct3 <=  {funct3,1'b1};
+				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};// TODO sign extension
 				
 			end
-			
+			eOpJal:
+			begin
+				dInst.rd <= {destAddr,1'b1};
+				dInst.imm.value[20] <= insti1[31];
+				dInst.imm.value[10:1] <= insti1[30:21];
+				dInst.imm.value[11] <= insti1[20];
+				dInst.imm.value[19:12] <= insti1[19:12];
+				dInst.imm.dv <= 1'b1;
+			end
+			eOpCntrlSt:
+			begin
+				// nothing done right now.	
+			end
 			default: 
 			begin
 				
@@ -85,6 +135,10 @@ module InstDecoder
 		endcase
 	end
 	
+	always_comb 
+	begin
+		oDecoded = dInst;
+	end
 	
 	
 	

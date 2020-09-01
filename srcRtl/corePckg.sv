@@ -34,36 +34,7 @@ package corePckg;
 		eOpJal 	 = 7'h6f,
 		eOpCntrlSt= 7'h73
 	}tOpcodeEnum;
-		
-//	typedef struct packed{// includes 5 operation
-//		logic [2:0] loadType;
-//		logic [cRegSelBitW-1:0] destAddr;
-//		logic [cRegSelBitW-1:0] srcAddr;
-//		logic [11:0] imm;
-//		logic dv;
-//	} tOpLoad;
-//	
-//	typedef struct packed{ // includes 9 operation
-//		logic [2:0] imType;
-//		logic [cRegSelBitW-1:0] destAddr;
-//		logic [cRegSelBitW-1:0] srcAddr;
-//		logic [11:0] imm;// can be all immediates or shamt+ selection
-//		logic dv;
-//	} tOpImmediate;
-//	
-//	typedef struct packed{
-//		logic [19:0] imm;
-//		logic [cRegSelBitW-1:0] destAddr;
-//		logic dv;
-//	}tOpAuIPC;
-//	
-//	typedef struct packed{
-//		logic [2:0] storeType;
-//		logic [cRegSelBitW-1:0] src1Addr;
-//		logic [cRegSelBitW-1:0] src2Addr;
-//		logic [11:0] imm;
-//		logic dv;
-//	}tOpStore;
+
 	typedef struct packed {
 		logic[cRegSelBitW-1:0] addr;
 		logic dv;
@@ -93,6 +64,35 @@ package corePckg;
 		tImmedi imm;
 	}tDecodedInst;
 	
+	//	typedef struct packed{// includes 5 operation
+	//		logic [2:0] loadType;
+	//		logic [cRegSelBitW-1:0] destAddr;
+	//		logic [cRegSelBitW-1:0] srcAddr;
+	//		logic [11:0] imm;
+	//		logic dv;
+	//	} tOpLoad;
+	//	
+	//	typedef struct packed{ // includes 9 operation
+	//		logic [2:0] imType;
+	//		logic [cRegSelBitW-1:0] destAddr;
+	//		logic [cRegSelBitW-1:0] srcAddr;
+	//		logic [11:0] imm;// can be all immediates or shamt+ selection
+	//		logic dv;
+	//	} tOpImmediate;
+	//	
+	//	typedef struct packed{
+	//		logic [19:0] imm;
+	//		logic [cRegSelBitW-1:0] destAddr;
+	//		logic dv;
+	//	}tOpAuIPC;
+	//	
+	//	typedef struct packed{
+	//		logic [2:0] storeType;
+	//		logic [cRegSelBitW-1:0] src1Addr;
+	//		logic [cRegSelBitW-1:0] src2Addr;
+	//		logic [11:0] imm;
+	//		logic dv;
+	//	}tOpStore;
 
 endpackage
 
