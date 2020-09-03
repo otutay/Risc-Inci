@@ -26,6 +26,7 @@ module InstDecoder
 	logic [cRegSelBitW-1:0] src2Addr;
 	logic [31:0] insti1;
 	tDecodedInst dInst;
+	tOpcodeEnum opcode;
 	//	tOpLoad opLoad;
 	//	tOpImmedi opImmedi;
 	//	tOpAuIPC opAuIPC;
@@ -34,7 +35,7 @@ module InstDecoder
 	generate 
 		if(cycleNum == 1)
 		begin : cycle1
-			assign opcode 	   = iInst[6:0];
+			assign opcode 	   = tOpcodeEnum'(iInst[6:0]);
 			assign src1Addr	   = iInst[19:15];
 			assign src2Addr    = iInst[24:20];
 			assign destAddr    = iInst[11:7];
@@ -45,15 +46,15 @@ module InstDecoder
 				
 		if (cycleNum == 2)
 		begin : cycle2
-			always_ff @(posedge iCLk) // opcode and input flops
+			always_ff @(posedge iClk) // opcode and input flops
 			begin :flop
-				opcode 	  	<= iInst[6:0];
+				opcode 	  	<= tOpcodeEnum'(iInst[6:0]);
 				src1Addr	<= iInst[19:15];
 				src2Addr 	<= iInst[24:20];
 				destAddr 	<= iInst[11:7];
 				funct3 	  	<= iInst[14:12];
 				funct7	  	<= iInst[31:25];
-				instruction <= insti1;
+				insti1 		<= iInst;
 		
 			end		
 		end
@@ -99,7 +100,7 @@ module InstDecoder
 				dInst.imm.value <= {{20{1'b0}},insti1[31:25],insti1[11:7]}; // TODO sign extension 
 				dInst.imm.dv <= 1'b1;
 			end
-			eOpRType:
+			eOpRtype:
 			begin
 				dInst.rs1 <= {src1Addr,1'b1};
 				dInst.rs2 <= {src2Addr,1'b1};
