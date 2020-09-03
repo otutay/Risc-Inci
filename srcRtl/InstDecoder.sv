@@ -11,6 +11,7 @@
  */
 import corePckg::*;
 module InstDecoder
+		#(parameter cycleNum = 2)
 		(
 		input logic iClk,
 		input logic iRst,
@@ -18,7 +19,6 @@ module InstDecoder
 		output tDecodedInst oDecoded 
 		);
 
-	
 	logic [2:0] funct3;
 	logic [6:0] funct7;
 	logic [cRegSelBitW-1:0] destAddr;
@@ -31,19 +31,36 @@ module InstDecoder
 	//	tOpAuIPC opAuIPC;
 	//	tOpStore opStore;
 	
-	always_ff @(posedge iCLk) // opcode and input flops
-	begin
-		opcode 	  	<= iInst[6:0];
-		src1Addr	<= iInst[19:15];
-		src2Addr 	<= iInst[24:20];
-		destAddr 	<= iInst[11:7];
-		funct3 	  	<= iInst[14:12];
-		funct7	  	<= iInst[31:25];
-		instruction <= insti1;
-	end
+	generate 
+		if(cycleNum == 1)
+		begin : cycle1
+			assign opcode 	   = iInst[6:0];
+			assign src1Addr	   = iInst[19:15];
+			assign src2Addr    = iInst[24:20];
+			assign destAddr    = iInst[11:7];
+			assign funct3 	   = iInst[14:12];
+			assign funct7	   = iInst[31:25];
+			assign instruction = insti1;
+		end
+				
+		if (cycleNum == 2)
+		begin : cycle2
+			always_ff @(posedge iCLk) // opcode and input flops
+			begin :flop
+				opcode 	  	<= iInst[6:0];
+				src1Addr	<= iInst[19:15];
+				src2Addr 	<= iInst[24:20];
+				destAddr 	<= iInst[11:7];
+				funct3 	  	<= iInst[14:12];
+				funct7	  	<= iInst[31:25];
+				instruction <= insti1;
+		
+			end		
+		end
+	endgenerate
 	
 	always_ff @(posedge iClk) // instructionDecode
-	begin
+	begin : decode
 		dInst <= {default:0};
 		case (opcode)
 			eOpLoad: 
@@ -135,10 +152,8 @@ module InstDecoder
 		endcase
 	end
 	
-	always_comb 
-	begin
-		oDecoded = dInst;
-	end
+	assign oDecoded = dInst;
+	
 	
 	
 	
