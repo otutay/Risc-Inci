@@ -62,6 +62,7 @@ package corePckg;
 		tFunct3 funct3;
 		tFunct7 funct7;
 		tImmedi imm;
+		tOpcodeEnum opcode;
 	}tDecodedInst;
 	
 	//	typedef struct packed{// includes 5 operation
