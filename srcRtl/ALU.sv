@@ -14,17 +14,40 @@ module ALU
 		(
 		input logic iClk,
 		input logic iRst,
-		input tDecodedInst iDecoded 
+		input tDecoded iDecoded
+		
 		);
 
 	
 	
 	always_ff @(posedge iClk)
-	begin : loadOperation
-		if(iDecoded.opcode == eOpLoad)
-		begin
-			
-		end
+		case (iDecoded.opcode)
+			eOpLoad: 
+			begin
+				case (iDecoded.funct3)
+					3'b000 : 
+					begin
+						
+					end
+					3'b001 :
+					begin
+						
+					end
+					
+					default: 
+					begin
+					end
+				endcase
+				
+			end
+			default: begin
+			end
+		endcase
+		//	begin : loadOperation
+		//		if(iDecoded.opcode == eOpLoad)
+		//		begin
+		//			
+		//		end
 	end
 endmodule
 

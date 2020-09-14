@@ -15,10 +15,6 @@ package corePckg;
 	parameter int unsigned cDataWidth = 32;
 	parameter int unsigned cRegNum = 2**cRegSelBitW;
 	
-	typedef struct packed{
-		logic en;
-		logic [cRegSelBitW-1:0] addr;
-	}tRegControl;
 	
 	//	parameter logic [6:0] cRtype =  7'b0110011;
 	typedef enum logic [6:0]{
@@ -35,11 +31,16 @@ package corePckg;
 		eOpCntrlSt= 7'h73
 	}tOpcodeEnum;
 
+	typedef struct packed{
+		logic [cRegSelBitW-1:0] addr;
+		logic en;
+	}tRegControl;
+	
 	typedef struct packed {
-		logic[cRegSelBitW-1:0] addr;
+		logic[31:0] data;
 		logic dv;
 	}tRegister;
-	
+//	
 	typedef struct packed {
 		logic[2:0] value;
 		logic dv;
@@ -56,44 +57,24 @@ package corePckg;
 	}tImmedi;
 	
 	typedef struct packed {
-		tRegister rs1;
-		tRegister rs2;
-		tRegister rd;
+		tRegControl rs1;
+		tRegControl rs2;
+		tRegControl rd;
 		tFunct3 funct3;
 		tFunct7 funct7;
 		tImmedi imm;
 		tOpcodeEnum opcode;
 	}tDecodedInst;
 	
-	//	typedef struct packed{// includes 5 operation
-	//		logic [2:0] loadType;
-	//		logic [cRegSelBitW-1:0] destAddr;
-	//		logic [cRegSelBitW-1:0] srcAddr;
-	//		logic [11:0] imm;
-	//		logic dv;
-	//	} tOpLoad;
-	//	
-	//	typedef struct packed{ // includes 9 operation
-	//		logic [2:0] imType;
-	//		logic [cRegSelBitW-1:0] destAddr;
-	//		logic [cRegSelBitW-1:0] srcAddr;
-	//		logic [11:0] imm;// can be all immediates or shamt+ selection
-	//		logic dv;
-	//	} tOpImmediate;
-	//	
-	//	typedef struct packed{
-	//		logic [19:0] imm;
-	//		logic [cRegSelBitW-1:0] destAddr;
-	//		logic dv;
-	//	}tOpAuIPC;
-	//	
-	//	typedef struct packed{
-	//		logic [2:0] storeType;
-	//		logic [cRegSelBitW-1:0] src1Addr;
-	//		logic [cRegSelBitW-1:0] src2Addr;
-	//		logic [11:0] imm;
-	//		logic dv;
-	//	}tOpStore;
+	typedef struct packed {
+		tRegister rs1;
+		tRegister rs2;
+		tRegControl rd;
+		tFunct3 funct3;
+		tFunct7 funct7;
+		tImmedi imm;
+		tOpcodeEnum opcode;
+	}tDecoded;
 
 endpackage
 

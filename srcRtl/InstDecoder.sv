@@ -16,6 +16,7 @@ module InstDecoder
 		input logic iClk,
 		input logic iRst,
 		input logic [31:0] iInst,
+		
 		output tDecodedInst oDecoded 
 		);
 

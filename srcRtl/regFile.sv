@@ -46,7 +46,7 @@ module regFile
 	begin
 		if (rs1Cntrl.en) 
 		begin
-			rs1Data = rdData[rs1Cntrl.addr];
+			rs1Data = rf[rs1Cntrl.addr];
 		end
 		else
 		begin
@@ -59,7 +59,7 @@ module regFile
 	begin
 		if (rs2Cntrl.en) 
 		begin
-			rs2Data = rdData[rs2Cntrl.addr];
+			rs2Data = rf[rs2Cntrl.addr];
 		end
 		else
 		begin
