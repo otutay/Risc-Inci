@@ -68,11 +68,12 @@ module InstDecoder
 		case (opcode)
 			eOpLoad: 
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rd <= {destAddr,1'b1};
-				dInst.funct3 <= {funct3,1'b1};
-				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};// TODO sign extension
-				dInst.imm.dv <= 1'b1;
+				dInst.rs1Addr <= src1Addr ;//{src1Addr,1'b1};
+				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
+				dInst.funct3 <= funct3;//{funct3,1'b1};
+				dInst.imm <= 32'(signed'(insti1[31:20])); 
+//				dInst.imm.value <= 32'(signed'(insti1[31:20])); 
+//				dInst.imm.dv <= 1'b1;
 			end
 			eOpFence:
 			begin
@@ -80,69 +81,82 @@ module InstDecoder
 			end
 			eOpImmedi:
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rd <= {destAddr,1'b1};
-				dInst.funct3 <= {funct3,1'b1};
-				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; // TODO sign extension
-				dInst.imm.dv <= 1'b1; // TODO shift operations are decoded in alu
+				dInst.rs1Addr <=src1Addr; //{src1Addr,1'b1};
+				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
+				dInst.funct3 <= funct3;//{funct3,1'b1};
+				dInst.imm <=  32'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]}; 
+//				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; 
+//				dInst.imm.dv <= 1'b1; // TODO shift operations are decoded in alu
 			end
 			eOpAuIpc:
 			begin
-				dInst.rd <= {destAddr,1'b1};
-				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
-				dInst.imm.dv <= 1'b1;
+				dInst.rdAddr <= destAddr;// {destAddr,1'b1};
+				dInst.imm <= {insti1[31:12],{12{1'b0}}};
+//				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
+//				dInst.imm.dv <= 1'b1;
 				
 			end
 			
 			eOpStore:
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rs2 <= {src2Addr,1'b1};
-				dInst.funct3 <=  {funct3,1'b1};
-				dInst.imm.value <= {{20{1'b0}},insti1[31:25],insti1[11:7]}; // TODO sign extension 
-				dInst.imm.dv <= 1'b1;
+				dInst.rs1Addr <=src1Addr; //{src1Addr,1'b1};
+				dInst.rs2Addr <= src2Addr;//{src2Addr,1'b1};
+				dInst.funct3 <= funct3;// {funct3,1'b1};
+				dInst.imm <=  32'(signed'({insti1[31:25],insti1[11:7]}));
+//				dInst.imm.value <=  32'(signed'({insti1[31:25],insti1[11:7]}));
+				//{{20{1'b0}},insti1[31:25],insti1[11:7]}; // TODO sign extension 
+//				dInst.imm.dv <= 1'b1;
 			end
 			eOpRtype:
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rs2 <= {src2Addr,1'b1};
-				dInst.rd <= {destAddr,1'b1};
-				dInst.funct3 <=  {funct3,1'b1};
-				dInst.funct7 <=  {funct7,1'b1};
+				dInst.rs1Addr <=src1Addr;// {src1Addr,1'b1};
+				dInst.rs2Addr <=src2Addr;// {src2Addr,1'b1};
+				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
+				dInst.funct3 <=  funct3;//{funct3,1'b1};
+				dInst.funct7 <=  funct7;//{funct7,1'b1};
 			end
 			eOpLui:
 			begin
-				dInst.rd <= {destAddr,1'b1};
-				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
-				dInst.imm.dv <= 1'b1;
+				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
+				dInst.imm <= {insti1[31:12],{12{1'b0}}};
+//				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
+//				dInst.imm.dv <= 1'b1;
 			end
 			eOpBranch:
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rs2 <= {src2Addr,1'b1};
-				dInst.funct3 <=  {funct3,1'b1};
-				dInst.imm.value[12] <= insti1[31];
-				dInst.imm.value[10:5] <= insti1[30:25];
-				dInst.imm.value[4:1] <=  insti1[11:8];
-				dInst.imm.value[11] <=  insti1[7];
-				dInst.imm.dv <= 1'b1;
+				dInst.rs1Addr <= src1Addr;//{src1Addr,1'b1};
+				dInst.rs2Addr <= src2Addr;//{src2Addr,1'b1};
+				dInst.funct3 <=  funct3;{funct3,1'b1};
+				// TODO error in below
+				dInst.imm[12] <= insti1[31];
+				dInst.imm[10:5] <= insti1[30:25];
+				dInst.imm[4:1] <=  insti1[11:8];
+				dInst.imm[11] <=  insti1[7];
+				
+//				dInst.imm.value[12] <= insti1[31];
+//				dInst.imm.value[10:5] <= insti1[30:25];
+//				dInst.imm.value[4:1] <=  insti1[11:8];
+//				dInst.imm.value[11] <=  insti1[7];
+//				dInst.imm.dv <= 1'b1;
 			end
 			eOpJalr:
 			begin
-				dInst.rs1 <= {src1Addr,1'b1};
-				dInst.rd <= {destAddr,1'b1};
-				dInst.funct3 <=  {funct3,1'b1};
-				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};// TODO sign extension
+				dInst.rs1Addr <= src1Addr;//{src1Addr,1'b1};
+				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
+				dInst.funct3 <=  funct3;//{funct3,1'b1};
+				dInst.imm <= 32'(signed'(insti1[31:20]));//{{20{1'b0}},insti1[31:20]};
+//				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};
 				
 			end
 			eOpJal:
 			begin
-				dInst.rd <= {destAddr,1'b1};
-				dInst.imm.value[20] <= insti1[31];
-				dInst.imm.value[10:1] <= insti1[30:21];
-				dInst.imm.value[11] <= insti1[20];
-				dInst.imm.value[19:12] <= insti1[19:12];
-				dInst.imm.dv <= 1'b1;
+				dInst.rdAddr <=destAddr;// {destAddr,1'b1};
+				// TODO correct below
+//				dInst.imm.value[20] <= insti1[31];
+//				dInst.imm.value[10:1] <= insti1[30:21];
+//				dInst.imm.value[11] <= insti1[20];
+//				dInst.imm.value[19:12] <= insti1[19:12];
+//				dInst.imm.dv <= 1'b1;
 			end
 			eOpCntrlSt:
 			begin

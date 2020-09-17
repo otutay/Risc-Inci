@@ -12,53 +12,35 @@
 import corePckg::*;
 module ALU
 		(
-		input logic iClk,
-		input logic iRst,
-		input tDecoded iDecoded
-		
-		);
-	
-	
-	
-	tAluOut aluOut; 
-	
-	always_ff @(posedge iClk) 
+	input logic iClk,
+	input logic iRst,
+	input tDecoded iDecoded
+
+);
+
+
+
+	tAluOut aluOut;
+
+	always_ff @(posedge iClk)
 	begin : operation
+		aluOut <= '{default:'0};
 		case (iDecoded.opcode)
-			eOpLoad: 
+			eOpLoad:
 			begin
-				addr <= iDecoded.rs1 + 	32'(signed'(iDecoded.imm));
-				
+				aluOut.memOp.addr <= iDecoded.rs1Data + iDecoded.imm;
+				aluOut.memOp.memRead <= 1'b1;
+				aluOut.memOp.rdAddr<= iDecoded.rdAddr;
 			end
-				
-//				case (iDecoded.funct3) 
-//					3'b000 : 
-//					begin 
-//						
-//					end
-//					3'b001 :
-//					begin
-//						
-//					end
-//					3'b010 :
-//					begin
-//						
-//					end
-//					3'b100 :
-//					begin
-//						
-//					end
-//					3'b101 :
-//					begin
-//						
-//					end
-//					default : 
-//					begin
-//						
-//					end
-//				endcase
-//				
-			
+			eOpStore:
+			begin
+				//				aluOut.addr <= iDecoded.rs1 + 	32'(signed'(iDecoded.imm));
+				//				aluOut.memWrite <= 1'b1;
+				//				aluOut.destReg <= iDecoded.rd;
+				//				aluOut.opcode <= iDecoded.opcode;
+			end
+
+
 			default: begin
 			end
 		endcase
@@ -66,7 +48,21 @@ module ALU
 		//		if(iDecoded.opcode == eOpLoad)
 		//		begin
 		//			
-		//		end
+		//		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	end
 endmodule
 
