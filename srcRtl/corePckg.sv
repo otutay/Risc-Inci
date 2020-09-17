@@ -17,19 +17,7 @@ package corePckg;
 
 
 	//	parameter logic [6:0] cRtype =  7'b0110011;
-	typedef enum logic [6:0]{
-		eOpLoad   = 7'h03,
-		eOpFence  = 7'h0f,
-		eOpImmedi = 7'h13,
-		eOpAuIpc  = 7'h17,
-		eOpStore  = 7'h23,
-		eOpRtype  = 7'h33,
-		eOpLui 	 = 7'h37,
-		eOpBranch = 7'h63,
-		eOpJalr   = 7'h67,
-		eOpJal 	 = 7'h6f,
-		eOpCntrlSt= 7'h73
-	}tOpcodeEnum;
+	
 
 //	typedef struct packed{
 //		logic [cRegSelBitW-1:0] addr;
@@ -56,6 +44,20 @@ package corePckg;
 //		logic[31:0] value;
 //		logic dv;
 //	}tImmedi;
+	typedef enum logic [6:0]{
+		eOpLoad   = 7'h03, // done;
+		eOpFence  = 7'h0f,
+		eOpImmedi = 7'h13,
+		eOpAuIpc  = 7'h17,
+		eOpStore  = 7'h23, // done;
+		eOpRtype  = 7'h33,
+		eOpLui 	 = 7'h37,
+		eOpBranch = 7'h63,
+		eOpJalr   = 7'h67,
+		eOpJal 	 = 7'h6f,
+		eOpCntrlSt= 7'h73
+	}tOpcodeEnum;
+
 
 	typedef struct packed {
 		logic [cRegSelBitW-1:0] rs1Addr;
@@ -93,16 +95,18 @@ package corePckg;
 
 
 	typedef struct packed {
-		logic memRead;
-		logic memWrite;
-		logic [31:0] baseAddr;
+		logic read;
+		logic write;
+		logic [31:0] addr;	
+		logic [31:0] data;
+		logic [2:0] opType;
 		logic [cRegSelBitW-1:0] rdAddr;
+		
 //		tRegControl destReg;
 //		tRegister base;
 //		tRegister data;
 //		tImmedi imm; 
 //		tFunct3 opType;
-		logic [31:0] addr;	
 	}tMemOp;
 
 	typedef struct packed {

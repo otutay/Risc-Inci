@@ -29,17 +29,26 @@ module ALU
 			eOpLoad:
 			begin
 				aluOut.memOp.addr <= iDecoded.rs1Data + iDecoded.imm;
-				aluOut.memOp.memRead <= 1'b1;
 				aluOut.memOp.rdAddr<= iDecoded.rdAddr;
+				aluOut.memOp.opType <= iDecoded.funct3;
+				aluOut.memOp.read <= 1'b1;
 			end
 			eOpStore:
 			begin
+				aluOut.addr <= iDecoded.rs1Data + iDecoded.imm;
+				aluOut.data <= iDecoded.rs2Data;
+				aluOut.memOp.opType <= iDecoded.funct3;
+				aluOut.memOp.write <= 1'b1;
 				//				aluOut.addr <= iDecoded.rs1 + 	32'(signed'(iDecoded.imm));
 				//				aluOut.memWrite <= 1'b1;
 				//				aluOut.destReg <= iDecoded.rd;
 				//				aluOut.opcode <= iDecoded.opcode;
 			end
-
+			eOpRtype : 
+			begin
+								
+				
+			end
 
 			default: begin
 			end
