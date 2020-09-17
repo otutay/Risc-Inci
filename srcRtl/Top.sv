@@ -39,17 +39,14 @@ module Top
 			.rs2Data(rs2Data),
 			.rdData(rdData)
 		);
-	
-	InstDecoder 
-		#(cycleNum = 1)
-		decoder(
-			.iClk(iClk),
-			.iRst(iRst),
-			.iInst(inst),
-			.oDecoded(decodedInst) 
-		);	
-			
-	
+	InstDecoder #(
+		.cycleNum(1)
+	) InstDecoder_instance (
+		.iClk(iClk),
+		.iRst(iRst),
+		.iInst(inst),
+		.oDecoded(decodedInst)
+	);
 	
 	ALU arith(
 		.iClk(iClk),

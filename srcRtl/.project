@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>riscInci</name>
+	<name>RiscInci</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>net.sf.sveditor.core.SVProjectBuilder</name>
+			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>net.sf.sveditor.core.SVNature</nature>
+		<nature>com.sigasi.hdt.verilog.ui.verilogNature</nature>
+		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>External SV Files</name>
-			<type>2</type>
-			<locationURI>svext://riscInci</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

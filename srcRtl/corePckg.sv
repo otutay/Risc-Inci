@@ -41,6 +41,7 @@ package corePckg;
 		logic dv;
 	}tRegister;
 //	
+	
 	typedef struct packed {
 		logic[2:0] value;
 		logic dv;
@@ -75,6 +76,14 @@ package corePckg;
 		tImmedi imm;
 		tOpcodeEnum opcode;
 	}tDecoded;
+
+
+	typedef struct packed {
+		logic [31:0] addr;
+		logic memOp;
+		tRegControl destReg;
+		
+	}tAluOut;
 
 endpackage
 

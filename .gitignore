@@ -2,3 +2,10 @@
 transcript
 *.wlf
 work
+.library_mapping.xml
+.project
+.svproject
+srcRtl/.library_mapping.xml
+srcRtl/.settings/
+sve.f
+

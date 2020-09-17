@@ -63,7 +63,7 @@ module InstDecoder
 	
 	always_ff @(posedge iClk) // instructionDecode
 	begin : decode
-		dInst <= {default:0};
+		dInst <= '{default:'0};
 		dInst.opcode <= opcode;
 		case (opcode)
 			eOpLoad: 

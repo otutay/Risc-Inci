@@ -17,29 +17,48 @@ module ALU
 		input tDecoded iDecoded
 		
 		);
-
 	
 	
-	always_ff @(posedge iClk)
+	
+	tAluOut aluOut; 
+	
+	always_ff @(posedge iClk) 
+	begin : operation
 		case (iDecoded.opcode)
 			eOpLoad: 
 			begin
-				case (iDecoded.funct3)
-					3'b000 : 
-					begin
-						
-					end
-					3'b001 :
-					begin
-						
-					end
-					
-					default: 
-					begin
-					end
-				endcase
+				addr <= iDecoded.rs1 + 	32'(signed'(iDecoded.imm));
 				
 			end
+				
+//				case (iDecoded.funct3) 
+//					3'b000 : 
+//					begin 
+//						
+//					end
+//					3'b001 :
+//					begin
+//						
+//					end
+//					3'b010 :
+//					begin
+//						
+//					end
+//					3'b100 :
+//					begin
+//						
+//					end
+//					3'b101 :
+//					begin
+//						
+//					end
+//					default : 
+//					begin
+//						
+//					end
+//				endcase
+//				
+			
 			default: begin
 			end
 		endcase
