@@ -17,11 +17,15 @@ module ALU
 	input tDecoded iDecoded
 
 );
-
-
-
 	tAluOut aluOut;
-
+	
+	logic[3:0] rSelection;
+	
+	always_comb
+	begin
+		rSelection = {iDecoded.funct7[5],iDecoded.funct3}; 
+	end
+	
 	always_ff @(posedge iClk)
 	begin : operation
 		aluOut <= '{default:'0};
@@ -46,7 +50,30 @@ module ALU
 			end
 			eOpRtype : 
 			begin
-								
+				aluOut.regOp.addr <= iDecoded.rdAddr;
+				aluOut.regOp.dv <= 1'b1;
+				case (rSelection)
+					4'b0000 : // add 
+					begin
+						aluOut.regOp.data <= iDecoded.rs1Data + iDecoded.rs2Data;
+					end 
+					4'b1000: // sub
+					begin
+						aluOut.regOp.data <= iDecoded.rs1Data - iDecoded.rs2Data;
+					end
+					4'b0001 : // sll
+					begin
+						aluOut.regOp.data <= iDecoded.rs1Data << iDecoded.rs2Data[$clog2(cDataWidth)-1:0];
+					end
+					4'b0010 : // slt
+					begin
+						aluOut.regOp.data <= iDecoded.rs1Data << iDecoded.rs2Data[$clog2(cDataWidth)-1:0];
+					end	
+					
+					
+					
+					default : statement_or_null_2;
+				endcase			
 				
 			end
 

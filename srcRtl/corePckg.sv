@@ -77,8 +77,8 @@ package corePckg;
 	}tDecodedInst;
 
 	typedef struct packed {
-		logic [31:0] rs1Data;
-		logic [31:0] rs2Data;
+		logic [cDataWidth-1:0] rs1Data;
+		logic [cDataWidth-1:0] rs2Data;
 		logic [cRegSelBitW-1:0] rdAddr;
 		logic [2:0] funct3;
 		logic [6:0] funct7;
@@ -98,25 +98,24 @@ package corePckg;
 		logic read;
 		logic write;
 		logic [31:0] addr;	
-		logic [31:0] data;
+		logic [cDataWidth-1:0] data;
 		logic [2:0] opType;
 		logic [cRegSelBitW-1:0] rdAddr;
-		
-//		tRegControl destReg;
-//		tRegister base;
-//		tRegister data;
-//		tImmedi imm; 
-//		tFunct3 opType;
 	}tMemOp;
 
 	typedef struct packed {
+		logic dv;
+		logic [cRegSelBitW-1:0] addr;
+		logic [cDataWidth-1:0] data; 
+	}tRegOp;
+	
+
+	typedef struct packed {
 		tMemOp memOp;
+		tRegOp regOp;
 	}tAluOut;	
-//		logic memRead;
-//		logic memWrite;
-//		tRegControl sour
-//		tRegControl destReg;
-//		tOpcodeEnum opcode;
+
+	
 
 	
 
