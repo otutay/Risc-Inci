@@ -17,45 +17,45 @@ package corePckg;
 
 
 	//	parameter logic [6:0] cRtype =  7'b0110011;
-	
 
-//	typedef struct packed{
-//		logic [cRegSelBitW-1:0] addr;
-//		logic en;
-//	}tRegControl;
-//
-//	typedef struct packed {
-//		logic[31:0] data;
-//		logic dv;
-//	}tRegister;
-//	//	
-//
-//	typedef struct packed {
-//		logic[2:0] value;
-//		logic dv;
-//	}tFunct3;
-//
-//	typedef struct packed {
-//		logic[6:0] value;
-//		logic dv;
-//	}tFunct7;
-//
-//	typedef struct packed {
-//		logic[31:0] value;
-//		logic dv;
-//	}tImmedi;
+
+	//	typedef struct packed{
+	//		logic [cRegSelBitW-1:0] addr;
+	//		logic en;
+	//	}tRegControl;
+	//
+	//	typedef struct packed {
+	//		logic[31:0] data;
+	//		logic dv;
+	//	}tRegister;
+	//	//	
+	//
+	//	typedef struct packed {
+	//		logic[2:0] value;
+	//		logic dv;
+	//	}tFunct3;
+	//
+	//	typedef struct packed {
+	//		logic[6:0] value;
+	//		logic dv;
+	//	}tFunct7;
+	//
+	//	typedef struct packed {
+	//		logic[31:0] value;
+	//		logic dv;
+	//	}tImmedi;
 	typedef enum logic [6:0]{
 		eOpLoad   = 7'h03, // done;
 		eOpFence  = 7'h0f,
 		eOpImmedi = 7'h13,
 		eOpAuIpc  = 7'h17,
 		eOpStore  = 7'h23, // done;
-		eOpRtype  = 7'h33,
-		eOpLui 	 = 7'h37,
+		eOpRtype  = 7'h33, // done
+		eOpLui 	  = 7'h37,
 		eOpBranch = 7'h63,
 		eOpJalr   = 7'h67,
-		eOpJal 	 = 7'h6f,
-		eOpCntrlSt= 7'h73
+		eOpJal 	  = 7'h6f,
+		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
 
@@ -67,13 +67,13 @@ package corePckg;
 		logic [6:0] funct7;
 		logic[31:0] imm;
 		tOpcodeEnum opcode;
-//		tRegControl rs1;
-//		tRegControl rs2;
-//		tRegControl rd;
-//		tFunct3 funct3;
-//		tFunct7 funct7;
-//		tImmedi imm;
-//		tOpcodeEnum opcode;
+		//		tRegControl rs1;
+		//		tRegControl rs2;
+		//		tRegControl rd;
+		//		tFunct3 funct3;
+		//		tFunct7 funct7;
+		//		tImmedi imm;
+		//		tOpcodeEnum opcode;
 	}tDecodedInst;
 
 	typedef struct packed {
@@ -84,20 +84,20 @@ package corePckg;
 		logic [6:0] funct7;
 		logic[31:0] imm;
 		tOpcodeEnum opcode;
-//		tRegister rs1;
-//		tRegister rs2;
-//		tRegControl rd;
-//		tFunct3 funct3;
-//		tFunct7 funct7;
-//		tImmedi imm;
-		
+		//		tRegister rs1;
+		//		tRegister rs2;
+		//		tRegControl rd;
+		//		tFunct3 funct3;
+		//		tFunct7 funct7;
+		//		tImmedi imm;
+
 	}tDecoded;
 
 
 	typedef struct packed {
 		logic read;
 		logic write;
-		logic [31:0] addr;	
+		logic [31:0] addr;
 		logic [cDataWidth-1:0] data;
 		logic [2:0] opType;
 		logic [cRegSelBitW-1:0] rdAddr;
@@ -106,18 +106,18 @@ package corePckg;
 	typedef struct packed {
 		logic dv;
 		logic [cRegSelBitW-1:0] addr;
-		logic [cDataWidth-1:0] data; 
+		logic [cDataWidth-1:0] data;
 	}tRegOp;
-	
+
 
 	typedef struct packed {
 		tMemOp memOp;
 		tRegOp regOp;
-	}tAluOut;	
+	}tAluOut;
 
-	
 
-	
+
+
 
 endpackage
 
