@@ -91,11 +91,41 @@ module ALU
 					begin
 						aluOut.regOp.data <= iDecoded.rs1Data & iDecoded.rs2Data;
 					end
+					
 					default : statement_or_null_2;
 				endcase
 
 			end
-
+			eOpBranch:
+			begin
+				case (iDecoded.funct3)
+					3'b000 : // beq 
+					begin
+					
+					end
+					3'b001: // bne
+					begin
+					
+					end
+					3'b100: //blt
+					begin
+					
+					end
+					3'b101: //bge
+					begin
+					
+					end
+					3'b110: //bltu
+					begin
+					
+					end
+					3'b111: // bgeu
+					begin
+					
+					end
+					default : NULL;
+				endcase
+			end 
 			default: begin
 			end
 		endcase
