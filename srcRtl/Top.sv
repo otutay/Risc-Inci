@@ -19,13 +19,13 @@ module Top
 	
 	
 	tRegControl destiReg;//TODO not implemented
-	logic [31:0] rdData;//TODO not implemented
+	logic [cXLEN-1:0] rdData;//TODO not implemented
 	
-	logic [31:0] inst;
-	logic [31:0] curPc;
+	logic [cPCBitW-1:0] inst;
+	logic [cXLEN-1:0] curPc;
 	tDecodedInst decodedInst;
-	logic [31:0] rs1Data;
-	logic [31:0] rs2Data;
+	logic [cXLEN-1:0] rs1Data;
+	logic [cXLEN-1:0] rs2Data;
 	tDecoded decoded;
 
 	

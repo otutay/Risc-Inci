@@ -19,12 +19,12 @@ module regFile
 		input tRegControl  rs1Cntrl,
 		input tRegControl  rs2Cntrl,
 		input tRegControl  rdCntrl,
-		output logic[cDataWidth-1:0] rs1Data,
-		output logic[cDataWidth-1:0] rs2Data,
-		input  logic[cDataWidth-1:0] rdData
+		output logic[cXLEN-1:0] rs1Data,
+		output logic[cXLEN-1:0] rs2Data,
+		input  logic[cXLEN-1:0] rdData
 		);
 
-	logic [cRegNum-1:0][cDataWidth-1:0] rf;
+	logic [cRegNum-1:0][cXLEN-1:0] rf;
 	
 	always_ff @(posedge iClk)
 	begin

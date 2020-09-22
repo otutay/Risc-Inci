@@ -66,12 +66,12 @@ module ALU
 					end
 					4'b0010 : // slt
 					begin
-						aluOut.regOp.data[31:1] <=  '{default:'0};
+						aluOut.regOp.data[cXLEN-1:1] <=  '{default:'0};
 						aluOut.regOp.data[0] <=  signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data);
 					end
 					4'b0011 : // sltu
 					begin
-						aluOut.regOp.data[31:1] <=  '{default:'0};
+						aluOut.regOp.data[cXLEN-1:1] <=  '{default:'0};
 						aluOut.regOp.data[0] <=  iDecoded.rs1Data < iDecoded.rs2Data;
 					end
 					4'b0100 : // xor

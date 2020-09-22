@@ -12,7 +12,10 @@
 package corePckg;
 
 	parameter int unsigned cRegSelBitW = 5;
-	parameter int unsigned cDataWidth = 32;
+//	parameter int unsigned cDataWidth = 32;
+//	parameter int unsigned cPCBitW = 32;
+//	parameter int unsigned cImmBitW = 32;
+	parameter int unsigned cXLEN = 32;
 	parameter int unsigned cRegNum = 2**cRegSelBitW;
 
 
@@ -65,9 +68,9 @@ package corePckg;
 		logic [cRegSelBitW-1:0] rdAddr;
 		logic [2:0] funct3;
 		logic [6:0] funct7;
-		logic[31:0] imm;
+		logic[cXLEN-1:0] imm;
 		tOpcodeEnum opcode;
-		logic [31:0] curPc;
+		logic [cXLEN-1:0] curPc;
 		//		tRegControl rs1;
 		//		tRegControl rs2;
 		//		tRegControl rd;
@@ -78,14 +81,14 @@ package corePckg;
 	}tDecodedInst;
 
 	typedef struct packed {
-		logic [cDataWidth-1:0] rs1Data;
-		logic [cDataWidth-1:0] rs2Data;
+		logic [cXLEN-1:0] rs1Data;
+		logic [cXLEN-1:0] rs2Data;
 		logic [cRegSelBitW-1:0] rdAddr;
 		logic [2:0] funct3;
 		logic [6:0] funct7;
-		logic[31:0] imm;
+		logic[cXLEN-1:0] imm;
 		tOpcodeEnum opcode;
-		logic [31:0] curPc;
+		logic [cXLEN-1:0] curPc;
 		//		tRegister rs1;
 		//		tRegister rs2;
 		//		tRegControl rd;
@@ -99,8 +102,8 @@ package corePckg;
 	typedef struct packed {
 		logic read;
 		logic write;
-		logic [31:0] addr;
-		logic [cDataWidth-1:0] data;
+		logic [cXLEN-1:0] addr;
+		logic [cXLEN-1:0] data;
 		logic [2:0] opType;
 		logic [cRegSelBitW-1:0] rdAddr;
 	}tMemOp;
@@ -108,7 +111,7 @@ package corePckg;
 	typedef struct packed {
 		logic dv;
 		logic [cRegSelBitW-1:0] addr;
-		logic [cDataWidth-1:0] data;
+		logic [cXLEN-1:0] data;
 	}tRegOp;
 
 	typedef struct packed {

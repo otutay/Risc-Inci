@@ -15,8 +15,8 @@ module InstDecoder
 		(
 		input logic iClk,
 		input logic iRst,
-		input logic [31:0] iInst,
-		input logic [31:0] iCurPc,
+		input logic [cXLEN-1:0] iInst,
+		input logic [cXLEN-1:0] iCurPc,
 		output tDecodedInst oDecoded 
 		);
 
@@ -25,8 +25,8 @@ module InstDecoder
 	logic [cRegSelBitW-1:0] destAddr;
 	logic [cRegSelBitW-1:0] src1Addr;
 	logic [cRegSelBitW-1:0] src2Addr;
-	logic [31:0] insti1;
-	logic [31:0] curPci1;
+	logic [cXLEN-1:0] insti1;
+	logic [cXLEN-1:0] curPci1;
 	tDecodedInst dInst;
 	tOpcodeEnum opcode;
 	//	tOpLoad opLoad;
@@ -75,7 +75,7 @@ module InstDecoder
 				dInst.rs1Addr <= src1Addr ;//{src1Addr,1'b1};
 				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
 				dInst.funct3 <= funct3;//{funct3,1'b1};
-				dInst.imm <= 32'(signed'(insti1[31:20])); 
+				dInst.imm <= cXLEN'(signed'(insti1[31:20])); 
 //				dInst.imm.value <= 32'(signed'(insti1[31:20])); 
 //				dInst.imm.dv <= 1'b1;
 			end
@@ -88,7 +88,7 @@ module InstDecoder
 				dInst.rs1Addr <=src1Addr; //{src1Addr,1'b1};
 				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
 				dInst.funct3 <= funct3;//{funct3,1'b1};
-				dInst.imm <=  32'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]}; 
+				dInst.imm <=  cXLEN'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]}; 
 //				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; 
 //				dInst.imm.dv <= 1'b1; // TODO shift operations are decoded in alu
 			end
@@ -106,7 +106,7 @@ module InstDecoder
 				dInst.rs1Addr <=src1Addr; //{src1Addr,1'b1};
 				dInst.rs2Addr <= src2Addr;//{src2Addr,1'b1};
 				dInst.funct3 <= funct3;// {funct3,1'b1};
-				dInst.imm <=  32'(signed'({insti1[31:25],insti1[11:7]}));
+				dInst.imm <=  cXLEN'(signed'({insti1[31:25],insti1[11:7]}));
 //				dInst.imm.value <=  32'(signed'({insti1[31:25],insti1[11:7]}));
 				//{{20{1'b0}},insti1[31:25],insti1[11:7]}; // TODO sign extension 
 //				dInst.imm.dv <= 1'b1;
@@ -131,11 +131,12 @@ module InstDecoder
 				dInst.rs1Addr <= src1Addr;//{src1Addr,1'b1};
 				dInst.rs2Addr <= src2Addr;//{src2Addr,1'b1};
 				dInst.funct3 <=  funct3;{funct3,1'b1};
-				// TODO error in below
-				dInst.imm[12] <= insti1[31];
-				dInst.imm[10:5] <= insti1[30:25];
-				dInst.imm[4:1] <=  insti1[11:8];
-				dInst.imm[11] <=  insti1[7];
+				// 
+				dInst.imm <= {{cXLEN-12{insti1[31]}},insti1[7],insti1[30:25],insti1[11:8],1'b0};
+//				dInst.imm[12] <= insti1[31];
+//				dInst.imm[10:5] <= insti1[30:25];
+//				dInst.imm[4:1] <=  insti1[11:8];
+//				dInst.imm[11] <=  insti1[7];
 				
 //				dInst.imm.value[12] <= insti1[31];
 //				dInst.imm.value[10:5] <= insti1[30:25];
@@ -148,7 +149,7 @@ module InstDecoder
 				dInst.rs1Addr <= src1Addr;//{src1Addr,1'b1};
 				dInst.rdAddr <= destAddr;//{destAddr,1'b1};
 				dInst.funct3 <=  funct3;//{funct3,1'b1};
-				dInst.imm <= 32'(signed'(insti1[31:20]));//{{20{1'b0}},insti1[31:20]};
+				dInst.imm <= cXLEN'(signed'(insti1[31:20]));//{{20{1'b0}},insti1[31:20]};
 //				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};
 				
 			end
