@@ -20,6 +20,9 @@ module ALU
 	tAluOut aluOut;
 
 	logic[3:0] rSelection;
+	logic equal;
+	logic lessThan;
+	logic lessThanUns;
 
 	always_comb
 	begin
@@ -101,7 +104,10 @@ module ALU
 				case (iDecoded.funct3)
 					3'b000 : // beq 
 					begin
-					
+						if(equal == 1'b1)
+						begin
+							
+						end
 					end
 					3'b001: // bne
 					begin
@@ -129,26 +135,15 @@ module ALU
 			default: begin
 			end
 		endcase
-		//	begin : loadOperation
-		//		if(iDecoded.opcode == eOpLoad)
-		//		begin
-		//			
-		//		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	end
+	
+	always_comb
+	begin
+		equal = iDecoded.rs1Data == iDecoded.rs2Data;// beq and bne comparison
+		lessThanUns = iDecoded.rs1Data < iDecoded.rs2Data; // bltu and bgeu comparison
+		lessThan    = signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data); // blt and bge comparison
+	end
+	
 endmodule
 
 

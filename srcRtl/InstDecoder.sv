@@ -16,7 +16,7 @@ module InstDecoder
 		input logic iClk,
 		input logic iRst,
 		input logic [31:0] iInst,
-		
+		input logic [31:0] iCurPc,
 		output tDecodedInst oDecoded 
 		);
 
@@ -26,6 +26,7 @@ module InstDecoder
 	logic [cRegSelBitW-1:0] src1Addr;
 	logic [cRegSelBitW-1:0] src2Addr;
 	logic [31:0] insti1;
+	logic [31:0] curPci1;
 	tDecodedInst dInst;
 	tOpcodeEnum opcode;
 	//	tOpLoad opLoad;
@@ -42,7 +43,8 @@ module InstDecoder
 			assign destAddr    = iInst[11:7];
 			assign funct3 	   = iInst[14:12];
 			assign funct7	   = iInst[31:25];
-			assign instruction = insti1;
+			assign insti1 	   = iInst;
+			assign curPci1     = iCurPc;
 		end
 				
 		if (cycleNum == 2)
@@ -56,6 +58,7 @@ module InstDecoder
 				funct3 	  	<= iInst[14:12];
 				funct7	  	<= iInst[31:25];
 				insti1 		<= iInst;
+				curPci1     <= iCurPc;
 		
 			end		
 		end
@@ -65,6 +68,7 @@ module InstDecoder
 	begin : decode
 		dInst <= '{default:'0};
 		dInst.opcode <= opcode;
+		dInst.curPc <= curPci1;
 		case (opcode)
 			eOpLoad: 
 			begin

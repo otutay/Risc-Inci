@@ -22,6 +22,7 @@ module Top
 	logic [31:0] rdData;//TODO not implemented
 	
 	logic [31:0] inst;
+	logic [31:0] curPc;
 	tDecodedInst decodedInst;
 	logic [31:0] rs1Data;
 	logic [31:0] rs2Data;
@@ -45,6 +46,7 @@ module Top
 		.iClk(iClk),
 		.iRst(iRst),
 		.iInst(inst),
+		.iCurPc(curPc),
 		.oDecoded(decodedInst)
 	);
 	
@@ -65,7 +67,7 @@ module Top
 		decoded.funct7 = decodedInst.funct7;
 		decoded.imm = decodedInst.imm;
 		decoded.opcode = decodedInst.opcode;
-	
+		decoded.curPc = decodedInst.curPc;
 	end
 		
 		

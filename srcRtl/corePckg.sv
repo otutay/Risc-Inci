@@ -67,6 +67,7 @@ package corePckg;
 		logic [6:0] funct7;
 		logic[31:0] imm;
 		tOpcodeEnum opcode;
+		logic [31:0] curPc;
 		//		tRegControl rs1;
 		//		tRegControl rs2;
 		//		tRegControl rd;
@@ -84,6 +85,7 @@ package corePckg;
 		logic [6:0] funct7;
 		logic[31:0] imm;
 		tOpcodeEnum opcode;
+		logic [31:0] curPc;
 		//		tRegister rs1;
 		//		tRegister rs2;
 		//		tRegControl rd;
@@ -109,6 +111,11 @@ package corePckg;
 		logic [cDataWidth-1:0] data;
 	}tRegOp;
 
+	typedef struct packed {
+		logic branchTaken;
+		logic flushPipe;
+		logic newPC;
+	}tBranchOp;
 
 	typedef struct packed {
 		tMemOp memOp;
