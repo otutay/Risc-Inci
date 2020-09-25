@@ -24,10 +24,11 @@ module ALU
 	logic lessThan;
 	logic lessThanUns;
 
-	always_comb
-	begin
-		rSelection = {iDecoded.funct7[5],iDecoded.funct3};
-	end
+	assign	rSelection = {iDecoded.funct7[5],iDecoded.funct3};
+	assign	equal = iDecoded.rs1Data == iDecoded.rs2Data; // beq and bne comparison
+	assign	lessThanUns = iDecoded.rs1Data < iDecoded.rs2Data; // bltu and bgeu comparison
+	assign	lessThan    = signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data); // blt and bge comparison
+
 
 	always_ff @(posedge iClk)
 	begin : operation
@@ -94,7 +95,7 @@ module ALU
 					begin
 						aluOut.regOp.data <= iDecoded.rs1Data & iDecoded.rs2Data;
 					end
-					
+
 					default : statement_or_null_2;
 				endcase
 
@@ -106,44 +107,64 @@ module ALU
 					begin
 						if(equal == 1'b1)
 						begin
-							
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
 						end
 					end
 					3'b001: // bne
 					begin
-					
+						if(equal == 1'b0)
+						begin
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+						end
 					end
 					3'b100: //blt
 					begin
-					
+						if(lessThan == 1'b1)
+						begin
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+						end
 					end
 					3'b101: //bge
 					begin
-					
+						if(lessThan == 1'b0)
+						begin
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+						end
 					end
 					3'b110: //bltu
 					begin
-					
+						if(lessThanUns == 1'b1)
+						begin
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+						end
 					end
 					3'b111: // bgeu
 					begin
-					
+						if(lessThanUns == 1'b0)
+						begin
+							aluOut.brchOp.branchTaken <= 1'b1;
+							aluOut.brchOp.flushPipe   <= 1'b1;
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+						end
 					end
 					default : NULL;
 				endcase
-			end 
+			end
 			default: begin
 			end
 		endcase
 	end
-	
-	always_comb
-	begin
-		equal = iDecoded.rs1Data == iDecoded.rs2Data;// beq and bne comparison
-		lessThanUns = iDecoded.rs1Data < iDecoded.rs2Data; // bltu and bgeu comparison
-		lessThan    = signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data); // blt and bge comparison
-	end
-	
+
 endmodule
 
 

@@ -123,6 +123,7 @@ package corePckg;
 	typedef struct packed {
 		tMemOp memOp;
 		tRegOp regOp;
+		tBranchOp brchOp;
 	}tAluOut;
 
 
