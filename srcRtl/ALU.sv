@@ -85,7 +85,7 @@ module ALU
 					end
 					4'b1101 : // srA
 					begin
-						aluOut.regOp.data <= signed'(iDecoded.rs1Data) >> iDecoded.rs2Data[$clog2(cDataWidth)-1:0];
+						aluOut.regOp.data <= signed'(iDecoded.rs1Data) >> iDecoded.rs2Data[$clog2(cDataWidth)-1:0];// TODO can be wrong
 					end
 					4'b0110 : // or
 					begin
@@ -109,7 +109,7 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					3'b001: // bne
@@ -118,7 +118,7 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					3'b100: //blt
@@ -127,7 +127,7 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					3'b101: //bge
@@ -136,7 +136,7 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					3'b110: //bltu
@@ -145,7 +145,7 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					3'b111: // bgeu
@@ -154,12 +154,49 @@ module ALU
 						begin
 							aluOut.brchOp.branchTaken <= 1'b1;
 							aluOut.brchOp.flushPipe   <= 1'b1;
-							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm); 
+							aluOut.brchOp.newPC 	  <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
 						end
 					end
 					default : NULL;
 				endcase
 			end
+			eOpImmedi:
+			begin
+				aluOut.regOp.addr <= iDecoded.rdAddr;
+				aluOut.regOp.dv  <= 1'b1;
+				case (iDecoded.funct3)
+					3'b000 : aluOut.regOp.data <= signed'(iDecoded.rs1Data) + signed'(iDecoded.imm);
+
+					3'b010 :
+					begin
+						aluOut.regOp.data[cXLEN-1:1] <=  '{default:'0};
+						aluOut.regOp.data[0] <=  signed'(iDecoded.rs1Data) < signed'(iDecoded.imm);
+					end
+					3'b011:
+					begin
+						aluOut.regOp.data[cXLEN-1:1] <=  '{default:'0};
+						aluOut.regOp.data[0] <=  iDecoded.rs1Data < iDecoded.imm ;
+					end
+					3'b100: aluOut.regOp.data <=  iDecoded.rs1Data ^ iDecoded.imm;
+					3'b110: aluOut.regOp.data <=  iDecoded.rs1Data | iDecoded.imm;
+					3'b111: aluOut.regOp.data <=  iDecoded.rs1Data & iDecoded.imm;
+					3'b001: aluOut.regOp.data <= iDecoded.rs1Data << iDecoded.imm[$clog2(cDataWidth)-1:0];
+					3'b101:
+					begin
+						if (iDecoded.funct7[5] == 1'b1)
+							begin
+								aluOut.regOp.data <= iDecoded.rs1Data >> iDecoded.imm[$clog2(cDataWidth)-1:0];		
+							end
+						else
+							begin
+								aluOut.regOp.data <= signed'(iDecoded.rs1Data) >> iDecoded.imm[$clog2(cDataWidth)-1:0]; // TODO can be wrong
+							end
+						
+					end
+					default : statement_or_null_2;
+				endcase
+			end
+			
 			default: begin
 			end
 		endcase

@@ -50,12 +50,12 @@ package corePckg;
 	typedef enum logic [6:0]{
 		eOpLoad   = 7'h03, // done;
 		eOpFence  = 7'h0f,
-		eOpImmedi = 7'h13,
+		eOpImmedi = 7'h13, // done
 		eOpAuIpc  = 7'h17,
 		eOpStore  = 7'h23, // done;
 		eOpRtype  = 7'h33, // done
 		eOpLui 	  = 7'h37,
-		eOpBranch = 7'h63,
+		eOpBranch = 7'h63, // done
 		eOpJalr   = 7'h67,
 		eOpJal 	  = 7'h6f,
 		eOpCntrlSt = 7'h73
