@@ -196,7 +196,17 @@ module ALU
 					default : statement_or_null_2;
 				endcase
 			end
-			
+			eOpJal:
+			begin
+				aluOut.brchOp.branchTaken <= 1'b1;
+				aluOut.brchOp.flushPipe   <= 1'b1;
+				aluOut.brchOp.newPC <= signed'(iDecoded.curPc) + signed'(iDecoded.imm);
+				
+				aluOut.regOp.dv <=  1'b1;
+				aluOut.regOp.addr <= iDecoded.rdAddr;
+				aluOut.regOp.data <= signed'(iDecoded.curPc) + 4;
+				
+			end
 			default: begin
 			end
 		endcase

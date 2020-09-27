@@ -57,7 +57,7 @@ package corePckg;
 		eOpLui 	  = 7'h37,
 		eOpBranch = 7'h63, // done
 		eOpJalr   = 7'h67,
-		eOpJal 	  = 7'h6f,
+		eOpJal 	  = 7'h6f, // done
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
@@ -89,13 +89,6 @@ package corePckg;
 		logic[cXLEN-1:0] imm;
 		tOpcodeEnum opcode;
 		logic [cXLEN-1:0] curPc;
-		//		tRegister rs1;
-		//		tRegister rs2;
-		//		tRegControl rd;
-		//		tFunct3 funct3;
-		//		tFunct7 funct7;
-		//		tImmedi imm;
-
 	}tDecoded;
 
 
