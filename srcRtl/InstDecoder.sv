@@ -156,7 +156,6 @@ module InstDecoder
 			eOpJal:
 			begin
 				dInst.rdAddr <=destAddr;// {destAddr,1'b1};
-				// TODO correct below
 				dInst.imm <= cXLEN'(signed'({insti1[31],insti1[19:12],insti1[20],insti1[30:21],1'b0}));
 //				dInst.imm.value[20] <= insti1[31];
 //				dInst.imm.value[10:1] <= insti1[30:21];

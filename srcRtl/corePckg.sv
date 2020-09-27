@@ -12,9 +12,9 @@
 package corePckg;
 
 	parameter int unsigned cRegSelBitW = 5;
-//	parameter int unsigned cDataWidth = 32;
-//	parameter int unsigned cPCBitW = 32;
-//	parameter int unsigned cImmBitW = 32;
+	//	parameter int unsigned cDataWidth = 32;
+	//	parameter int unsigned cPCBitW = 32;
+	//	parameter int unsigned cImmBitW = 32;
 	parameter int unsigned cXLEN = 32;
 	parameter int unsigned cRegNum = 2**cRegSelBitW;
 
@@ -56,7 +56,7 @@ package corePckg;
 		eOpRtype  = 7'h33, // done
 		eOpLui 	  = 7'h37,
 		eOpBranch = 7'h63, // done
-		eOpJalr   = 7'h67,
+		eOpJalr   = 7'h67, // done
 		eOpJal 	  = 7'h6f, // done
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
@@ -71,13 +71,6 @@ package corePckg;
 		logic[cXLEN-1:0] imm;
 		tOpcodeEnum opcode;
 		logic [cXLEN-1:0] curPc;
-		//		tRegControl rs1;
-		//		tRegControl rs2;
-		//		tRegControl rd;
-		//		tFunct3 funct3;
-		//		tFunct7 funct7;
-		//		tImmedi imm;
-		//		tOpcodeEnum opcode;
 	}tDecodedInst;
 
 	typedef struct packed {

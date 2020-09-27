@@ -207,6 +207,20 @@ module ALU
 				aluOut.regOp.data <= signed'(iDecoded.curPc) + 4;
 				
 			end
+			eOpJalr: 
+			begin
+				aluOut.brchOp.branchTaken <= 1'b1;
+				aluOut.brchOp.flushPipe   <= 1'b1;
+				aluOut.brchOp.newPC <= (signed'(iDecoded.rs1Data) + signed'(iDecoded.imm)) & {{cXLEN-1{1'b1}},1'b0};
+				
+				
+				aluOut.regOp.dv <=  1'b1;
+				aluOut.regOp.addr <= iDecoded.rdAddr;
+				aluOut.regOp.data <= signed'(iDecoded.curPc) + 4;
+					
+			end
+			
+			
 			default: begin
 			end
 		endcase
