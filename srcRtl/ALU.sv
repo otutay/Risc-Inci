@@ -225,6 +225,13 @@ module ALU
 				aluOut.regOp.addr <= iDecoded.rdAddr;
 				aluOut.regOp.data <= iDecoded.imm;
 			end
+			eOpAuIpc:
+			begin
+				aluOut.regOp.dv <=  1'b1;
+				aluOut.regOp.addr <= iDecoded.rdAddr;
+				aluOut.regOp.data <= signed'(iDecoded.imm) + signed'(iDecoded.curPc);
+			end
+			
 			
 			default: begin
 			end

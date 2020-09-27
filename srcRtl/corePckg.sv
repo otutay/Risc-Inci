@@ -54,7 +54,7 @@ package corePckg;
 		eOpAuIpc  = 7'h17,
 		eOpStore  = 7'h23, // done;
 		eOpRtype  = 7'h33, // done
-		eOpLui 	  = 7'h37,
+		eOpLui 	  = 7'h37, // done
 		eOpBranch = 7'h63, // done
 		eOpJalr   = 7'h67, // done
 		eOpJal 	  = 7'h6f, // done
