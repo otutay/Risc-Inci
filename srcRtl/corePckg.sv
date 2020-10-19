@@ -18,40 +18,11 @@ package corePckg;
 	parameter int unsigned cXLEN = 32;
 	parameter int unsigned cRegNum = 2**cRegSelBitW;
 
-
-	//	parameter logic [6:0] cRtype =  7'b0110011;
-
-
-	//	typedef struct packed{
-	//		logic [cRegSelBitW-1:0] addr;
-	//		logic en;
-	//	}tRegControl;
-	//
-	//	typedef struct packed {
-	//		logic[31:0] data;
-	//		logic dv;
-	//	}tRegister;
-	//	//	
-	//
-	//	typedef struct packed {
-	//		logic[2:0] value;
-	//		logic dv;
-	//	}tFunct3;
-	//
-	//	typedef struct packed {
-	//		logic[6:0] value;
-	//		logic dv;
-	//	}tFunct7;
-	//
-	//	typedef struct packed {
-	//		logic[31:0] value;
-	//		logic dv;
-	//	}tImmedi;
 	typedef enum logic [6:0]{
 		eOpLoad   = 7'h03, // done;
 		eOpFence  = 7'h0f,
 		eOpImmedi = 7'h13, // done
-		eOpAuIpc  = 7'h17,
+		eOpAuIpc  = 7'h17, // done
 		eOpStore  = 7'h23, // done;
 		eOpRtype  = 7'h33, // done
 		eOpLui 	  = 7'h37, // done
@@ -61,6 +32,15 @@ package corePckg;
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
+
+	typedef enum logic[2:0] {
+		eR 		= 3'b000,
+		eImmedi = 3'b001,
+		eJal 	= 3'b010,
+		eJalR 	= 3'b011,
+		eLui 	= 3'b100,
+		eAuipc 	= 3'b101
+	}tRegTypeEnum;
 
 	typedef struct packed {
 		logic [cRegSelBitW-1:0] rs1Addr;
@@ -84,6 +64,35 @@ package corePckg;
 		logic [cXLEN-1:0] curPc;
 	}tDecoded;
 
+	typedef enum logic[3:0] {
+		eAdd 			= 4'b0000,
+		eSub 			= 4'b1000,
+		eShftLeft 		= 4'b0001,
+		eCompareSigned 	= 4'b0010,
+		eCompareUnsigned= 4'b0011,
+		eXor 			= 4'b0100,
+		eShftRight      = 4'b0101,
+		eShftRightArit  = 4'b1101,
+		eOr 			= 4'b0110,
+		eAnd			= 4'b0111,
+		eNoOp 			= 4'b1111
+	}tArithEnum;
+
+
+	typedef struct packed {
+		logic load;
+		logic store;
+		logic dv;
+	}tDecodedMem;
+
+	typedef struct packed{
+		tArithEnum arithType;
+		logic opRs1;
+		logic opRs2;
+		logic opImm;
+		logic opPc;
+		logic dv;
+	}tDecodedReg;
 
 	typedef struct packed {
 		logic read;
