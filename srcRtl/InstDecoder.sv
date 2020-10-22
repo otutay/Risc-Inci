@@ -34,6 +34,7 @@ module InstDecoder
 	tDecodedInst dInst;
 	tDecodedMem memOp;
 	tDecodedReg regOp;
+	tDecodedBranch branchOp;
 
 	generate
 		if(cycleNum == 1)
@@ -82,7 +83,7 @@ module InstDecoder
 				memOp.dv <= 1'b1;
 
 				// regOpDecode
-				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0};
+				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpStore:
 			begin
@@ -92,7 +93,7 @@ module InstDecoder
 				memOp.dv <= 1'b1;
 
 				// regOpDecode
-				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0};
+				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpRtype:
 			begin
@@ -102,7 +103,9 @@ module InstDecoder
 				regOp.opRs2 <= 1'b1;
 				regOp.opImm <= 1'b0;
 				regOp.opPc <= 1'b0;
+				regOp.opConst <= 1'b0;
 				regOp.dv <= 1'b1;
+
 
 				// memOpDecode
 				memOp <= '{default:'0};
@@ -125,11 +128,65 @@ module InstDecoder
 				regOp.opRs2 <= 1'b0;
 				regOp.opImm <= 1'b1;
 				regOp.opPc <= 1'b0;
+				regOp.opConst <= 1'b0;
 				regOp.dv <= 1'b1;
-
 				// memOp
 				memOp <= '{default:'0};
 			end
+			eOpJal:
+			begin
+				//regOpCode
+				regOp.arithType <= eAdd;
+				regOp.opRs1 <= 1'b0;
+				regOp.opRs2 <= 1'b0;
+				regOp.opImm <= 1'b0;
+				regOp.opPc <= 1'b1;
+				regOp.opConst <= 1'b1;
+				regOp.dv <= 1'b1;
+
+				//memOp
+				memOp <= '{default:'0};
+			end
+			eOpJalr:
+			begin
+				regOp.arithType <= eAdd;
+				regOp.opRs1 <= 1'b0;
+				regOp.opRs2 <= 1'b0;
+				regOp.opImm <= 1'b0;
+				regOp.opPc <= 1'b1;
+				regOp.opConst <= 1'b1;
+				regOp.dv <= 1'b1;
+				
+				//memOp
+				memOp <= '{default:'0};
+			end
+			eOpLui:
+			begin
+				regOp.arithType <= eNoOp;
+				regOp.opRs1 <= 1'b0;
+				regOp.opRs2 <= 1'b0;
+				regOp.opImm <= 1'b1;
+				regOp.opPc <= 1'b0;
+				regOp.opConst <= 1'b0;
+				regOp.dv <= 1'b1;
+				
+				//memOp
+				memOp <= '{default:'0};
+			end
+			eOpAuIpc:
+			begin
+				regOp.arithType <= eAdd;
+				regOp.opRs1 <= 1'b0;
+				regOp.opRs2 <= 1'b0;
+				regOp.opImm <= 1'b1;
+				regOp.opPc <= 1'b1;
+				regOp.opConst <= 1'b0;
+				regOp.dv <= 1'b1;
+				
+				//memOp
+				memOp <= '{default:'0};
+			end
+			
 		endcase
 	end
 

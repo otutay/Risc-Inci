@@ -74,74 +74,24 @@ module ALU
 	always_ff @(posedge iClk)
 	begin: registerOperationOperandSelection
 		if(iDecodedReg.dv)
-			begin
-				if(iDecodedReg.opRs1)
-					operand1 <= iDecoded.rs1Data;
-				else if(iDecodedReg.opPc)
-					operand1 <= iDecoded.curPc;
-				else if(iDecodedReg.opImm)
-					operand1 <= iDecoded.imm;
+		begin
+			if(iDecodedReg.opRs1)
+				operand1 <= iDecoded.rs1Data;
+			else if(iDecodedReg.opPc)
+				operand1 <= iDecoded.curPc;
+			else if(iDecodedReg.opImm)
+				operand1 <= iDecoded.imm;
 
-				if(iDecodedReg.opRs2)
-					operand2 <= iDecoded.rs2Data;
-				else if(iDecodedReg.opImm)
-					operand2 <= iDecoded.imm;
-				else if(iDecodedReg.opPc)
-					operand2 <= iDecoded.curPc;
-			end
-
-		else
-
-
-		//				case (iDecodedReg.opType)
-		//					eR :
-		//					begin
-		//						operand1 <= iDecoded.rs1Data;
-		//						operand2 <= iDecoded.rs2Data;
-		//						aluOp <= tArithEnum'(rSelection);
-		//					end
-		//					eImmedi :
-		//					begin
-		//						operand1 <= iDecoded.rs1Data;
-		//						operand2 <= iDecoded.imm;
-		//						
-		//					end
-		//					eJal:
-		//					begin
-		//						operand1 <= iDecoded.curPc ;
-		//						operand2 <= cXLEN'(4);
-		//						pcAdd <= 1'b1;
-		//					end
-		//					eJalR:
-		//					begin
-		//						operand1 <= iDecoded.curPc ;
-		//						operand2 <= cXLEN'(4);
-		//						pcAdd <= 1'b1;
-		//					end
-		//					eLui:
-		//					begin
-		//						operand1 <= iDecoded.imm;
-		//						operand2 <= cXLEN'(0);
-		//						pcAdd <= 1'b0;
-		//					end
-		//					eAuipc:
-		//					begin
-		//
-		//						operand1 <= iDecoded.imm;
-		//						operand2 <= iDecoded.curPc;
-		//						pcAdd <= 1'b1;
-		//					end
-		//					default :
-		//					begin
-		//						operand1 <= cXLEN'(0);
-		//						operand2 <= cXLEN'(0);
-		//						pcAdd <= 1'b0;
-		//					end
-		//				endcase
-
+			if(iDecodedReg.opRs2)
+				operand2 <= iDecoded.rs2Data;
+			else if (iDecodedReg.opConst)
+				operand2 <= cXLEN'(4);
+			else if(iDecodedReg.opImm)
+				operand2 <= iDecoded.imm;
+			else if(iDecodedReg.opPc)
+				operand2 <= iDecoded.curPc;
+		end
 	end
-
-
 
 endmodule
 	//		aluOut <= '{default:'0};

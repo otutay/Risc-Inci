@@ -20,15 +20,16 @@ package corePckg;
 
 	typedef enum logic [6:0]{
 		eOpLoad   = 7'h03, // done;
-		eOpFence  = 7'h0f,
-		eOpImmedi = 7'h13, // done
-		eOpAuIpc  = 7'h17, // done
 		eOpStore  = 7'h23, // done;
 		eOpRtype  = 7'h33, // done
-		eOpLui 	  = 7'h37, // done
-		eOpBranch = 7'h63, // done
+		eOpImmedi = 7'h13, // done
 		eOpJalr   = 7'h67, // done
 		eOpJal 	  = 7'h6f, // done
+		eOpLui 	  = 7'h37, // done
+		eOpAuIpc  = 7'h17, // done
+		
+		eOpFence  = 7'h0f,		
+		eOpBranch = 7'h63, // done
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
@@ -91,8 +92,16 @@ package corePckg;
 		logic opRs2;
 		logic opImm;
 		logic opPc;
+		logic opConst;
 		logic dv;
 	}tDecodedReg;
+	
+	typedef struct packed {
+		logic branchTaken;
+		logic flushPipe;
+		logic [31:0]newPc;
+		logic dv;
+	}tDecodedBranch;
 
 	typedef struct packed {
 		logic read;
