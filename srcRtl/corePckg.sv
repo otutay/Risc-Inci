@@ -102,6 +102,7 @@ package corePckg;
 		logic curPC;
 		logic imm;
 		logic rs1;
+		logic decide;
 		logic dv;
 	}tDecodedBranch;
 

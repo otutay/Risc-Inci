@@ -87,7 +87,7 @@ module InstDecoder
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpStore:
 			begin
@@ -99,7 +99,7 @@ module InstDecoder
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpRtype:
 			begin
@@ -117,7 +117,7 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpImmedi:
 			begin
@@ -142,7 +142,7 @@ module InstDecoder
 				// memOp
 				memOp <= {1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpJal:
 			begin
@@ -161,6 +161,7 @@ module InstDecoder
 				branchOp.curPc 		 <= 1'b1;
 				branchOp.imm 		 <= 1'b1;
 				branchOp.rs1		 <= 1'b0;
+				branchOp.decide		 <= 1'b0;
 				branchOp.dv 		 <= 1'b1;
 
 				//memOp
@@ -185,6 +186,7 @@ module InstDecoder
 				branchOp.curPc 		 <= 1'b0;
 				branchOp.imm 		 <= 1'b1;
 				branchOp.rs1		 <= 1'b1;
+				branchOp.decide		 <= 1'b0;
 				branchOp.dv 		 <= 1'b1;
 
 				//memOp
@@ -204,7 +206,7 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 				
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpAuIpc:
 			begin
@@ -220,10 +222,24 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 				
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			
-			
+			eOpBranch:
+			begin
+				// branchOpDecode
+				branchOp.branchTaken <= 1'b0;
+				branchOp.flushPipe   <= 1'b0;
+				branchOp.curPc 		 <= 1'b1;
+				branchOp.imm 		 <= 1'b1;
+				branchOp.rs1		 <= 1'b0;
+				branchOp.decide		 <= 1'b1;
+				branchOp.dv 		 <= 1'b1;
+				// regOpDecode
+				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				//memOp
+				memOp <= {1'b0,1'b0,1'b0};
+			end
 
 		endcase
 	end
