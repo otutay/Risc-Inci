@@ -34,14 +34,14 @@ package corePckg;
 	}tOpcodeEnum;
 
 
-	typedef enum logic[2:0] {
-		eR 		= 3'b000,
-		eImmedi = 3'b001,
-		eJal 	= 3'b010,
-		eJalR 	= 3'b011,
-		eLui 	= 3'b100,
-		eAuipc 	= 3'b101
-	}tRegTypeEnum;
+//	typedef enum logic[2:0] {
+//		eR 		= 3'b000,
+//		eImmedi = 3'b001,
+//		eJal 	= 3'b010,
+//		eJalR 	= 3'b011,
+//		eLui 	= 3'b100,
+//		eAuipc 	= 3'b101
+//	}tRegTypeEnum;
 
 	typedef struct packed {
 		logic [cRegSelBitW-1:0] rs1Addr;
@@ -99,7 +99,9 @@ package corePckg;
 	typedef struct packed {
 		logic branchTaken;
 		logic flushPipe;
-		logic [31:0]newPc;
+		logic curPC;
+		logic imm;
+		logic rs1;
 		logic dv;
 	}tDecodedBranch;
 

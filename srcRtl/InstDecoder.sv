@@ -19,7 +19,8 @@ module InstDecoder
 	input logic [cXLEN-1:0] iCurPc,
 	output tDecodedInst oDecoded,
 	output tDecodedMem oMemOp,
-	output tDecodedReg oRegOp
+	output tDecodedReg oRegOp,
+	output tDecodedBranch oBranchOp
 );
 
 	logic [2:0] funct3;
@@ -71,6 +72,7 @@ module InstDecoder
 	assign oDecoded = dInst;
 	assign oMemOp   = memOp;
 	assign oRegOp = regOp;
+	assign oBranchOp = branchOp;
 
 	always_ff @(posedge iClk)
 	begin : operationDecide
@@ -84,6 +86,8 @@ module InstDecoder
 
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpStore:
 			begin
@@ -94,6 +98,8 @@ module InstDecoder
 
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpRtype:
 			begin
@@ -108,7 +114,10 @@ module InstDecoder
 
 
 				// memOpDecode
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
+
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpImmedi:
 			begin
@@ -131,7 +140,9 @@ module InstDecoder
 				regOp.opConst <= 1'b0;
 				regOp.dv <= 1'b1;
 				// memOp
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpJal:
 			begin
@@ -144,11 +155,22 @@ module InstDecoder
 				regOp.opConst <= 1'b1;
 				regOp.dv <= 1'b1;
 
+				// branchOpDecode
+				branchOp.branchTaken <= 1'b1;
+				branchOp.flushPipe   <= 1'b1;
+				branchOp.curPc 		 <= 1'b1;
+				branchOp.imm 		 <= 1'b1;
+				branchOp.rs1		 <= 1'b0;
+				branchOp.dv 		 <= 1'b1;
+
 				//memOp
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
+
+
 			end
 			eOpJalr:
 			begin
+				//regOpCode
 				regOp.arithType <= eAdd;
 				regOp.opRs1 <= 1'b0;
 				regOp.opRs2 <= 1'b0;
@@ -157,8 +179,16 @@ module InstDecoder
 				regOp.opConst <= 1'b1;
 				regOp.dv <= 1'b1;
 				
+				// branchOpDecode
+				branchOp.branchTaken <= 1'b1;
+				branchOp.flushPipe   <= 1'b1;
+				branchOp.curPc 		 <= 1'b0;
+				branchOp.imm 		 <= 1'b1;
+				branchOp.rs1		 <= 1'b1;
+				branchOp.dv 		 <= 1'b1;
+
 				//memOp
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
 			end
 			eOpLui:
 			begin
@@ -169,9 +199,12 @@ module InstDecoder
 				regOp.opPc <= 1'b0;
 				regOp.opConst <= 1'b0;
 				regOp.dv <= 1'b1;
-				
+
 				//memOp
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
+				
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			eOpAuIpc:
 			begin
@@ -182,11 +215,16 @@ module InstDecoder
 				regOp.opPc <= 1'b1;
 				regOp.opConst <= 1'b0;
 				regOp.dv <= 1'b1;
-				
+
 				//memOp
-				memOp <= '{default:'0};
+				memOp <= {1'b0,1'b0,1'b0};
+				
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 			end
 			
+			
+
 		endcase
 	end
 
@@ -262,7 +300,7 @@ module InstDecoder
 			begin
 				dInst.rs1Addr <= src1Addr; //{src1Addr,1'b1};
 				dInst.rs2Addr <= src2Addr; //{src2Addr,1'b1};
-				dInst.funct3 <=  funct3;{funct3,1'b1};
+				dInst.funct3 <=  funct3;
 				// 
 				dInst.imm <= {{cXLEN-12{insti1[31]}},insti1[7],insti1[30:25],insti1[11:8],1'b0};
 				//				dInst.imm[12] <= insti1[31];
