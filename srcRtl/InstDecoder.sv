@@ -240,123 +240,46 @@ module InstDecoder
 				//memOp
 				memOp <= {1'b0,1'b0,1'b0};
 			end
-
+			
+			eOpFence : NULL;// not implemented
+			eOpCntrlSt : NULL;// not implemented
+			
+			default : begin
+				//memOp
+				memOp <= {1'b0,1'b0,1'b0};
+				// regOpDecode
+				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				// branchOpDecode
+				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+			end
+			
 		endcase
 	end
 
 
 	always_ff @(posedge iClk) // instructionDecode
 	begin : decode
-		dInst <= '{default:'0};
+		dInst.rs1Addr <= src1Addr;
+		dInst.rs2Addr <= src2Addr;
+		dInst.rdAddr <= destAddr;
+		dInst.funct3 <= funct3;
+		dInst.funct7 <= funct7;
 		dInst.opcode <= opcode;
 		dInst.curPc <= curPci1;
 
 		case (opcode)
-			eOpLoad:
-			begin
-				// decoded inst
-				dInst.rs1Addr <= src1Addr;
-				dInst.rdAddr <= destAddr;
-				dInst.funct3 <= funct3;
-				dInst.imm <= cXLEN'(signed'(insti1[31:20]));
-
-			end
-			eOpStore:
-			begin
-				dInst.rs1Addr <=src1Addr;
-				dInst.rs2Addr <= src2Addr;
-				dInst.funct3 <= funct3;
-				dInst.imm <=  cXLEN'(signed'({insti1[31:25],insti1[11:7]}));
-			end
-
-
-			eOpRtype:
-			begin
-				dInst.rs1Addr <= src1Addr;
-				dInst.rs2Addr <= src2Addr;
-				dInst.rdAddr <= destAddr;
-				dInst.funct3 <=  funct3;
-				dInst.funct7 <=  funct7;
-
-			end
-
-
-			eOpFence:
-			begin
-				// nothing done right now.
-			end
-			eOpImmedi:
-			begin
-				dInst.rs1Addr <=src1Addr; //{src1Addr,1'b1};
-				dInst.rdAddr <= destAddr; //{destAddr,1'b1};
-				dInst.funct3 <= funct3; //{funct3,1'b1};
-				dInst.imm <=  cXLEN'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]}; 
-				//				dInst.imm.value <= {{20{1'b0}},insti1[31:20]}; 
-				//				dInst.imm.dv <= 1'b1; // TODO shift operations are decoded in alu
-			end
-			eOpAuIpc:
-			begin
-				dInst.rdAddr <= destAddr; // {destAddr,1'b1};
-				dInst.imm <= {insti1[31:12],{12{1'b0}}};
-				//				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
-				//				dInst.imm.dv <= 1'b1;
-
-			end
-
-
-
-			eOpLui:
-			begin
-				dInst.rdAddr <= destAddr; //{destAddr,1'b1};
-				dInst.imm <= {insti1[31:12],{12{1'b0}}};
-				//				dInst.imm.value <= {insti1[31:12],{12{1'b0}}};
-				//				dInst.imm.dv <= 1'b1;
-			end
-			eOpBranch:
-			begin
-				dInst.rs1Addr <= src1Addr; //{src1Addr,1'b1};
-				dInst.rs2Addr <= src2Addr; //{src2Addr,1'b1};
-				dInst.funct3 <=  funct3;
-				// 
-				dInst.imm <= {{cXLEN-12{insti1[31]}},insti1[7],insti1[30:25],insti1[11:8],1'b0};
-				//				dInst.imm[12] <= insti1[31];
-				//				dInst.imm[10:5] <= insti1[30:25];
-				//				dInst.imm[4:1] <=  insti1[11:8];
-				//				dInst.imm[11] <=  insti1[7];
-
-				//				dInst.imm.value[12] <= insti1[31];
-				//				dInst.imm.value[10:5] <= insti1[30:25];
-				//				dInst.imm.value[4:1] <=  insti1[11:8];
-				//				dInst.imm.value[11] <=  insti1[7];
-				//				dInst.imm.dv <= 1'b1;
-			end
-			eOpJalr:
-			begin
-				dInst.rs1Addr <= src1Addr; //{src1Addr,1'b1};
-				dInst.rdAddr <= destAddr; //{destAddr,1'b1};
-				dInst.funct3 <=  funct3; //{funct3,1'b1};
-				dInst.imm <= cXLEN'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]};
-				//				dInst.imm.value <= {{20{1'b0}},insti1[31:20]};
-
-			end
-			eOpJal:
-			begin
-				dInst.rdAddr <=destAddr; // {destAddr,1'b1};
-				dInst.imm <= cXLEN'(signed'({insti1[31],insti1[19:12],insti1[20],insti1[30:21],1'b0}));
-				//				dInst.imm.value[20] <= insti1[31];
-				//				dInst.imm.value[10:1] <= insti1[30:21];
-				//				dInst.imm.value[11] <= insti1[20];
-				//				dInst.imm.value[19:12] <= insti1[19:12];
-				//				dInst.imm.dv <= 1'b1;
-			end
-			eOpCntrlSt:
-			begin
-				// nothing done right now.	
-			end
-			default:
-			begin
-
-			end
+			eOpLoad   :dInst.imm <= cXLEN'(signed'(insti1[31:20]));
+			eOpStore  :dInst.imm <=  cXLEN'(signed'({insti1[31:25],insti1[11:7]}));
+			eOpRtype  :dInst.imm <= cXLEN'(0);
+			eOpFence  :dInst.imm <= cXLEN'(0);// not implemented yet
+			eOpImmedi :dInst.imm <=  cXLEN'(signed'(insti1[31:20]));  
+			eOpAuIpc  :dInst.imm <= {insti1[31:12],{12{1'b0}}};
+			eOpLui    :dInst.imm <= {insti1[31:12],{12{1'b0}}};
+			eOpBranch :dInst.imm <= {{cXLEN-12{insti1[31]}},insti1[7],insti1[30:25],insti1[11:8],1'b0};
+			eOpJalr   :dInst.imm <= cXLEN'(signed'(insti1[31:20])); //{{20{1'b0}},insti1[31:20]};
+			eOpJal    :dInst.imm <= cXLEN'(signed'({insti1[31],insti1[19:12],insti1[20],insti1[30:21],1'b0}));
+			eOpCntrlSt:dInst.imm <= cXLEN'(0);// not implemented yet
+			default   :dInst.imm <= cXLEN'(0);
 		endcase
 	end
 

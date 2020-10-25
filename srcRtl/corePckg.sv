@@ -27,9 +27,10 @@ package corePckg;
 		eOpJal 	  = 7'h6f, // done
 		eOpLui 	  = 7'h37, // done
 		eOpAuIpc  = 7'h17, // done
+		eOpBranch = 7'h63, // done
 		
 		eOpFence  = 7'h0f,		
-		eOpBranch = 7'h63, // done
+		
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
