@@ -19,16 +19,19 @@ module Top
 	
 	
 	tRegControl destiReg;//TODO not implemented
-	logic [cXLEN-1:0] rdData;//TODO not implemented
+
 	
 	logic [cPCBitW-1:0] inst;
 	logic [cXLEN-1:0] curPc;
-	tDecodedInst decodedInst;
 	logic [cXLEN-1:0] rs1Data;
 	logic [cXLEN-1:0] rs2Data;
-	tDecoded decoded;
-
+	logic [cXLEN-1:0] rdData;//TODO not implemented
 	
+	tDecodedInst decodedInst;
+	tDecoded decoded;
+	tDecodedMem memOp;
+	tDecodedReg regOp;
+	tDecodedBranch branchOp;
 	
 	regFile Registers(
 			.iClk(iClk),
@@ -40,6 +43,7 @@ module Top
 			.rs2Data(rs2Data),
 			.rdData(rdData)
 		);
+		
 	InstDecoder #(
 		.cycleNum(1)
 	) InstDecoder_instance (
@@ -47,9 +51,11 @@ module Top
 		.iRst(iRst),
 		.iInst(inst),
 		.iCurPc(curPc),
-		.oDecoded(decodedInst)
-	);
-	
+		.oDecoded(decodedInst),
+		.oMemOp(memOp),
+		.oRegOp(regOp),
+		.oBranchOp(branchOp)
+	);	
 	ALU arith(
 		.iClk(iClk),
 		.iRst(iRst),

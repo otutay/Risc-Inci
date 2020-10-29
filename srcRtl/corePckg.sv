@@ -28,21 +28,10 @@ package corePckg;
 		eOpLui 	  = 7'h37, // done
 		eOpAuIpc  = 7'h17, // done
 		eOpBranch = 7'h63, // done
-		
-		eOpFence  = 7'h0f,		
-		
+		eOpFence  = 7'h0f,				
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
-
-//	typedef enum logic[2:0] {
-//		eR 		= 3'b000,
-//		eImmedi = 3'b001,
-//		eJal 	= 3'b010,
-//		eJalR 	= 3'b011,
-//		eLui 	= 3'b100,
-//		eAuipc 	= 3'b101
-//	}tRegTypeEnum;
 
 	typedef struct packed {
 		logic [cRegSelBitW-1:0] rs1Addr;

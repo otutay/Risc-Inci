@@ -1,7 +1,7 @@
 // ****************************************************************************
 // * ALU.sv
 // * osmant 
-// * 
+// * 2 cycle alu
 // ****************************************************************************/
 
 /**
@@ -11,14 +11,16 @@
  */
 import corePckg::*;
 module ALU
-		(
+//	#(
+//	parameter cycleNum = 2
+//)
+	(
 	input logic iClk,
 	input logic iRst,
+	input tDecoded iDecoded,
 	input tDecodedMem iDecodedMem,
 	input tDecodedReg iDecodedReg,
-	//	input logic iMemOp
-	input tDecoded iDecoded
-
+	input tDecodedBranch iDecodedBranchOp
 );
 	//	tAluOut aluOut;
 	// mem op registers
@@ -28,22 +30,10 @@ module ALU
 	// regOp Register
 	logic [cXLEN-1:0] operand1;
 	logic [cXLEN-1:0] operand2;
+	tArithEnum operation;
+	logic regOpValid;
+	logic [cRegSelBitW-1:0] regAddr;
 	tRegOp regOut;
-
-
-
-
-
-
-	tArithEnum aluOp;
-	logic equal;
-	logic lessThan;
-	logic lessThanUns;
-
-
-	assign	equal = iDecoded.rs1Data == iDecoded.rs2Data; // beq and bne comparison
-	assign	lessThanUns = iDecoded.rs1Data < iDecoded.rs2Data; // bltu and bgeu comparison
-	assign	lessThan    = signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data); // blt and bge comparison
 
 	//---------------------------- load Store Operation ----------------------------------
 	always_ff @(posedge iClk)
@@ -63,16 +53,25 @@ module ALU
 			memOut.write <= 1'b1;
 		end
 	end
-
+	//
+	//	generate
+	//		if(cycleNum == 1)
+	//		begin
+	//			assign memOuti1 = memOut;
+	//		end
+	//		else if(cycleNum == 2)
+	//		begin
 	always_ff @(posedge iClk)
 	begin : LoadStoreOperation_reg
 		memOuti1 <= memOut;
 	end
 
-	//---------------------------- Register Operation ----------------------------------
+	//		end
+	//	endgenerate
 
+	//---------------------------- Register Operation ----------------------------------
 	always_ff @(posedge iClk)
-	begin: registerOperationOperandSelection
+	begin: RegOpOperandSelection
 		if(iDecodedReg.dv)
 		begin
 			if(iDecodedReg.opRs1)
@@ -92,6 +91,52 @@ module ALU
 				operand2 <= iDecoded.curPc;
 		end
 	end
+
+	always_ff @(posedge iClk)
+	begin : regOpRegister
+		operation <= iDecodedReg.arithType;
+		regAddr <= iDecoded.rdAddr;
+		regOpValid<= iDecodedReg.dv;
+	end
+
+	always_ff @(posedge iClk)
+	begin : regOpOperation
+		regOut.addr <= regAddr;
+		regOut.dv <= regOpValid;
+		case (operation)
+			eAdd 			: regOut.data <= signed'(operand1) + signed'(operand2);
+			eSub 			: regOut.data <= signed'(operand1) - signed'(operand2);
+			eShftLeft 		: regOut.data <= operand1 << operand2[$clog2(cDataWidth)-1:0];
+			eCompareSigned	: regOut.data <= {(cXLEN-1)'(0),signed'(operand1) < signed'(operand2)}; 
+			eCompareUnsigned: regOut.data <= {(cXLEN-1)'(0),operand1 < operand2}; 
+			eXor 			: regOut.data <= operand1 ^ operand2;
+			eShftRight 		: regOut.data <= operand1 >> operand2[$clog2(cDataWidth)-1:0];
+			eShftRightArit  : regOut.data <= signed'(operand1) >> signed'(operand2[$clog2(cDataWidth)-1:0]); // TODO smth wrong 
+			eOr 			: regOut.data <= operand1 | operand2;
+			eAnd 			: regOut.data <= operand1 & operand2;
+			eNoOp			: regOut.data <= operand1;
+
+			default : regOut.data <= cXLEN'(0);
+		endcase
+	end
+
+
+
+
+	//	tArithEnum aluOp;
+	//	logic equal;
+	//	logic lessThan;
+	//	logic lessThanUns;
+	//
+	//
+	//	assign	equal = iDecoded.rs1Data == iDecoded.rs2Data; // beq and bne comparison
+	//	assign	lessThanUns = iDecoded.rs1Data < iDecoded.rs2Data; // bltu and bgeu comparison
+	//	assign	lessThan    = signed'(iDecoded.rs1Data) < signed'(iDecoded.rs2Data); // blt and bge comparison
+
+
+
+
+
 
 endmodule
 	//		aluOut <= '{default:'0};

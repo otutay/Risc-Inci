@@ -1,14 +1,9 @@
 // ****************************************************************************
 // * InstDecoder.sv
 // * osmant 
-// * 
+// * parameter selected decoder 1 or 2 cycle
 // ****************************************************************************/
 
-/**
- * Module: InstDecoder
- * 
- * TODO: Add module documentation
- */
 import corePckg::*;
 module InstDecoder
 		#(parameter cycleNum = 2)
