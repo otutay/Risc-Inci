@@ -82,7 +82,7 @@ module InstDecoder
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			eOpStore:
 			begin
@@ -94,7 +94,7 @@ module InstDecoder
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			eOpRtype:
 			begin
@@ -112,7 +112,7 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			eOpImmedi:
 			begin
@@ -137,7 +137,7 @@ module InstDecoder
 				// memOp
 				memOp <= {1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			eOpJal:
 			begin
@@ -151,13 +151,8 @@ module InstDecoder
 				regOp.dv <= 1'b1;
 
 				// branchOpDecode
-				branchOp.branchTaken <= 1'b1;
-				branchOp.flushPipe   <= 1'b1;
-				branchOp.curPc 		 <= 1'b1;
-				branchOp.imm 		 <= 1'b1;
-				branchOp.rs1		 <= 1'b0;
-				branchOp.decide		 <= 1'b0;
-				branchOp.dv 		 <= 1'b1;
+				branchOp.branchOp <= eJal;
+				branchOp.dv <= 1'b1;
 
 				//memOp
 				memOp <= {1'b0,1'b0,1'b0};
@@ -176,13 +171,9 @@ module InstDecoder
 				regOp.dv <= 1'b1;
 				
 				// branchOpDecode
-				branchOp.branchTaken <= 1'b1;
-				branchOp.flushPipe   <= 1'b1;
-				branchOp.curPc 		 <= 1'b0;
-				branchOp.imm 		 <= 1'b1;
-				branchOp.rs1		 <= 1'b1;
-				branchOp.decide		 <= 1'b0;
-				branchOp.dv 		 <= 1'b1;
+				branchOp.branchOp <= eJalr;
+				branchOp.dv <= 1'b1;
+
 
 				//memOp
 				memOp <= {1'b0,1'b0,1'b0};
@@ -201,7 +192,7 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 				
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			eOpAuIpc:
 			begin
@@ -217,12 +208,16 @@ module InstDecoder
 				memOp <= {1'b0,1'b0,1'b0};
 				
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			
 			eOpBranch:
 			begin
 				// branchOpDecode
+				branchOp.branchOp <= tBranchEnum'(funct3);
+				branchOp.dv <= 1'b1;
+				
+				
 				branchOp.branchTaken <= 1'b0;
 				branchOp.flushPipe   <= 1'b0;
 				branchOp.curPc 		 <= 1'b1;
@@ -230,6 +225,7 @@ module InstDecoder
 				branchOp.rs1		 <= 1'b0;
 				branchOp.decide		 <= 1'b1;
 				branchOp.dv 		 <= 1'b1;
+				
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				//memOp
@@ -245,7 +241,7 @@ module InstDecoder
 				// regOpDecode
 				regOp <= {eNoOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 				// branchOpDecode
-				branchOp <= {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+				branchOp <= {eEqual,1'b0};
 			end
 			
 		endcase

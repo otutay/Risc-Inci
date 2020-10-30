@@ -28,7 +28,7 @@ package corePckg;
 		eOpLui 	  = 7'h37, // done
 		eOpAuIpc  = 7'h17, // done
 		eOpBranch = 7'h63, // done
-		eOpFence  = 7'h0f,				
+		eOpFence  = 7'h0f,
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
@@ -85,14 +85,20 @@ package corePckg;
 		logic opConst;
 		logic dv;
 	}tDecodedReg;
-	
+
+	typedef enum logic [2:0]{
+		eEqual 			= 3'b000,
+		eNEqual 		= 3'b001,
+		eLessThan 		= 3'b100,
+		eGreatEqual 	= 3'b101,
+		eLessThanUns 	= 3'b110,
+		eGreatEqualUns 	= 3'b111,
+		eJal			= 3'b010,
+		eJalr 			= 3'b011
+	}tBranchEnum;
+
 	typedef struct packed {
-		logic branchTaken;
-		logic flushPipe;
-		logic curPC;
-		logic imm;
-		logic rs1;
-		logic decide;
+		tBranchEnum branchOp;
 		logic dv;
 	}tDecodedBranch;
 
@@ -115,6 +121,7 @@ package corePckg;
 		logic branchTaken;
 		logic flushPipe;
 		logic newPC;
+		logic [cXLEN-1:0] pc;
 	}tBranchOp;
 
 	typedef struct packed {
