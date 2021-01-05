@@ -20,7 +20,11 @@ module ALU
 	input tDecoded iDecoded,
 	input tDecodedMem iDecodedMem,
 	input tDecodedReg iDecodedReg,
-	input tDecodedBranch iDecodedBranchOp
+	input tDecodedBranch iDecodedBranchOp,
+	output tMemOp oMemWB,
+	output tRegOp oRegWB,
+	output tBranchOp oBranchWB
+	
 );
 	//	tAluOut aluOut;
 	// mem op registers
@@ -71,7 +75,8 @@ module ALU
 	begin : LoadStoreOperation_reg
 		memOuti1 <= memOut;
 	end
-
+	
+    assign oMemWB = memOuti1; 
 	//---------------------------- Register Operation ----------------------------------
 
 	always_ff @(posedge iClk)
@@ -123,7 +128,8 @@ module ALU
 			default : regOut.data <= cXLEN'(0);
 		endcase
 	end
-
+    
+    assign oRegWB = regOut;
 	//---------------------------- Branch Operation ----------------------------------
 	always_ff @(posedge iClk)
 	begin : branchCompare
@@ -175,7 +181,7 @@ module ALU
 			branchOut <= {1'b0,1'b0,1'b0,cXLEN'(0)};
 
 	end
-
+    assign oBranchWB = branchOut;
 endmodule
 	
 
