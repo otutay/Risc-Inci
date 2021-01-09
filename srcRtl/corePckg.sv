@@ -17,7 +17,8 @@ package corePckg;
 	//	parameter int unsigned cImmBitW = 32;
 	parameter int unsigned cXLEN = 32;
 	parameter int unsigned cRegNum = 2**cRegSelBitW;
-
+    parameter int unsigned cRamDepth = 1024;
+    
 	typedef enum logic [6:0]{
 		eOpLoad   = 7'h03, // done;
 		eOpStore  = 7'h23, // done;
@@ -130,6 +131,11 @@ package corePckg;
 		tBranchOp brchOp;
 	}tAluOut;
 
+    typedef struct packed{
+       logic [cXLEN-1:0] newPc;
+       logic newPcValid;
+       logic noOp;
+    }tFetchCtrl;
 
 
 
