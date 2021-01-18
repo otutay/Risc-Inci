@@ -17,7 +17,8 @@ module fetch_WB(
     input tMemOp iMemOp,
     input tFetchCtrl iFetchCtrl,
     output logic [cXLEN-1 : 0] oCurPc,
-    output logic [cXLEN-1 : 0] oInstr
+    output logic [cXLEN-1 : 0] oInstr,
+    output tRegOp oRegOp
 );
 
     logic LSWEN;
@@ -28,16 +29,34 @@ module fetch_WB(
 
 
 
-
-    always_ff @(posedge iCLk)
+    // this directly goes to ram port
+    always_ff @(posedge iClk)
     begin : load_StoreOp
+        
+        // same for every store
         LSAddr      <= iMemOp.addr;
-        LSStoreData <= data;
-        LSEn <= iMemOp.read | iMemOp.write;
-        LSWEN <= iMemOp.write;
+        LSEn        <= iMemOp.read | iMemOp.write;
+        LSWEN       <= iMemOp.write;
+        
+       case (iMemOp.opType)
+           3'b000 : LSStoreData <= (cXLEN)'(signed'( iMemOp.data[7:0])); 
+           3'b001 : LSStoreData <= (cXLEN)'(signed'( iMemOp.data[15:0])); 
+           3'b010 : LSStoreData <=  iMemOp.data[15:0];
+           default : LSStoreData <= cXLEN'(1'b0);
+       endcase
+       
+    end
+   
+    // collect ram data and form reg op
+    tRegOp regOp;
+    always_ff @(posedge iClk) 
+    begin : ramDataCollect
+        regOp.dv <= iMemOp.read;
+        regOp.addr <= iMemOp.rdAddr;
+        regOp.data <= LSLoadData;
     end
 
-
+    
 
     logic [cXLEN-1:0] instruction;
     logic [$clog2(cRamDepth-1)-1:0] readAddr;
@@ -57,7 +76,7 @@ module fetch_WB(
         .oDataA(instruction),
         // load store port
         .iRstB(1'b0),
-        .iEnB(1'b1),
+        .iEnB(LSEn),
         .iWEnB(LSWEN),
         .iAddrB(LSAddr),
         .iDataB(LSStoreData),
@@ -81,5 +100,6 @@ module fetch_WB(
 
     assign oInstr = instruction;
     assign oCurPc = curPc;
+    assign oRegOp = regOp;
 
 endmodule
