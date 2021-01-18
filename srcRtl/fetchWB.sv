@@ -11,7 +11,7 @@
  */
 
 import corePckg::*;
-module fetch_WB(
+module fetchWB(
     input iClk,
     input iRst,
     input tMemOp iMemOp,
@@ -99,7 +99,7 @@ module fetch_WB(
     end
 
     assign oInstr = instruction;
-    assign oCurPc = curPc;
+    assign oCurPc = curPc-4;
     assign oRegOp = regOp;
 
 endmodule

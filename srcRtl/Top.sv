@@ -33,7 +33,7 @@ module Top
     tDecodedMem memOp;
     tDecodedReg regOp;
     tDecodedBranch branchOp;
-    
+
     // alu out signals -> WB
     tMemOp memWB;
     tRegOp regWB;
@@ -63,6 +63,18 @@ module Top
         .oBranchOp(branchOp)
     );
 
+    always_comb
+    begin : ALU
+        decoded.rs1 = rs1Data;
+        decoded.rs2 = rs2Data;
+        decoded.rd  = decodedInst.rd;
+        decoded.funct3 = decodedInst.funct3;
+        decoded.funct7 = decodedInst.funct7;
+        decoded.imm = decodedInst.imm;
+        decoded.opcode = decodedInst.opcode;
+        decoded.curPc = decodedInst.curPc;
+    end
+
     ALU ALU_instance (
         .iClk(iClk),
         .iRst(iRst),
@@ -76,17 +88,17 @@ module Top
     );
 
 
-    always_comb
-    begin : ALU
-        decoded.rs1 = rs1Data;
-        decoded.rs2 = rs2Data;
-        decoded.rd  = decodedInst.rd;
-        decoded.funct3 = decodedInst.funct3;
-        decoded.funct7 = decodedInst.funct7;
-        decoded.imm = decodedInst.imm;
-        decoded.opcode = decodedInst.opcode;
-        decoded.curPc = decodedInst.curPc;
-    end
+    fetchWB fetchWB_instance (
+        .iClk(iClk),
+        .iRst(iRst),
+        .iMemOp(memWB),
+        .iFetchCtrl(iFetchCtrl),
+        .oCurPc(curPc),
+        .oInstr(inst),
+        .oRegOp(oRegOp)
+    );
+
+
 
 
 
