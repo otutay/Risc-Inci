@@ -33,10 +33,17 @@ package corePckg;
 		eOpCntrlSt = 7'h73
 	}tOpcodeEnum;
 
+	typedef struct packed {
+		logic dv;
+		logic [cRegSelBitW-1:0] addr;
+		logic [cXLEN-1:0] data;
+	}tRegOp;
 
 	typedef struct packed {
-		logic [cRegSelBitW-1:0] rs1Addr;
-		logic [cRegSelBitW-1:0] rs2Addr;
+//		logic [cRegSelBitW-1:0] rs1Addr;
+//		logic [cRegSelBitW-1:0] rs2Addr;
+        tRegOp rs1;
+        tRegOp rs2;
 		logic [cRegSelBitW-1:0] rdAddr;
 		logic [2:0] funct3;
 		logic [6:0] funct7;
@@ -112,11 +119,6 @@ package corePckg;
 		logic [cRegSelBitW-1:0] rdAddr;
 	}tMemOp;
 
-	typedef struct packed {
-		logic dv;
-		logic [cRegSelBitW-1:0] addr;
-		logic [cXLEN-1:0] data;
-	}tRegOp;
 
 	typedef struct packed {
 		logic branchTaken;

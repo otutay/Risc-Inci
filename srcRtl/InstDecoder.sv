@@ -250,8 +250,10 @@ module InstDecoder
 
 	always_ff @(posedge iClk) // instructionDecode
 	begin : decode
-		dInst.rs1Addr <= src1Addr;
-		dInst.rs2Addr <= src2Addr;
+//		dInst.rs1Addr <= src1Addr;
+//		dInst.rs2Addr <= src2Addr;
+        dInst.rs1 <= {1'b1,src1Addr,cXLEN'(0)};
+        dInst.rs2 <= {1'b1,src2Addr,cXLEN'(0)};
 		dInst.rdAddr <= destAddr;
 		dInst.funct3 <= funct3;
 		dInst.funct7 <= funct7;

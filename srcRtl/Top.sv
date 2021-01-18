@@ -25,7 +25,7 @@ module Top
     logic [cXLEN-1:0] curPc;
     logic [cXLEN-1:0] rs1Data;
     logic [cXLEN-1:0] rs2Data;
-    logic [cXLEN-1:0] rdData; //TODO not implemented
+    //logic [cXLEN-1:0] rdData; //TODO not implemented
 
     // decoded instructions
     tDecodedInst decodedInst;
@@ -42,12 +42,12 @@ module Top
     regFile Registers(
         .iClk(iClk),
         .iRst(iRst),
-        .rs1Cntrl(decodedInst.rs1),
-        .rs2Cntrl(decodedInst.rs2),
-        .rdCntrl(destiReg),
-        .rs1Data(rs1Data),
-        .rs2Data(rs2Data),
-        .rdData(rdData)
+        .iRs1(decodedInst.rs1),
+        .iRs2(decodedInst.rs2),
+        .iRd(regWB),
+        .oRs1Data(rs1Data),
+        .oRs2Data(rs2Data)
+        //.rdData(rdData)
     );
 
     InstDecoder #(

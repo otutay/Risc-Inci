@@ -58,8 +58,8 @@ module regFileTb();
 				.rs1Cntrl(rs1Ctrl),
 				.rs2Cntrl(rs2Ctrl),
 				.rdCntrl(rdCtrl),
-				.rs1Data(rs1Data),
-				.rs2Data(rs2Data),
+				.oRs1Data(rs1Data),
+				.oRs2Data(rs2Data),
 				.rdData(rdData)
 				);
 
