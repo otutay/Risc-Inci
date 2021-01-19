@@ -19,6 +19,7 @@ module regFile
     input tRegOp iRs1,
     input tRegOp iRs2,
     input tRegOp iRd,
+    input tRegOp iRdMem,
     output logic[cXLEN-1:0] oRs1Data,
     output logic[cXLEN-1:0] oRs2Data
     //		input  logic[cXLEN-1:0] rdData,
@@ -34,18 +35,14 @@ module regFile
 
     always_ff @(posedge iClk)
     begin
-        if (iRd.dv)
-        begin
-            if(iRd.addr == {cRegSelBitW{ 1'b0}})
-                begin
-                    rf[0] <= '0;
-                end
-            else
-                begin
-                    rf[iRd.addr] <= rdData;
-                end
+        if(iRd.dv)
+            rf[iRd.addr] <= iRd.data;
 
-        end
+        if(iRdMem.dv)
+            rf[iRdMem.addr] <= iRdMem.data;
+
+        rf[0] <= cXLEN'(0);
+
     end
 
     always_comb

@@ -121,8 +121,8 @@ package corePckg;
 
 
 	typedef struct packed {
-		logic branchTaken;
-		logic flushPipe;
+//		logic branchTaken;
+//		logic flushPipe;
 		logic newPC;
 		logic [cXLEN-1:0] pc;
 	}tBranchOp;
@@ -134,8 +134,8 @@ package corePckg;
 	}tAluOut;
 
     typedef struct packed{
-       logic [cXLEN-1:0] newPc;
-       logic newPcValid;
+       logic [cXLEN-1:0] pc;
+       logic newPc;
        logic noOp;
     }tFetchCtrl;
 

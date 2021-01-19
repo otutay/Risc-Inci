@@ -87,7 +87,7 @@ module fetchWB(
     begin : pcCounter
         if(iFetchCtrl.noOp)
             curPc <= curPc;
-        else if(iFetchCtrl.newPcValid)
+        else if(iFetchCtrl.valid)
             curPc <= iFetchCtrl.newPc;
         else
             curPc <= curPc + 4;

@@ -18,14 +18,14 @@ module Top
 );
 
 
-    tRegControl destiReg; //TODO not implemented
+    //    tRegControl destiReg; //TODO not implemented
+    //logic [cXLEN-1:0] rdData; //TODO not implemented
 
     // reg file signals
     logic [cPCBitW-1:0] inst;
     logic [cXLEN-1:0] curPc;
     logic [cXLEN-1:0] rs1Data;
     logic [cXLEN-1:0] rs2Data;
-    //logic [cXLEN-1:0] rdData; //TODO not implemented
 
     // decoded instructions
     tDecodedInst decodedInst;
@@ -39,12 +39,19 @@ module Top
     tRegOp regWB;
     tBranchOp branchWB;
 
+    // ram load op
+    tRegOp regMem;
+
+    // fetch control
+    tFetchCtrl fetchCtrl;
+
     regFile Registers(
         .iClk(iClk),
         .iRst(iRst),
         .iRs1(decodedInst.rs1),
         .iRs2(decodedInst.rs2),
         .iRd(regWB),
+        .iRdMem(regMem),
         .oRs1Data(rs1Data),
         .oRs2Data(rs2Data)
         //.rdData(rdData)
@@ -87,16 +94,22 @@ module Top
         .oBranchWB(branchWB)
     );
 
-
     fetchWB fetchWB_instance (
         .iClk(iClk),
         .iRst(iRst),
         .iMemOp(memWB),
-        .iFetchCtrl(iFetchCtrl),
+        .iFetchCtrl(fetchCtrl),
         .oCurPc(curPc),
         .oInstr(inst),
-        .oRegOp(oRegOp)
+        .oRegOp(regMem)
     );
+
+
+    always_comb
+    begin
+        fetchCtrl.pc <= branchWB.pc;
+        fetchCtrl.newPc<=  branchWB.newPC;
+    end
 
 
 

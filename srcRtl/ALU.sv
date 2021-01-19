@@ -151,30 +151,30 @@ module ALU
             begin
                 case (branchOpi1.branchOp)
                     eEqual 			:
-                    branchOut <= {equal,equal,equal,signed'(curPc) + signed'(imm)};
+                    branchOut <= {equal,signed'(curPc) + signed'(imm)};
 
                     eNEqual 		:
-                    branchOut <= {~equal,~equal,~equal,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~equal,signed'(curPc) + signed'(imm)};
 
                     eLessThan 		:
-                    branchOut <= {lessThan,lessThan,lessThan,signed'(curPc) + signed'(imm)};
+                    branchOut <= {lessThan,signed'(curPc) + signed'(imm)};
 
                     eGreatEqual 	:
-                    branchOut <= {~lessThan,~lessThan,~lessThan,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~lessThan,signed'(curPc) + signed'(imm)};
 
                     eLessThanUns 	:
-                    branchOut <= {lessThanUns,lessThanUns,lessThanUns,signed'(curPc) + signed'(imm)};
+                    branchOut <= {lessThanUns,signed'(curPc) + signed'(imm)};
 
                     eGreatEqualUns 	:
-                    branchOut <= {~lessThanUns,~lessThanUns,~lessThanUns,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~lessThanUns,signed'(curPc) + signed'(imm)};
 
                     eJal 			:
-                    branchOut <= {1'b1,1'b1,1'b1,signed'(curPc) + signed'(imm)};
+                    branchOut <= {1'b1,signed'(curPc) + signed'(imm)};
 
                     eJalr 			:
-                    branchOut <= {1'b1,1'b1,1'b1,((signed'(data1) + signed'(imm)) & {{cXLEN-1{1'b1}},1'b0})};
+                    branchOut <= {1'b1,((signed'(data1) + signed'(imm)) & {{cXLEN-1{1'b1}},1'b0})};
 
-                    default : branchOut <= {1'b0,1'b0,1'b0,cXLEN'(0)};
+                    default : branchOut <= {1'b0,cXLEN'(0)};
                 endcase
             end
         else
