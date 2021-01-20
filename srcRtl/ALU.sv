@@ -151,34 +151,34 @@ module ALU
             begin
                 case (branchOpi1.branchOp)
                     eEqual 			:
-                    branchOut <= {equal,signed'(curPc) + signed'(imm)};
+                    branchOut <= {equal,equal,signed'(curPc) + signed'(imm)};
 
                     eNEqual 		:
-                    branchOut <= {~equal,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~equal,~equal,signed'(curPc) + signed'(imm)};
 
                     eLessThan 		:
-                    branchOut <= {lessThan,signed'(curPc) + signed'(imm)};
+                    branchOut <= {lessThan,lessThan,signed'(curPc) + signed'(imm)};
 
                     eGreatEqual 	:
-                    branchOut <= {~lessThan,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~lessThan,~lessThan,signed'(curPc) + signed'(imm)};
 
                     eLessThanUns 	:
-                    branchOut <= {lessThanUns,signed'(curPc) + signed'(imm)};
+                    branchOut <= {lessThanUns,lessThanUns,signed'(curPc) + signed'(imm)};
 
                     eGreatEqualUns 	:
-                    branchOut <= {~lessThanUns,signed'(curPc) + signed'(imm)};
+                    branchOut <= {~lessThanUns,~lessThanUns,signed'(curPc) + signed'(imm)};
 
                     eJal 			:
-                    branchOut <= {1'b1,signed'(curPc) + signed'(imm)};
+                    branchOut <= {1'b1,1'b1,signed'(curPc) + signed'(imm)};
 
                     eJalr 			:
-                    branchOut <= {1'b1,((signed'(data1) + signed'(imm)) & {{cXLEN-1{1'b1}},1'b0})};
+                    branchOut <= {1'b1,1'b1,((signed'(data1) + signed'(imm)) & {{cXLEN-1{1'b1}},1'b0})};
 
-                    default : branchOut <= {1'b0,cXLEN'(0)};
+                    default : branchOut <= {1'b0,1'b0,cXLEN'(0)};
                 endcase
             end
         else
-            branchOut <= {1'b0,1'b0,1'b0,cXLEN'(0)};
+            branchOut <= {1'b0,1'b0,cXLEN'(0)};
 
     end
     assign oBranchWB = branchOut;
