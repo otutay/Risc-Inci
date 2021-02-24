@@ -22,13 +22,6 @@ module regFile
     input tRegOp iRdMem,
     output logic[cXLEN-1:0] oRs1Data,
     output logic[cXLEN-1:0] oRs2Data
-    //		input  logic[cXLEN-1:0] rdData,
-    //		input logic [cRegSelBitW-1:0] rs1Addr,
-    //		input logic [cRegSelBitW-1:0] rs2Addr,
-    //		input logic [cRegSelBitW-1:0] rdAddr,
-    //		input tRegControl  rs1Cntrl,
-    //		input tRegControl  rs2Cntrl,
-    //		input tRegControl  rdCntrl,
 );
 
     logic [cRegNum-1:0][cXLEN-1:0] rf;

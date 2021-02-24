@@ -56,14 +56,15 @@ module Top
         .oRs2Data(rs2Data)
         //.rdData(rdData)
     );
-
+    
     InstDecoder #(
-    .cycleNum(1)
+        .cycleNum(1)
     ) InstDecoder_instance (
         .iClk(iClk),
         .iRst(iRst),
         .iInst(inst),
         .iCurPc(curPc),
+        .iFlushPipe(branchWB.flushPipe),
         .oDecoded(decodedInst),
         .oMemOp(memOp),
         .oRegOp(regOp),

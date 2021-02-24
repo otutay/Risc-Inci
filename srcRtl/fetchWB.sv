@@ -29,6 +29,8 @@ module fetchWB(
 
 
 
+     assign oRegOp = regOp;
+
     // this directly goes to ram port
     always_ff @(posedge iClk)
     begin : load_StoreOp
@@ -87,7 +89,7 @@ module fetchWB(
     begin : pcCounter
         if(iFetchCtrl.noOp)
             curPc <= curPc;
-        else if(iFetchCtrl.valid)
+        else if(iFetchCtrl.newPc)
             curPc <= iFetchCtrl.newPc;
         else
             curPc <= curPc + 4;
@@ -98,8 +100,15 @@ module fetchWB(
         readAddr = curPc[$clog2(cRamDepth-1)-1:0];
     end
 
-    assign oInstr = instruction;
-    assign oCurPc = curPc-4;
-    assign oRegOp = regOp;
+    always_comb 
+    begin: outputRename
+       oInstr = iFetchCtrl.newPc ? cXLEN'(0) : instruction;
+       oCurPc = iFetchCtrl.newPc ? iFetchCtrl.newPc : curPc-4;
+    end
+    
+
+//    assign oInstr = instruction;
+//    assign oCurPc = curPc-4;
+   
 
 endmodule
