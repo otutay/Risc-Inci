@@ -49,6 +49,7 @@ architecture rtl of instDecoder is
   signal insti1     : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
   signal curPci1    : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
   signal rSelection : std_logic_vector(3 downto 0)             := (others => '0');
+  signal regOp      : tRegOp                                   := cRegOp;
 begin  -- architecture rtl
   -- assert statements
   assert cycleNum = 1 or cycleNum = 2 report "cycleNum is not supported" severity failure;
@@ -115,12 +116,26 @@ begin  -- architecture rtl
 
   end generate twoCycleGen;
 
-  operationPro : process (iClk) is
+  regOpPro : process (iClk) is
   begin  -- process operationPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-
+      if(iFlushPipe = '1') then
+        regOp <= cRegOp;
+      else
+        case opCode is
+          when cOpRtype =>
+            regOp.arithType <= tArithEnum´(rSelection);
+            regOp.opRs1     <= '1';
+            regOp.opRs2     <= '1';
+            regOp.opImm     <= '0';
+            regOp.opPc      <= '0';
+            regOp.opConst   <= '0';
+            regOp.dv        <= '1';
+          when others => null;
+        end case;
+      end if;
     end if;
-  end process operationPro;
+  end process regOpPro;
 
 
 end architecture rtl;

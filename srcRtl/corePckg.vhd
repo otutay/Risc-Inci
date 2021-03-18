@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-18
+-- Last update: 2021-03-19
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -32,6 +32,7 @@ package corePckg is
   constant cRegNum     : integer := 2**cRegSelBitW;
   constant cRamDepth   : integer := 1024;
 
+  -- opcode Constants
   constant cOpLoad   : std_logic_vector(6 downto 0) := "000" & x"3";
   constant cOpStore  : std_logic_vector(6 downto 0) := "010" & x"3";
   constant cOpRtype  : std_logic_vector(6 downto 0) := "011" & x"3";
@@ -91,12 +92,22 @@ package corePckg is
     opConst   : std_logic;
     dv        : std_logic;
   end record tDecodedReg;
-  constant cDecodedReg : tDecodedReg :=(eNoArithOp,'0','0','0','0','0','0');
+  constant cDecodedReg : tDecodedReg := (eNoArithOp, '0', '0', '0', '0', '0', '0');
+
+
+  type tBranchEnum is (eEqual, eNEqual, eLessThan, eGreatEqual,
+                       eLessThanUns, eGreatEqualUns, eJal, eJalr);
+
+  attribute enum_encoding of tBranchEnum : type is "000 001 100 101 110 111 010 011";
 
   type tDecodedBranch is record
-
-
+    branchOp : tBranchEnum;
+    dv       : std_logic;
   end record;
+  constant cDecodedBranch : tDecodedBranch := (eEqual, '0');
+
+
+
 end package corePckg;
 
 package body corePckg is
