@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-21
+-- Last update: 2021-03-22
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -41,18 +41,19 @@ entity instDecoder is
 end entity instDecoder;
 architecture rtl of instDecoder is
 --  signal opcode     : std_logic_vector(6 downto 0)             := cOpNoOp;
-  signal opcode     : tOpcodeEnum                              := eNOOP;
-  signal src1Addr   : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
-  signal src2Addr   : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
-  signal dest2Addr  : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
-  signal funct3     : std_logic_vector(2 downto 0)             := (others => '0');
-  signal funct7     : std_logic_vector(6 downto 0)             := (others => '0');
-  signal insti1     : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
-  signal curPci1    : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
-  signal rSelection : std_logic_vector(3 downto 0)             := (others => '0');
-  signal regOp      : tDecodedReg                              := cDecodedReg;
-  signal memOp      : tDecodedMem                              := cDecodedMem;
-  signal branchOp   : tDecodedBranch                           := cDecodedBranch;
+  signal opcode      : tOpcodeEnum                              := eNOOP;
+  signal src1Addr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
+  signal src2Addr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
+  signal destAddr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
+  signal funct3      : std_logic_vector(2 downto 0)             := (others => '0');
+  signal funct7      : std_logic_vector(6 downto 0)             := (others => '0');
+  signal insti1      : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
+  signal curPci1     : std_logic_vector(cXLEN-1 downto 0)       := (others => '0');
+  signal rSelection  : std_logic_vector(3 downto 0)             := (others => '0');
+  signal regOp       : tDecodedReg                              := cDecodedReg;
+  signal memOp       : tDecodedMem                              := cDecodedMem;
+  signal branchOp    : tDecodedBranch                           := cDecodedBranch;
+  signal decodedInst : tDecodedInst                             := cDecodedInst;
 begin  -- architecture rtl
   -- assert statements
   assert cycleNum = 1 or cycleNum = 2 report "cycleNum is not supported" severity failure;
@@ -254,10 +255,45 @@ begin  -- architecture rtl
     end if;
   end process branchOpPRo;
 
-  decodedInstPro: process (iClk) is
+  decodedInstPro : process (iClk) is
   begin  -- process decodedInstPro
-    if iClk'event and iClk = '1' then  -- rising clock edge
+    if iClk'event and iClk = '1' then   -- rising clock edge
+      if(iFlushPipe = '1') then
+        decodedInst <= cDecodedInst;
+      else
+        decodedInst.rs1    <= ('1', src1Addr, (others => '0'));
+        decodedInst.rs2    <= ('1', src1Addr, (others => '0'));
+        decodedInst.rdAddr <= destAddr;
+        decodedInst.funct3 <= funct3;
+        decodedInst.funct7 <= funct7;
+        decodedInst.opcode <= opcode;
+        decodedInst.curPc  <= curPc;
 
+        case opcode is
+          when eOpLoad =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
+          when eOpStore =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20) & insti1(11 downto 7)), cXLEN));
+          when eOpRtype =>
+            decodedInst.imm <= (others => '0');
+          when eOpFence =>
+            decodedInst.imm <= (others => '0');
+          when eOpImmedi =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
+          when eOpAuIpc =>
+            decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
+            decodedInst.imm(11 downto 0)  <= insti1(11 downto 0);
+          when eOpLui =>
+            decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
+            decodedInst.imm(11 downto 0)  <= insti1(11 downto 0);
+          when eOpBranch =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(7) & insti1(30 downto 25)
+                                                              & insti1(11 downto 8) & '0'), cXLEN));
+
+          when eOp
+        end case;
+
+      end if;
     end if;
   end process decodedInstPro;
 
