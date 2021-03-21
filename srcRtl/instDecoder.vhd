@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-20
+-- Last update: 2021-03-21
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -211,9 +211,16 @@ begin  -- architecture rtl
     if iClk'event and iClk = '1' then   -- rising clock edge
       case opcode is
         when eOpLoad =>
-          memOp.load <=
+          memOp.load  <= '1';
+          memOp.store <= '0';
+          memOp.dv    <= '1';
+        when eOpStore =>
+          memOp.load  <= '0';
+          memOp.store <= '1';
+          memOp.dv    <= '1';
 
-
+        when others =>
+          memOp <= cDecodedMem;
       end case;
 
     end if;
