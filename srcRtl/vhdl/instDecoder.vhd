@@ -52,6 +52,7 @@ architecture rtl of instDecoder is
   signal rSelection : std_logic_vector(3 downto 0)             := (others => '0');
   signal regOp      : tDecodedReg                              := cDecodedReg;
   signal memOp      : tDecodedMem                              := cDecodedMem;
+  signal branchOp   : tDecodedBranch                           := cDecodedBranch;
 begin  -- architecture rtl
   -- assert statements
   assert cycleNum = 1 or cycleNum = 2 report "cycleNum is not supported" severity failure;
@@ -209,22 +210,55 @@ begin  -- architecture rtl
   memOpPro : process (iClk) is
   begin  -- process memOpPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      case opcode is
-        when eOpLoad =>
-          memOp.load  <= '1';
-          memOp.store <= '0';
-          memOp.dv    <= '1';
-        when eOpStore =>
-          memOp.load  <= '0';
-          memOp.store <= '1';
-          memOp.dv    <= '1';
+      if(iFlushPipe = '1') then
+        memOp <= cDecodedMem;
+      else
+        case opcode is
+          when eOpLoad =>
+            memOp.load  <= '1';
+            memOp.store <= '0';
+            memOp.dv    <= '1';
+          when eOpStore =>
+            memOp.load  <= '0';
+            memOp.store <= '1';
+            memOp.dv    <= '1';
 
-        when others =>
-          memOp <= cDecodedMem;
-      end case;
-
+          when others =>
+            memOp <= cDecodedMem;
+        end case;
+      end if;
     end if;
   end process memOpPro;
 
+
+  branchOpPRo : process (iClk) is
+  begin  -- process branchOpPRo
+    if iClk'event and iClk = '1' then   -- rising clock edge
+      if(iFlushPipe = '1') then
+        branchOp <= cDecodedBranch;
+      else
+        case opcode is
+          when eOpJal =>
+            branchOp.op <= eJal;
+            branchOp.dv <= '1';
+          when eOpJalr =>
+            branchOp.op <= eJalr;
+            branchOp.dv <= '1';
+          when eOpBranch =>
+            branchOp.op <= to_branchEnum(funct3);
+            branchOp.dv <= '1';
+          when others =>
+            branchOp <= cDecodedBranch;
+        end case;
+      end if;
+    end if;
+  end process branchOpPRo;
+
+  decodedInstPro: process (iClk) is
+  begin  -- process decodedInstPro
+    if iClk'event and iClk = '1' then  -- rising clock edge
+
+    end if;
+  end process decodedInstPro;
 
 end architecture rtl;

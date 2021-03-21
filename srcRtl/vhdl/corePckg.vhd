@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-20
+-- Last update: 2021-03-21
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ use ieee.numeric_std.all;
 
 package corePckg is
   -- attributes
-  attribute enum_encoding : string;
+  -- attribute enum_encoding : string;
 
   -- constants
   constant cRegSelBitW : integer := 5;
@@ -52,6 +52,7 @@ package corePckg is
   type tOpcodeEnum is (eOpLoad, eOpStore, eOpRtype, eOpImmedi,
                        eOpJalr, eOpJal, eOpLui, eOpAuIpc,
                        eOpBranch, eOpFence, eOpCtrlSt, eNOOP);
+
   type tRegOp is record                 -- regOp
     dv   : std_logic;
     addr : std_logic_vector(cRegSelBitW-1 downto 0);
@@ -83,8 +84,8 @@ package corePckg is
                       eCompareUnsigned, eXor, eShftRight,
                       eShftRightArit, eOr, eAnd, eNoArithOp);
 
-  attribute enum_encoding of tArithEnum : type is "0000 1000 0001 0010 0011
-    0100 0101 1101 0110 0111 1111 ";
+  -- attribute enum_encoding of tArithEnum : type is "0000 1000 0001 0010 0011
+  --   0100 0101 1101 0110 0111 1111 ";
 
   type tDecodedReg is record            -- decoded register operation
     arithType : tArithEnum;
@@ -101,15 +102,17 @@ package corePckg is
   type tBranchEnum is (eEqual, eNEqual, eLessThan, eGreatEqual,
                        eLessThanUns, eGreatEqualUns, eJal, eJalr);
 
-  attribute enum_encoding of tBranchEnum : type is "000 001 100 101 110 111 010 011";
+  -- attribute enum_encoding of tBranchEnum : type is "000 001 100 101 110 111 010 011";
 
   type tDecodedBranch is record
-    branchOp : tBranchEnum;
-    dv       : std_logic;
+    op : tBranchEnum;
+    dv : std_logic;
   end record;
   constant cDecodedBranch : tDecodedBranch := (eEqual, '0');
 
 
+
+  -- function declarations
   function to_opcodeEnum(
     signal opcodeData : std_logic_vector(7 downto 0)
     )
@@ -120,11 +123,41 @@ package corePckg is
     )
     return tArithEnum;
 
-
+  function to_branchEnum(
+    signal branchData : std_logic_vector(3 downto 0)
+    )
+    return tBranchEnum;
 
 end package corePckg;
 
 package body corePckg is
+  function to_branchEnum(
+    signal branchData : std_logic_vector(3 downto 0))
+    return tBranchEnum is
+    variable retVal : tBranchEnum;
+  begin
+    case branchData is
+      when "000" =>
+        retVal := eEqual;
+      when "001" =>
+        retVal := eNEqual;
+      when "100" =>
+        retVal := eLessThan;
+      when "101" =>
+        retVal := eGreatEqual;
+      when "110" =>
+        retVal := eLessThanUns;
+      when "111" =>
+        retVal := eGreatEqualUns;
+      when "010" =>
+        retVal := eJal;
+      when "011" =>
+        retVal := eJalr;
+    end case;
+
+    return retVal;
+  end function to_branchEnum;
+
 
   function to_opcodeEnum(
     signal opcodeData : std_logic_vector(7 downto 0))
