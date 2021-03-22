@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-22
+-- Last update: 2021-03-23
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -23,30 +23,12 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package corePckg is
-  -- attributes
-  -- attribute enum_encoding : string;
 
   -- constants
   constant cRegSelBitW : integer := 5;
   constant cXLen       : integer := 32;
   constant cRegNum     : integer := 2**cRegSelBitW;
   constant cRamDepth   : integer := 1024;
-
-  -- opcode Constants
-  -- constant cOpLoad   : std_logic_vector(6 downto 0) := "000" & x"3";
-  -- constant cOpStore  : std_logic_vector(6 downto 0) := "010" & x"3";
-  -- constant cOpRtype  : std_logic_vector(6 downto 0) := "011" & x"3";
-  -- constant cOpImmedi : std_logic_vector(6 downto 0) := "001" & x"3";
-  -- constant cOpJalR   : std_logic_vector(6 downto 0) := "110" & x"7";
-  -- constant cOpJal    : std_logic_vector(6 downto 0) := "110" & x"F";
-  -- constant cOpLui    : std_logic_vector(6 downto 0) := "011" & x"7";
-  -- constant cOpAuIpc  : std_logic_vector(6 downto 0) := "001" & x"7";
-  -- constant cOpBranch : std_logic_vector(6 downto 0) := "110" & x"3";
-  -- constant cOpCtrlSt : std_logic_vector(6 downto 0) := "111" & x"3";
-  -- constant cOpNoOp   : std_logic_vector(6 downto 0) := "111" & x"f";
-
-
-
 
   -- typedefs
   type tOpcodeEnum is (eOpLoad, eOpStore, eOpRtype, eOpImmedi,
@@ -84,9 +66,6 @@ package corePckg is
                       eCompareUnsigned, eXor, eShftRight,
                       eShftRightArit, eOr, eAnd, eNoArithOp);
 
-  -- attribute enum_encoding of tArithEnum : type is "0000 1000 0001 0010 0011
-  --   0100 0101 1101 0110 0111 1111 ";
-
   type tDecodedReg is record            -- decoded register operation
     arithType : tArithEnum;
     opRs1     : std_logic;
@@ -102,13 +81,45 @@ package corePckg is
   type tBranchEnum is (eEqual, eNEqual, eLessThan, eGreatEqual,
                        eLessThanUns, eGreatEqualUns, eJal, eJalr);
 
-  -- attribute enum_encoding of tBranchEnum : type is "000 001 100 101 110 111 010 011";
-
   type tDecodedBranch is record
     op : tBranchEnum;
     dv : std_logic;
   end record;
   constant cDecodedBranch : tDecodedBranch := (eEqual, '0');
+
+
+  type tDecoded is record
+    rs1Data : std_logic_vector(cXLen-1 downto 0);
+    rs2Data : std_logic_vector(cXLen-1 downto 0);
+    rdAddr  : std_logic_vector(cRegSelBitW-1 downto 0);
+    funct3  : std_logic_vector(2 downto 0);
+    funct7  : std_logic_vector(6 downto 0);
+    imm     : std_logic_vector(cXLen-1 downto 0);
+    opcode  : tOpcodeEnum;
+    curPc   : std_logic_vector(cXLen-1 downto 0);
+  end record;
+  constant cDecoded : tDecoded := ((others => '0'), (others => '0'), (others => '0'), (others => '0'),
+                                   (others => '0'), (others => '0'), eNOOP, (others => '0'));
+
+
+  type tMemOp is record
+    readDv  : std_logic;
+    writeDv : std_logic;
+    addr    : std_logic_vector(cXLen-1 downto 0);
+    data    : std_logic_vector(cXLen-1 downto 0);
+    opType  : std_logic_vector(2 downto 0);
+    rdAddr  : std_logic_vector(cRegSelBitW-1 downto 0);
+  end record;
+  constant cMemOp : tMemOp := ('0', '0', (others => '0'), (others => '0'), (others => '0'), (others => '0'));
+
+  type tBranchOp is record
+    flushPipe : std_logic;
+    newPc     : std_logic;
+    pc        : std_logic_vector(cXLen-1 downto 0);
+  end record;
+  constant cBranchOp : tBranchOp := ('0', '0', (others => '0'));
+
+
 
 
 

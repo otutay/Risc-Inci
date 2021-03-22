@@ -69,6 +69,10 @@ module ALU
 	     memOut.opType <= iDecoded.funct3;
 	     memOut.write <= 1'b1;
 	  end
+	else
+	  begin
+	     memOut <= {1'b0,1'b0,cXLEN'(1'b0),cXLEN'(0),cXLEN'(0),3'(0),cRegSelBitW'(0));
+	  end
      end :LoadStoreOperation
 
    always_ff @(posedge iClk)

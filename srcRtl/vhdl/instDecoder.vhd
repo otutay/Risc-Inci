@@ -22,6 +22,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.corePckg.all;
+
 entity instDecoder is
   generic (
     cycleNum : integer := 2             -- cycleNum for instruction decode.
