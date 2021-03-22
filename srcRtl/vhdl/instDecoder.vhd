@@ -273,24 +273,31 @@ begin  -- architecture rtl
           when eOpLoad =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
           when eOpStore =>
-            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20) & insti1(11 downto 7)), cXLEN));
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 25) & insti1(11 downto 7)), cXLEN));
           when eOpRtype =>
             decodedInst.imm <= (others => '0');
           when eOpFence =>
-            decodedInst.imm <= (others => '0');
+            decodedInst.imm <= (others => '0'); -- not implemented
           when eOpImmedi =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
           when eOpAuIpc =>
             decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
-            decodedInst.imm(11 downto 0)  <= insti1(11 downto 0);
+            decodedInst.imm(11 downto 0)  <= (others => '0');
           when eOpLui =>
             decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
-            decodedInst.imm(11 downto 0)  <= insti1(11 downto 0);
+            decodedInst.imm(11 downto 0)  <= (others => '0');
           when eOpBranch =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(7) & insti1(30 downto 25)
                                                               & insti1(11 downto 8) & '0'), cXLEN));
-
-          when eOp
+          when eOpJalr =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
+          when eOpJal =>
+            decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(19 downto 12) & insti1(20)
+                                                              & insti1(30 downto 21) & '0'), cXLEN));
+          when eOpCntrlSt =>
+            decodedInst.imm <= (others => '0'); -- not implemented
+          when others =>
+            decodedInst.imm <= (others => '0');
         end case;
 
       end if;

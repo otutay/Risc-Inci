@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-21
+-- Last update: 2021-03-22
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -67,11 +67,11 @@ package corePckg is
     funct3 : std_logic_vector(2 downto 0);
     funct7 : std_logic_vector(6 downto 0);
     imm    : std_logic_vector(cXLen-1 downto 0);
-    opCode : std_logic_vector(6 downto 0);
+    opCode : tOpcodeEnum;
     curPc  : std_logic_vector(cXLen-1 downto 0);
   end record tDecodedInst;
   constant cDecodedInst : tDecodedInst := (cRegOp, cRegOp, (others => '0'), (others => '0'), (others => '0'),
-                                           (others                 => '0'), (others => '0'), (others => '0'));
+                                           (others                 => '0'), eNOOP, (others => '0'));
 
   type tDecodedMem is record            -- decoded mem operation
     load  : std_logic;
