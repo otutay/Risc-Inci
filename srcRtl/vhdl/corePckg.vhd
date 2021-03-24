@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-23
+-- Last update: 2021-03-25
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -116,8 +116,9 @@ package corePckg is
     flushPipe : std_logic;
     newPc     : std_logic;
     pc        : std_logic_vector(cXLen-1 downto 0);
+    dv : std_logic;
   end record;
-  constant cBranchOp : tBranchOp := ('0', '0', (others => '0'));
+  constant cBranchOp : tBranchOp := ('0', '0', (others => '0'),'0');
 
 
 
