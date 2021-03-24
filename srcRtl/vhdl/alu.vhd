@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-22
--- Last update: 2021-03-24
+-- Last update: 2021-03-25
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -116,6 +116,7 @@ begin  -- architecture rtl
   end process regOpRegPro;
 
   regOpDonePro : process (iClk) is
+
   begin  -- process regOpDonePro
     if iClk'event and iClk = '1' then   -- rising clock edge
       regOut.addr <= regAddr;
@@ -126,9 +127,39 @@ begin  -- architecture rtl
         when eSub =>
           regOut.data <= signed(operand1) - signed(operand2);
         when eShftLeft =>
-          regOut.data <= operand1 sll to_integer(unsigned(operand2(cRegSelBitW-1 downto 0)));
+          regOut.data <= shift_left(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
         when eCompareSigned =>
-          regOut.data <=
+          if(signed(operand1) < signed(operand2)) then
+            regOut.data(0)                <= '1';
+            regOut.data(cXLen-1 downto 1) <= (others => '0');
+          else
+            regOut.data <= (others => '0');
+          end if;
+        when eCompareUnsigned =>
+          if(unsigned(operand1) < unsigned(operand2)) then
+            regOut.data(0)                <= '1';
+            regOut.data(cXLen-1 downto 1) <= (others => '0');
+          else
+            regOut.data <= (others => '0');
+          end if;
+        when eXor =>
+          regOut.data <= operand1 xor operand2;
+
+        when eShftRight =>
+          regOut.data <= shift_right(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
+
+        when eShftRightArit =>
+          regOut.data <= shift_right(signed(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
+
+        when eOr =>
+          regOut.data <= operand1 or operand2;
+
+        when eAnd =>
+          regOut.data <= operand1 and operand2;
+
+        when eNOOP =>
+          regOut.data <= operand1;
+
         when others => null;
       end case;
     end if;
