@@ -60,8 +60,11 @@ architecture rtl of alu is
   signal branchOut   : tBranchOp                                := cBranchOp;
 begin  -- architecture rtl
 
-  ---------------------------- load store op  ------------------------------
+
   oMemWB <= memOuti1;
+  oRegWB <= regOut;
+  oBranchWB <= branchOut;
+  ---------------------------- load store op  ------------------------------
   loadStorePro : process (iClk) is
   begin  -- process loadStorePro
     if iClk'event and iClk = '1' then   -- rising clock edge
@@ -247,7 +250,8 @@ begin  -- architecture rtl
     if iClk'event and iClk = '1' then  -- rising clock edge
       case branchOpi1.op is
         when eJalr =>
-          branchOut.pc <=
+          branchOut.pc <= signed(data1) + signed(imm);
+          branchOut.pc(0) <= '0';
         when others =>
           branchOut.pc <= signed(curPc) + signed(imm);
     end if;
