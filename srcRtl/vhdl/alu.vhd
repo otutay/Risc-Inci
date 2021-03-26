@@ -60,10 +60,10 @@ architecture rtl of alu is
   signal branchOut   : tBranchOp                                := cBranchOp;
 begin  -- architecture rtl
 
-
   oMemWB <= memOuti1;
   oRegWB <= regOut;
   oBranchWB <= branchOut;
+
   ---------------------------- load store op  ------------------------------
   loadStorePro : process (iClk) is
   begin  -- process loadStorePro
