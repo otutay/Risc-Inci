@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-25
+-- Last update: 2021-03-30
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -116,9 +116,9 @@ package corePckg is
     flushPipe : std_logic;
     newPc     : std_logic;
     pc        : std_logic_vector(cXLen-1 downto 0);
-    dv : std_logic;
+    dv        : std_logic;
   end record;
-  constant cBranchOp : tBranchOp := ('0', '0', (others => '0'),'0');
+  constant cBranchOp : tBranchOp := ('0', '0', (others => '0'), '0');
 
 
 
@@ -140,9 +140,33 @@ package corePckg is
     )
     return tBranchEnum;
 
+  function log2(
+    dataVal : natural
+    )
+    return natural;
+
 end package corePckg;
 
 package body corePckg is
+  function log2(dataVal : natural)
+    return natural is
+    variable width : natural := 0;
+    variable cnt   : natural := 1;
+
+  begin
+    if (dataVal <= 1) then
+      width := 0;
+    else
+      while (cnt < dataVal) loop
+        width := width + 1;
+        cnt   := cnt * 2;
+      end loop;
+    end if;
+    return width;
+  end function log2;
+
+
+
   function to_branchEnum(
     signal branchData : std_logic_vector(3 downto 0))
     return tBranchEnum is
