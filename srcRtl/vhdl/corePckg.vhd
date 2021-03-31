@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-30
+-- Last update: 2021-04-01
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -120,8 +120,12 @@ package corePckg is
   end record;
   constant cBranchOp : tBranchOp := ('0', '0', (others => '0'), '0');
 
-
-
+  type tFetchCtrl is record
+    pc    : std_logic_vector(cXLen-1 downto 0);
+    newPc : std_logic;
+    noOp  : std_logic;
+  end record tFetchCtrl;
+  constant cFetchCtrl : tFetchCtrl := ((others => '0'), '0', '0');
 
 
   -- function declarations

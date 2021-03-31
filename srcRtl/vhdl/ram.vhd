@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-25
--- Last update: 2021-03-30
+-- Last update: 2021-04-01
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -39,12 +39,14 @@ entity ram is
     iEnA   : in  std_logic;
     iWEnA  : in  std_logic;
     iAddrA : in  std_logic_vector(log2(cRamDepth-1)-1 downto 0);
+    iDataA : out std_logic_vector(cRamWidth-1 downto 0);
     oDataA : out std_logic_vector(cRamWidth-1 downto 0);
     -- b port
     iRstB  : in  std_logic;
     iEnB   : in  std_logic;
     iWEnB  : in  std_logic;
     iAddrB : in  std_logic_vector(log2(cRamDepth-1)-1 downto 0);
+    iDataB : out std_logic_vector(cRamWidth-1 downto 0);
     oDataB : out std_logic_vector(cRamWidth-1 downto 0)
     );
 
