@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-03-22
+-- Last update: 2021-04-07
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -141,7 +141,12 @@ begin  -- architecture rtl
           when eOpImmedi =>
             case funct3 is
               when "000" =>
-                regOp.arithType <= eAdd;
+                if (funct7(5) = '0') then
+                  regOp.arithType <= eSub;
+                else
+                  regOp.arithType <= eAdd;
+                end if;
+
               when "010" =>
                 regOp.arithType <= eCompareSigned;
               when "011" =>
@@ -280,7 +285,7 @@ begin  -- architecture rtl
           when eOpRtype =>
             decodedInst.imm <= (others => '0');
           when eOpFence =>
-            decodedInst.imm <= (others => '0'); -- not implemented
+            decodedInst.imm <= (others => '0');  -- not implemented
           when eOpImmedi =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
           when eOpAuIpc =>
@@ -298,7 +303,7 @@ begin  -- architecture rtl
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(19 downto 12) & insti1(20)
                                                               & insti1(30 downto 21) & '0'), cXLEN));
           when eOpCntrlSt =>
-            decodedInst.imm <= (others => '0'); -- not implemented
+            decodedInst.imm <= (others => '0');  -- not implemented
           when others =>
             decodedInst.imm <= (others => '0');
         end case;
