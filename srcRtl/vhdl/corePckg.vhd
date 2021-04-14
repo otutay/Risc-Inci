@@ -158,14 +158,10 @@ package body corePckg is
     variable cnt   : natural := 1;
 
   begin
-    if (dataVal <= 1) then
-      width := 0;
-    else
       while (cnt < dataVal) loop
         width := width + 1;
         cnt   := cnt * 2;
       end loop;
-    end if;
     return width;
   end function log2;
 
