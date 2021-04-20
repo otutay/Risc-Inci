@@ -10,8 +10,8 @@
 import corePckg::*;
 class instDecoderIntf;
 
-   rand logic [cXLen-1:0] iInst;
-   rand logic [cXLen-1:0] iCurPc;
+   rand logic [cXLEN-1:0] iInst;
+   rand logic [cXLEN-1:0] iCurPc;
    rand logic iFlushPipe;
 
    function display ();
