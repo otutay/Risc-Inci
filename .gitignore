@@ -1,5 +1,6 @@
 /srcRtl/*.do
 /srcRtl/test/*.do
+/srcRtl/do
 
 transcript
 *.wlf
