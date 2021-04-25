@@ -1,14 +1,24 @@
-//                              -*- Mode: Verilog -*-
-// Filename        : InstDecoderTb.sv
-// Description     : instruction decoder test bench
-// Author          : osmant
-// Created On      : Sun Apr  4 23:18:52 2021
-// Last Modified By: osmant
-// Last Modified On: Sun Apr  4 23:18:52 2021
-// Update Count    : 0
-// Status          : Unknown, Use with caution!
+//-------------------------------------------------------------------------------
+// Title      : insDecoderTb
+// Project    :
+// -----------------------------------------------------------------------------
+// File       : InstDecoderTb.sv
+// Author     : osmant -> otutaysalgir@gmail.com
+// Company    :
+// Created    : 26.04.2021
+// Platform   :
+//-----------------------------------------------------------------------------
+// Description: decoder testBench
+//-----------------------------------------------------------------------------
+// Copyright (c) 2021
+//-----------------------------------------------------------------------------
+// Revisions  :
+// Date        Version  Author  Description
+// 26.04.2021  1.0      osmant  Created
+//-----------------------------------------------------------------------------
 
-`include "InstDecoderIntf.svh"
+
+`include "InstDecoderIntf.sv"
 
 module InstDecoderTb();
 
