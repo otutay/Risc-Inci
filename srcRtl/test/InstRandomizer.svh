@@ -28,6 +28,11 @@ class InstRandomizer;
    logic [cXLEN-1:0] instruction;
 
 
+   constraint opcodeConst{
+      opcode inside {eOpLoad,eOpStore,eOpRtype, eOpImmedi, eOpJalr,eOpJal,
+		     eOpLui,eOpAuIpc,eOpBranch,eOpFence,eOpCntrlSt};
+   };
+
    constraint funct3Const {
       opcode == eOpJalr -> funct3 inside {3'b000};
       opcode == eOpBranch -> funct3 inside {3'b000, 3'b001, 3'b100, 3'b101, 3'b110, 3'b111 };
@@ -36,11 +41,11 @@ class InstRandomizer;
       opcode == eOpImmedi -> funct3 inside {3'b000, 3'b010, 3'b011,3'b100,3'b110,3'b111,3'b001, 3'b101};
       opcode == eOpRtype -> funct3 inside {3'b000, 3'b001, 3'b010,3'b011,3'b100,3'b101,3'b110, 3'b111};
       opcode == eOpFence -> funct3 inside {3'b000, 3'b001};
-	      };
+   };
 
    constraint funct7Const {
       (opcode == eOpImmedi | opcode == eOpRtype) ->  funct7 inside {7'h00 , 7'h20};
-	       };
+   };
 
    function logic [cXLEN-1:0] formInst();
       instruction[6:0] = opcode;

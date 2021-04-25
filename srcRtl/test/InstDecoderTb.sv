@@ -8,18 +8,22 @@
 // Update Count    : 0
 // Status          : Unknown, Use with caution!
 
-`include "InstDecoderIntf.sv"
+`include "InstDecoderIntf.svh"
 
 module InstDecoderTb();
 
-  instDecoderIntf intf;
+   instDecoderIntf intf;
 
 
-   initial begin
-      intf = new();
-      assert(intf.randomize());
-      intf.display();
-   end
+   always
+     begin
+	intf = new();
+	assert(intf.randomize());
+	intf.display();
+
+     end
+
+
 
 
 endmodule : InstDecoderTb
