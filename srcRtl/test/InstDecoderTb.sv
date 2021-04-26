@@ -18,21 +18,83 @@
 //-----------------------------------------------------------------------------
 
 
-`include "InstDecoderIntf.sv"
+
+`include "InstDecoderIntf.sv";
 
 module InstDecoderTb();
 
    instDecoderIntf intf;
+   logic clk;
+   logic rst;
+   logic [6:0] opcode;
+   logic [cXLEN-1:0] inst;
+   logic [cXLEN-1:0] curPC;
+   logic	     flushPipe;
+
+   logic [7:0] shftReg = 7'b0000001;
 
 
-   always
+   initial
      begin
 	intf = new();
-	assert(intf.randomize());
-	intf.display();
-
+	clk <= 0;
+	rst <= 1;
+	#1000 rst <=0;
      end
 
+   always #5 clk =~clk;
+
+
+   always_ff @(clk) begin
+      shftReg <= {shftReg[$size(shftReg)-2:0],shftReg[$size(shftReg)-1]};
+   end
+
+
+   always_ff @(clk) begin
+      case (shftReg)
+	7'b0000001:
+	  begin
+	     opcode <= eOpLoad;
+	     intf.directedInst(opcode);
+	     inst <= intf.iInst;
+
+	  end
+/* -----\/----- EXCLUDED -----\/-----
+	7'b0000010:
+	  begin
+
+	  end
+ -----/\----- EXCLUDED -----/\----- */
+
+	default: begin
+	   opcode <= eNOOP;
+	   inst <= cXLEN'(0);
+
+	end
+      endcase
+      /* -----\/----- EXCLUDED -----\/-----
+       assert(intf.randomize());
+       -----/\----- EXCLUDED -----/\----- */
+      intf.display();
+
+   end
+
+
+
+
+
+   instDecoder #(.cycleNum(2))
+   DUT(
+       .iClk(clk),
+       .iRst(rst),
+       .iInst(inst),
+       .iCurPC(curPC),
+       .iFlushPipe(flushPipe),
+       .oDecoded(),
+       .oMemOp(),
+       .oRegOp(),
+       .oBranchOp()
+       );
 
 
 

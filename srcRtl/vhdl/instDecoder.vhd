@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-04-07
+-- Last update: 2021-04-27
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ begin  -- architecture rtl
         curPci1    <= (others => '0');
         rSelection <= (others => '0');
       else
-        opcode     <= to_opcodeEnum(iInst(6 downto 0));
+        opcode     <= iInst(6 downto 0);
         src1Addr   <= iInst(19 downto 15);
         src2Addr   <= iInst(24 downto 20);
         destAddr   <= iInst(11 downto 7);
@@ -107,7 +107,7 @@ begin  -- architecture rtl
           curPci1    <= (others => '0');
           rSelection <= (others => '0');
         else
-          opcode     <= to_opcodeEnum(iInst(6 downto 0));
+          opcode     <= iInst(6 downto 0);
           src1Addr   <= iInst(19 downto 15);
           src2Addr   <= iInst(24 downto 20);
           destAddr   <= iInst(11 downto 7);
@@ -131,7 +131,7 @@ begin  -- architecture rtl
       else
         case opcode is
           when eOpRtype =>
-            regOp.arithType <= to_arithEnum(rSelection);
+            regOp.arithType <= rSelection;
             regOp.opRs1     <= '1';
             regOp.opRs2     <= '1';
             regOp.opImm     <= '0';
