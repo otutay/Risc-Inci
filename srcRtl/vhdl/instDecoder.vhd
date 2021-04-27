@@ -23,7 +23,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.corePckg.all;
+use work.corePackage.all;
 
 entity instDecoder is
   generic (
@@ -44,7 +44,7 @@ entity instDecoder is
 end entity instDecoder;
 architecture rtl of instDecoder is
 --  signal opcode     : std_logic_vector(6 downto 0)             := cOpNoOp;
-  signal opcode      : tOpcodeEnum                              := eNOOP;
+  signal opcode      : std_logic_vector(6 downto 0)             := cOpNoop;
   signal src1Addr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
   signal src2Addr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
   signal destAddr    : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
@@ -64,13 +64,13 @@ begin  -- architecture rtl
   -- entity started
   OneCycleGen : if cycleNum = 1 generate
 
-    flop : process (all) is
+    flop : process (iFlushPipe, iInst, iCurPc) is
     begin  -- process flop
       if(iFlushPipe = '1') then
-        opcode     <= eNOOP;
+        opcode     <= cOpNoop;
         src1Addr   <= (others => '0');
         src2Addr   <= (others => '0');
-        dest2Addr  <= (others => '0');
+        destAddr   <= (others => '0');
         funct3     <= (others => '0');
         funct7     <= (others => '0');
         insti1     <= (others => '0');
@@ -85,7 +85,7 @@ begin  -- architecture rtl
         funct7     <= iInst(31 downto 25);
         insti1     <= iInst;
         curPci1    <= iCurPc;
-        rSelection <= iInst(30) & iInst(14 : 12);
+        rSelection <= iInst(30) & iInst(14 downto 12);
       end if;
     end process flop;
 
@@ -97,10 +97,10 @@ begin  -- architecture rtl
     begin  -- process flop
       if iClk'event and iClk = '1' then  -- rising clock edge
         if(iFlushPipe = '1') then
-          opcode     <= eNOOP;
+          opcode     <= cOpNoop;
           src1Addr   <= (others => '0');
           src2Addr   <= (others => '0');
-          dest2Addr  <= (others => '0');
+          destAddr   <= (others => '0');
           funct3     <= (others => '0');
           funct7     <= (others => '0');
           insti1     <= (others => '0');
@@ -115,7 +115,7 @@ begin  -- architecture rtl
           funct7     <= iInst(31 downto 25);
           insti1     <= iInst;
           curPci1    <= iCurPc;
-          rSelection <= iInst(30) & iInst(14 : 12);
+          rSelection <= iInst(30) & iInst(14 downto 12);
         end if;
 
       end if;
@@ -125,12 +125,12 @@ begin  -- architecture rtl
 
   regOpPro : process (iClk) is
   begin  -- process operationPro
-    if iClk'event and iClk = '1' then   -- rising clock edge
+    if iClk'event and iClk = '1' then       -- rising clock edge
       if(iFlushPipe = '1') then
         regOp <= cDecodedReg;
       else
         case opcode is
-          when eOpRtype =>
+          when cOpRType =>
             regOp.arithType <= rSelection;
             regOp.opRs1     <= '1';
             regOp.opRs2     <= '1';
@@ -138,33 +138,34 @@ begin  -- architecture rtl
             regOp.opPc      <= '0';
             regOp.opConst   <= '0';
             regOp.dv        <= '1';
-          when eOpImmedi =>
+          when cOpImmedi =>                 --eOpImmedi =>
             case funct3 is
               when "000" =>
                 if (funct7(5) = '0') then
-                  regOp.arithType <= eSub;
+                  regOp.arithType <= cSub;  --eSub;
                 else
-                  regOp.arithType <= eAdd;
+                  regOp.arithType <= cAdd;  --eAdd;
                 end if;
 
               when "010" =>
-                regOp.arithType <= eCompareSigned;
+                regOp.arithType <= cCompareSigned;    --eCompareSigned;
               when "011" =>
-                regOp.aritType <= eCompareUnsigned;
+                regOp.arithType <= cCompareUnSigned;   --eCompareUnsigned;
               when "100" =>
-                regOp.aritType <= eXor;
+                regOp.arithType <= cXor;               --eXor;
               when "110" =>
-                regOp.aritType <= eOr;
+                regOp.arithType <= cOr;                --eOr;
               when "111" =>
-                regOp.aritType <= eAnd;
+                regOp.arithType <= cAnd;               --eAnd;
               when "001" =>
-                regOp.aritType <= eShftLeft;
+                regOp.arithType <= cShftLeft;          --eShftLeft;
               when "101" =>
                 if(funct7(5) = '1') then
-                  regOp.aritType <= eShftRight;
+                  regOp.arithType <= cShftRight;       --eShftRight;
                 else
-                  regOp.aritType <= eShftRightArit;
+                  regOp.arithType <= cShftRightArith;  --eShftRightArit;
                 end if;
+              when others => regOp <= cDecodedReg;
             end case;
             regOp.opRs1   <= '1';
             regOp.opRs2   <= '0';
@@ -172,8 +173,8 @@ begin  -- architecture rtl
             regOp.opPc    <= '0';
             regOp.opConst <= '0';
             regOp.dv      <= '1';
-          when eOpJal =>
-            regOp.aritType <= eAdd;
+          when cOpJal =>                              -- eOpJal =>
+            regOp.arithType <= cAdd;--eAdd;
             regOp.opRs1    <= '0';
             regOp.opRs2    <= '0';
             regOp.opImm    <= '0';
@@ -181,16 +182,16 @@ begin  -- architecture rtl
             regOp.opConst  <= '1';
             regOp.dv       <= '1';
 
-          when eOpJalr =>
-            regOp.aritType <= eAdd;
+          when cOpJalR =>               --eOpJalr =>
+            regOp.arithType <= cAdd;--eAdd;
             regOp.opRs1    <= '0';
             regOp.opRs2    <= '0';
             regOp.opImm    <= '0';
             regOp.opPc     <= '1';
             regOp.opConst  <= '1';
             regOp.dv       <= '1';
-          when opLui =>
-            regOp.aritType <= eNoArithOp;
+          when cOpLui =>                --opLui =>
+            regOp.arithType <= cNoArith;--eNoArithOp;
             regOp.opRs1    <= '0';
             regOp.opRs2    <= '0';
             regOp.opImm    <= '1';
@@ -198,8 +199,8 @@ begin  -- architecture rtl
             regOp.opConst  <= '0';
             regOp.dv       <= '1';
 
-          when eOpAuIpc =>
-            regOp.aritType <= eAdd;
+          when cOpAuIpc =>              --eOpAuIpc =>
+            regOp.arithType <= cAdd;--eAdd;
             regOp.opRs1    <= '0';
             regOp.opRs2    <= '0';
             regOp.opImm    <= '1';
@@ -209,7 +210,6 @@ begin  -- architecture rtl
 
           when others =>
             regOp <= cDecodedReg;
-          when others => null;
         end case;
       end if;
     end if;
@@ -223,11 +223,11 @@ begin  -- architecture rtl
         memOp <= cDecodedMem;
       else
         case opcode is
-          when eOpLoad =>
+          when cOpLoad =>               --eOpLoad =>
             memOp.load  <= '1';
             memOp.store <= '0';
             memOp.dv    <= '1';
-          when eOpStore =>
+          when cOpStore =>              --eOpStore =>
             memOp.load  <= '0';
             memOp.store <= '1';
             memOp.dv    <= '1';
@@ -247,14 +247,14 @@ begin  -- architecture rtl
         branchOp <= cDecodedBranch;
       else
         case opcode is
-          when eOpJal =>
-            branchOp.op <= eJal;
+          when cOpJal =>                --eOpJal =>
+            branchOp.op <= cBrJal;--eJal;
             branchOp.dv <= '1';
-          when eOpJalr =>
-            branchOp.op <= eJalr;
+          when cOpJalR =>               --eOpJalr =>
+            branchOp.op <= cBrJalR;-- eJalr;
             branchOp.dv <= '1';
-          when eOpBranch =>
-            branchOp.op <= to_branchEnum(funct3);
+          when cOpBranch =>             --eOpBranch =>
+            branchOp.op <= funct3;--to_branchEnum(funct3);
             branchOp.dv <= '1';
           when others =>
             branchOp <= cDecodedBranch;
@@ -275,34 +275,34 @@ begin  -- architecture rtl
         decodedInst.funct3 <= funct3;
         decodedInst.funct7 <= funct7;
         decodedInst.opcode <= opcode;
-        decodedInst.curPc  <= curPc;
+        decodedInst.curPc  <= curPci1;
 
         case opcode is
-          when eOpLoad =>
+          when cOpLoad =>                        --eOpLoad =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
-          when eOpStore =>
+          when cOpStore =>                       --eOpStore =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 25) & insti1(11 downto 7)), cXLEN));
-          when eOpRtype =>
+          when cOpRType =>                       --eOpRtype =>
             decodedInst.imm <= (others => '0');
-          when eOpFence =>
+          when cOpFence =>                       --eOpFence =>
             decodedInst.imm <= (others => '0');  -- not implemented
-          when eOpImmedi =>
+          when cOpImmedi =>                      --eOpImmedi =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
-          when eOpAuIpc =>
+          when cOpAuIpc =>                       --eOpAuIpc =>
             decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
             decodedInst.imm(11 downto 0)  <= (others => '0');
-          when eOpLui =>
+          when cOpLui =>                         --eOpLui =>
             decodedInst.imm(31 downto 12) <= insti1(31 downto 12);
             decodedInst.imm(11 downto 0)  <= (others => '0');
-          when eOpBranch =>
+          when cOpBranch =>                      --eOpBranch =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(7) & insti1(30 downto 25)
                                                               & insti1(11 downto 8) & '0'), cXLEN));
-          when eOpJalr =>
+          when cOpJalR =>                        --eOpJalr =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31 downto 20)), cXLEN));
-          when eOpJal =>
+          when cOpJal =>                         -- eOpJal =>
             decodedInst.imm <= std_logic_vector(resize(signed(insti1(31) & insti1(19 downto 12) & insti1(20)
                                                               & insti1(30 downto 21) & '0'), cXLEN));
-          when eOpCntrlSt =>
+          when cOpCtrlSt =>                      --eOpCntrlSt =>
             decodedInst.imm <= (others => '0');  -- not implemented
           when others =>
             decodedInst.imm <= (others => '0');

@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- Title      : corePckg
+-- Title      : corePackage
 -- Project    :
 -------------------------------------------------------------------------------
--- File       : corePckg.vhd
+-- File       : corePackage.vhd
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
@@ -22,7 +22,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package corePckg is
+package corePackage is
 
   -- constants
   constant cRegSelBitW : integer := 5;
@@ -43,6 +43,7 @@ package corePckg is
   constant cOpAuIpc  : std_logic_vector(6 downto 0) := "001" & x"7";
   constant cOpBranch : std_logic_vector(6 downto 0) := "110" & x"3";
   constant cOpCtrlSt : std_logic_vector(6 downto 0) := "111" & x"3";
+  constant cOpFence  : std_logic_vector(6 downto 0) := "000" & x"f";
   constant cOpNoop   : std_logic_vector(6 downto 0) := "111" & x"f";
 
   -- branchConstants;
@@ -68,9 +69,9 @@ package corePckg is
   constant cAnd             : std_logic_vector(3 downto 0) := "0111";
   constant cNoArith         : std_logic_vector(3 downto 0) := "1111";
   -- typedefs
-  type tOpcodeEnum is (eOpLoad, eOpStore, eOpRtype, eOpImmedi,
-                       eOpJalr, eOpJal, eOpLui, eOpAuIpc,
-                       eOpBranch, eOpFence, eOpCtrlSt, eNOOP);
+  -- type tOpcodeEnum is (eOpLoad, eOpStore, eOpRtype, eOpImmedi,
+  --                      eOpJalr, eOpJal, eOpLui, eOpAuIpc,
+  --                      eOpBranch, eOpFence, eOpCtrlSt, eNOOP);
 
   type tRegOp is record                 -- regOp
     dv   : std_logic;
@@ -86,11 +87,11 @@ package corePckg is
     funct3 : std_logic_vector(2 downto 0);
     funct7 : std_logic_vector(6 downto 0);
     imm    : std_logic_vector(cXLen-1 downto 0);
-    opCode : tOpcodeEnum;
+    opCode : std_logic_vector(6 downto 0);
     curPc  : std_logic_vector(cXLen-1 downto 0);
   end record tDecodedInst;
   constant cDecodedInst : tDecodedInst := (cRegOp, cRegOp, (others => '0'), (others => '0'), (others => '0'),
-                                           (others                 => '0'), eNOOP, (others => '0'));
+                                           (others                 => '0'), cOpNoop, (others => '0'));
 
   type tDecodedMem is record            -- decoded mem operation
     load  : std_logic;
@@ -99,12 +100,12 @@ package corePckg is
   end record tDecodedMem;
   constant cDecodedMem : tDecodedMem := ('0', '0', '0');
 
-  type tArithEnum is (eAdd, eSub, eShftLeft, eCompareSigned,
-                      eCompareUnsigned, eXor, eShftRight,
-                      eShftRightArit, eOr, eAnd, eNoArithOp);
+  -- type tArithEnum is (eAdd, eSub, eShftLeft, eCompareSigned,
+  --                     eCompareUnsigned, eXor, eShftRight,
+  --                     eShftRightArit, eOr, eAnd, eNoArithOp);
 
   type tDecodedReg is record            -- decoded register operation
-    arithType : tArithEnum;
+    arithType : std_logic_vector(3 downto 0);
     opRs1     : std_logic;
     opRs2     : std_logic;
     opImm     : std_logic;
@@ -112,17 +113,17 @@ package corePckg is
     opConst   : std_logic;
     dv        : std_logic;
   end record tDecodedReg;
-  constant cDecodedReg : tDecodedReg := (eNoArithOp, '0', '0', '0', '0', '0', '0');
+  constant cDecodedReg : tDecodedReg := (cNoArith, '0', '0', '0', '0', '0', '0');
 
 
-  type tBranchEnum is (eEqual, eNEqual, eLessThan, eGreatEqual,
-                       eLessThanUns, eGreatEqualUns, eJal, eJalr);
+  -- type tBranchEnum is (eEqual, eNEqual, eLessThan, eGreatEqual,
+  --                      eLessThanUns, eGreatEqualUns, eJal, eJalr);
 
   type tDecodedBranch is record
-    op : tBranchEnum;
+    op : std_logic_vector(2 downto 0);
     dv : std_logic;
   end record;
-  constant cDecodedBranch : tDecodedBranch := (eEqual, '0');
+  constant cDecodedBranch : tDecodedBranch := (cBrEqual, '0');
 
 
   type tDecoded is record
@@ -132,11 +133,11 @@ package corePckg is
     funct3  : std_logic_vector(2 downto 0);
     funct7  : std_logic_vector(6 downto 0);
     imm     : std_logic_vector(cXLen-1 downto 0);
-    opcode  : tOpcodeEnum;
+    opcode  : std_logic_vector(6 downto 0);
     curPc   : std_logic_vector(cXLen-1 downto 0);
   end record;
   constant cDecoded : tDecoded := ((others => '0'), (others => '0'), (others => '0'), (others => '0'),
-                                   (others => '0'), (others => '0'), eNOOP, (others => '0'));
+                                   (others => '0'), (others => '0'), cOpNoop, (others => '0'));
 
 
   type tMemOp is record
@@ -186,9 +187,9 @@ package corePckg is
     )
     return natural;
 
-end package corePckg;
+end package corePackage;
 
-package body corePckg is
+package body corePackage is
   function log2(dataVal : natural)
     return natural is
     variable width : natural := 0;
@@ -299,4 +300,4 @@ package body corePckg is
   --   return retVal;
   -- end function to_arithEnum;
 
-end package body corePckg;
+end package body corePackage;

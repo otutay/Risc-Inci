@@ -31,7 +31,7 @@ package corePckg;
 	eOpBranch = 7'h63, // done //
 	eOpFence  = 7'h0f, //
 	eOpCntrlSt = 7'h73, //
-	eNOOP = 7'hff //
+	eNOOP = 7'h7f //
     }tOpcodeEnum;
 
     typedef struct packed {
