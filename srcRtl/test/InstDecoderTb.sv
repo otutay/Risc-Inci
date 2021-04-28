@@ -26,12 +26,11 @@ module InstDecoderTb();
    instDecoderIntf intf;
    logic clk;
    logic rst;
-   logic [6:0] opcode;
    logic [cXLEN-1:0] inst;
-   logic [cXLEN-1:0] curPC;
-   logic	     flushPipe;
+   logic [cXLEN-1:0] curPC = 0;
+   logic	     flushPipe = 0;
 
-   logic [7:0] shftReg = 7'b0000001;
+   logic [8:0]	     shftReg = 9'b0000001;
 
 
    initial
@@ -45,37 +44,28 @@ module InstDecoderTb();
    always #5 clk =~clk;
 
 
-   always_ff @(clk) begin
-      shftReg <= {shftReg[$size(shftReg)-2:0],shftReg[$size(shftReg)-1]};
+   always_ff @(posedge clk) begin
+      if (rst == 1'b0)
+	begin
+	   shftReg <= {shftReg[$size(shftReg)-2:0],shftReg[$size(shftReg)-1]};
+	end
    end
 
 
-   always_ff @(clk) begin
-      case (shftReg)
-	7'b0000001:
-	  begin
-	     opcode <= eOpLoad;
-	     intf.directedInst(opcode);
-	     inst <= intf.iInst;
-
-	  end
-/* -----\/----- EXCLUDED -----\/-----
-	7'b0000010:
-	  begin
-
-	  end
- -----/\----- EXCLUDED -----/\----- */
-
-	default: begin
-	   opcode <= eNOOP;
-	   inst <= cXLEN'(0);
-
+   always_ff @(posedge clk) begin
+      if(rst)
+	begin
+	   inst <= 0;
 	end
-      endcase
+      else
+	begin
+	   intf.directedInst(shftReg);
+	   inst <= intf.iInst;
+	end
       /* -----\/----- EXCLUDED -----\/-----
        assert(intf.randomize());
        -----/\----- EXCLUDED -----/\----- */
-      intf.display();
+      //intf.display();
 
    end
 
