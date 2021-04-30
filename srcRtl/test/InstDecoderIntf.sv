@@ -77,7 +77,7 @@ class instDecoderIntf;
 	     iInst[19:15] = 5'b01001;
 	     iInst[31:20] = 12'hcaf;
 	  end
-	9'b000100000:
+	9'b000100000: // correct
 	  begin
 	     iInst[6:0] = eOpJal;
 	     iInst[11:7] = 5'b11001;
@@ -108,7 +108,7 @@ class instDecoderIntf;
 	  end
 	default :
 	  begin
-	     iInst[31:6] = 26'hdeadbea;
+	     iInst[31:0] = 26'hdeadbeaf;
 	  end
 
       endcase
