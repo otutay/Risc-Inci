@@ -50,7 +50,7 @@ class instDecoderIntf;
 	     iInst[14:12] = 3'b010;
 	     iInst[19:15] = 5'b00111;
 	     iInst[24:20] = 5'b01111;
-	     iInst[31:25] = 12'hdec;
+	     iInst[31:25] = 7'b1101011;
 	  end
 	9'b000000100 : // slli
 	  begin
@@ -69,7 +69,7 @@ class instDecoderIntf;
 	     iInst[24:20] = 5'b00010;
 	     iInst[31:25] = 7'b0000000;
 	  end
-	9'b000010000:
+	9'b000010000: // JALR
 	  begin
 	     iInst[6:0] = eOpJalr;
 	     iInst[11:7] = 5'b10001;

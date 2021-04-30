@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-04-27
+-- Last update: 2021-04-30
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -148,9 +148,9 @@ begin  -- architecture rtl
                 end if;
 
               when "010" =>
-                regOp.arithType <= cCompareSigned;    --eCompareSigned;
+                regOp.arithType <= cCompareSigned;    --eCompareSigned; slt
               when "011" =>
-                regOp.arithType <= cCompareUnSigned;   --eCompareUnsigned;
+                regOp.arithType <= cCompareUnSigned;   --eCompareUnsigned; sltu
               when "100" =>
                 regOp.arithType <= cXor;               --eXor;
               when "110" =>

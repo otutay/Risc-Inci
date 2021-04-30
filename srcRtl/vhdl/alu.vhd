@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-22
--- Last update: 2021-03-25
+-- Last update: 2021-04-30
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -68,12 +68,12 @@ begin  -- architecture rtl
   loadStorePro : process (iClk) is
   begin  -- process loadStorePro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      if(iDecodedMem.dv and iDecodedMem.load) then
+      if(iDecodedMem.dv = '1' and iDecodedMem.load = '1') then
         memOut.addr   <= signed(iDecoded.rs1) + signed(iDecoded.imm);
         memOut.rdAddr <= iDecoded.rdAddr;
         memOut.opType <= iDecoded.funct3;
         memOut.readDv <= '1';
-      elsif(iDecodedMem.dv and iDecodedMem.store) then
+      elsif(iDecodedMem.dv = '1' and iDecodedMem.store = '1') then
         memOut.addr    <= signed(iDecoded.rs1) + signed(iDecoded.imm);
         memOut.data    <= iDecoded.rs2Data;
         memOut.opType  <= iDecoded.funct3;
