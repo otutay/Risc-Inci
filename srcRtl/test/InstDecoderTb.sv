@@ -16,11 +16,10 @@
 // Date        Version  Author  Description
 // 26.04.2021  1.0      osmant  Created
 //-----------------------------------------------------------------------------
-
-
-
+`timescale 1ns/1ns
 `include "InstDecoderIntf.sv";
-
+`include "testVector.sv"
+`include "logData.sv"
 module InstDecoderTb();
 
    instDecoderIntf intf;
@@ -31,7 +30,8 @@ module InstDecoderTb();
    logic	     flushPipe = 0;
 
    logic [8:0]	     shftReg = 9'b0000001;
-
+   testVector data;
+   logData logObj;
 
    initial
      begin
@@ -39,6 +39,9 @@ module InstDecoderTb();
 	clk <= 0;
 	rst <= 1;
 	#1000 rst <=0;
+	data = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
+	logObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt");
+
      end
 
    always #5 clk =~clk;
@@ -59,10 +62,21 @@ module InstDecoderTb();
 	end
       else
 	begin
-	   intf.directedInst(shftReg);
-	   inst <= intf.iInst;
+	   inst = data.getData();
+	   $display("data %h",inst);
+	   $display("--------------------------\n");
+	   inst = data.getData();
+	   $display("data %h",inst);
+	   $display("--------------------------\n");
+	   inst = data.getData();
+	   $display("data %h",inst);
+	   $display("--------------------------\n");
 	end
       /* -----\/----- EXCLUDED -----\/-----
+       begin
+       intf.directedInst(shftReg);
+       inst <= intf.iInst;
+	end
        assert(intf.randomize());
        -----/\----- EXCLUDED -----/\----- */
       //intf.display();

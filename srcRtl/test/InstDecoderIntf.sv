@@ -32,6 +32,14 @@ class instDecoderIntf;
       this.randInst = new();
    endfunction
 
+/* -----\/----- EXCLUDED -----\/-----
+   task readData(input logic clk,output logic [31:0] inst);
+
+   endtask
+
+
+ -----/\----- EXCLUDED -----/\----- */
+
 
    task directedInst(logic [8:0] shftReg);
       case (shftReg)
@@ -108,7 +116,7 @@ class instDecoderIntf;
 	  end
 	default :
 	  begin
-	     iInst[31:0] = 26'hdeadbeaf;
+	     iInst[31:0] = 32'hdeadbeaf;
 	  end
 
       endcase
