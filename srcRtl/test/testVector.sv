@@ -42,20 +42,13 @@ class testVector;
 	return data;
       else
 	begin
-
 	   $error("ERROR: NO DATA READ %h time %t \n",data,$time());
 	   $finish();
-
 	end
       return data;
 
    endfunction // getData
 
-/* -----\/----- EXCLUDED -----\/-----
-   function ret_type logData(args);
-
-   endfunction
- -----/\----- EXCLUDED -----/\----- */
 
 
 endclass

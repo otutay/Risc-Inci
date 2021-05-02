@@ -1,5 +1,6 @@
 /srcRtl/*.do
 /srcRtl/test/*.do
+/srcRtl/test/*.txt
 /srcRtl/do/work
 /srcRtl/do/transcript
 transcript

@@ -1,1 +1,3 @@
-file -> /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt opened at time                 1000
+file -> /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt opened at time                 1000 ns 
+NormalOp,inst -> bab1c083,  time->                 1005 ns 
+NormalOp,inst -> d6f3afa3,  time->                 1015 ns 

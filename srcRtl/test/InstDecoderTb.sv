@@ -63,6 +63,9 @@ module InstDecoderTb();
       else
 	begin
 	   inst = data.getData();
+	   logObj.addLog("NormalOp", inst);
+
+/* -----\/----- EXCLUDED -----\/-----
 	   $display("data %h",inst);
 	   $display("--------------------------\n");
 	   inst = data.getData();
@@ -71,6 +74,7 @@ module InstDecoderTb();
 	   inst = data.getData();
 	   $display("data %h",inst);
 	   $display("--------------------------\n");
+ -----/\----- EXCLUDED -----/\----- */
 	end
       /* -----\/----- EXCLUDED -----\/-----
        begin
