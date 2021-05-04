@@ -1,1 +1,0 @@
-file -> /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt opened at time                    0 ns 

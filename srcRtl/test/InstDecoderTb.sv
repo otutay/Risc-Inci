@@ -21,11 +21,16 @@
 //`include "InstDecoderIntf.sv";
 `include "testVector.sv"
 `include "logData.sv"
+
+ `define randomizer 1
+
 module InstDecoderTb();
 
    /* -----\/----- EXCLUDED -----\/-----
     instDecoderIntf intf;
     -----/\----- EXCLUDED -----/\----- */
+   localparam integer cRandomSize = 10;
+
 
    logic clk;
    logic rst;
@@ -41,22 +46,27 @@ module InstDecoderTb();
 
    initial
      begin
-	/* -----\/----- EXCLUDED -----\/-----
-	 intf = new();
-	 -----/\----- EXCLUDED -----/\----- */
-	clk <= 0;
-	rst <= 1;
+
+`ifdef randomizer
+
 	dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
-	logObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt");
 	randInstObj = new();
-	for (int i = 0; i < 10; i++) begin
+	for (int i = 0; i < cRandomSize; i++) begin
 	   assert(randInstObj.randomize());
 	   dataObj.setData(randInstObj.formInst());
 
 	end
+	dataObj.closeFile();
+
+`endif //  `ifdef randomizer
+	clk <= 0;
+	rst <= 1;
+	logObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt");
+	dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
 	#1000 rst <=0;
 
-     end
+     end // initial begin
+
 
    always #5 clk =~clk;
 
@@ -78,27 +88,7 @@ module InstDecoderTb();
 	begin
 	   inst = dataObj.getData();
 	   logObj.addLog("NormalOp", inst);
-
-	   /* -----\/----- EXCLUDED -----\/-----
-	    $display("data %h",inst);
-	    $display("--------------------------\n");
-	    inst = data.getData();
-	    $display("data %h",inst);
-	    $display("--------------------------\n");
-	    inst = data.getData();
-	    $display("data %h",inst);
-	    $display("--------------------------\n");
-	    -----/\----- EXCLUDED -----/\----- */
 	end
-      /* -----\/----- EXCLUDED -----\/-----
-       begin
-       intf.directedInst(shftReg);
-       inst <= intf.iInst;
-	end
-       assert(intf.randomize());
-       -----/\----- EXCLUDED -----/\----- */
-      //intf.display();
-
    end
 
 
