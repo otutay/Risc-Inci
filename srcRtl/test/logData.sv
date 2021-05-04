@@ -31,5 +31,4 @@ class logData;
    endfunction
 
 
-
 endclass

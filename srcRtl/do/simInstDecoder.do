@@ -9,7 +9,6 @@ vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRt
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/instDecoder.vhd
 vsim -voptargs=+acc work.InstDecoderTb
 add wave -position insertpoint sim:/InstDecoderTb/*
-add wave -position end  sim:/InstDecoderTb/intf
 add wave -divider dutInstDecoder
 add wave -position insertpoint sim:/InstDecoderTb/DUT/*
 

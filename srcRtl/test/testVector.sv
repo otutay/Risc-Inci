@@ -16,33 +16,38 @@
 // Date        Version  Author  Description
 // 02.05.2021  1.0      osmant  Created
 //-----------------------------------------------------------------------------
+import corePckg::*;
+
 class testVector;
    int fd;
 
    function new (string fileName);
       $display("FileName %s",fileName);
-      fd = $fopen(fileName,"r");
+      fd = $fopen(fileName,"r+");
       if(fd == 0)
 	begin
-	   $display("ERROR: FILE CANNOT BE OPENED");
+	   $display("\t\t TIME -> %t, ERROR: FILE CANNOT BE OPENED",$time);
 	   $finish();
 	end
       else
 	begin
-	   $display("File opened as normal");
+	   $display("\t\t TIME -> %t, File opened as normal",$time);
 	end
    endfunction // new
 
-   function logic [31:0] getData();
-      logic [31:0] data = 32'hdeadbeaf;
-      int	   status;
+   function logic [cXLEN-1:0] getData();
+      logic [cXLEN:0] data = 'hdeadbeaf;
+      int	      status;
       status = $fscanf(fd,"%h",data);
 
       if(!$feof(fd))
-	return data;
+	begin
+	   $display("\t\t TIME ->  %t, DATA ->  %h \n ",$time,data);
+	   return data;
+	end
       else
 	begin
-	   $error("ERROR: NO DATA READ %h time %t \n",data,$time());
+	   $error("\t\t TIME -> %t, ERROR: NO DATA READ %h  \n",$time, data);
 	   $finish();
 	end
       return data;
@@ -50,5 +55,13 @@ class testVector;
    endfunction // getData
 
 
+   function setData(logic [cXLEN-1:0] data);
+      $display("data formed %h",data);
+      $fwrite(fd,"%h \n",data);
+   endfunction
+
+   function closeFile();
+      $fclose(fd);
+   endfunction
 
 endclass
