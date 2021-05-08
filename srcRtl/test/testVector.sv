@@ -26,28 +26,28 @@ class testVector;
       fd = $fopen(fileName,"r+");
       if(fd == 0)
 	begin
-	   $display("\t\t TIME -> %t, ERROR: FILE CANNOT BE OPENED",$time);
+	   $display("\t\t TIME -> %0t, ERROR: FILE CANNOT BE OPENED",$time);
 	   $finish();
 	end
       else
 	begin
-	   $display("\t\t TIME -> %t, File opened as normal",$time);
+	   $display("\t\t TIME -> %0t, File opened as normal",$time);
 	end
    endfunction // new
 
    function logic [cXLEN-1:0] getData();
-      logic [cXLEN:0] data = 'hdeadbeaf;
+      logic [cXLEN-1:0] data = 'hdeadbeaf;
       int	      status;
       status = $fscanf(fd,"%h",data);
 
       if(!$feof(fd))
 	begin
-	   $display("\t\t TIME ->  %t, DATA ->  %h \n ",$time,data);
+	   $display("\t\t TIME ->  %0t, DATA ->  %h \n ",$time,data);
 	   return data;
 	end
       else
 	begin
-	   $error("\t\t TIME -> %t, ERROR: NO DATA READ %h  \n",$time, data);
+	   $error("\t\t TIME -> %0t, ERROR: NO DATA READ %h  \n",$time, data);
 	   $finish();
 	end
       return data;
@@ -56,7 +56,7 @@ class testVector;
 
 
    function setData(logic [cXLEN-1:0] data);
-      $display("data formed %h",data);
+      $display("\t\t %0t ns, data %h formed and written \n",$time, data);
       $fwrite(fd,"%h \n",data);
    endfunction
 

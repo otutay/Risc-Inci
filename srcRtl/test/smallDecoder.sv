@@ -42,15 +42,12 @@ class smallDecoder;
    /// 6'b010000 -> U
    /// 6'b100000 -> j
 
-   function new (args);
+   function logic [5:0] decodeInst(logic [cXLEN-1:0] inst);
 
-   endfunction
-
-   function logic [5:0] decodeInst(logic [31:0] inst);
       opcode = inst[6:0];
 
       case (opcode)
-	eOpLoad | eOpImmedi | eOpJalr :
+	eOpLoad , eOpImmedi , eOpJalr :
 	  begin
 	     typeOfInst = Itype;
 	     dest = inst[11:7];
@@ -75,7 +72,7 @@ class smallDecoder;
 	     src2 = inst[24:20];
 	     f7 = inst[31:25];
 	  end
-	eOpLui | eOpAuIpc :
+	eOpLui , eOpAuIpc :
 	  begin
 	     typeOfInst = Utype;
 	     dest = inst[11:7];
