@@ -34,6 +34,32 @@ module InstDecoderTb();
    logic [cXLEN-1:0]  curPC = 0;
    logic	      flushPipe = 0;
    logic [5:0]	      instType;
+   logic [5:0]	      instTypei1;
+   logic [5:0]	      instTypei2;
+
+   tDecodedInst dutInst;
+   tDecodedReg dutRegOp;
+   tDecodedMem dutMemOp;
+   tDecodedBranch dutBranchOp;
+
+   tDecodedInst decodedInst;
+   tDecodedInst decodedInsti1;
+   tDecodedInst decodedInsti2;
+
+
+   tDecodedReg regOp;
+   tDecodedReg regOpi1;
+   tDecodedReg regOpi2;
+
+
+   tDecodedMem memOp;
+   tDecodedMem memOpi1;
+   tDecodedMem memOpi2;
+
+   tDecodedBranch branchOp;
+   tDecodedBranch branchOpi1;
+   tDecodedBranch branchOpi2;
+
    logic [8:0]	      shftReg = 9'b0000001;
 
    // test classes
@@ -89,12 +115,12 @@ module InstDecoderTb();
 	   inst = dataObj.getData();
 	   logObj.addInstLog("NormalOp", inst);
 	   instType = decoderObj.decodeInst(inst);
+
 	   case (instType)
 	     6'b000001:
 	       begin
 		  logObj.addRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
 				     decoderObj.f3,decoderObj.f7);
-
 	       end
 	     6'b000010:
 	       begin
@@ -104,7 +130,7 @@ module InstDecoderTb();
 	     6'b000100 , 6'b001000:
 	       begin
 		  logObj.addSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
-				     decoderObj.imm);
+				      decoderObj.imm);
 	       end
 	     6'b010000 , 6'b100000:
 	       begin
@@ -115,11 +141,27 @@ module InstDecoderTb();
 
 	     end
 	   endcase
+	   decodedInst <= decoderObj.collectInst();
+	   regOp <= decoderObj.decodeReg(inst);
+	   branchOp <= decoderObj.decodedBranch();
+	   memOp <= decoderObj.decodedMem();
 
 
 	end
    end
 
+   always_ff @(posedge clk) begin
+      // small Decoder registers
+      instTypei1 <= instType;
+      instTypei2 <= instTypei1;
+
+
+      regOpi1 <= regOp;
+      regOpi2 <= regOpi1;
+
+      branchOpi1<= branchOp;
+      branchOpi2<= branchOpi1;
+   end
 
 
 
@@ -131,10 +173,10 @@ module InstDecoderTb();
        .iInst(inst),
        .iCurPC(curPC),
        .iFlushPipe(flushPipe),
-       .oDecoded(),
-       .oMemOp(),
-       .oRegOp(),
-       .oBranchOp()
+       .oDecoded(dutInst),
+       .oMemOp(dutMemOp),
+       .oRegOp(dutRegOp),
+       .oBranchOp(dutBranchOp)
        );
 
 

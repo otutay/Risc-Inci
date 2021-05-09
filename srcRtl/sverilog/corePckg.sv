@@ -113,7 +113,7 @@ package corePckg;
     }tBranchEnum;
 
     typedef struct packed {
-	tBranchEnum branchOp;
+	tBranchEnum op;
 	logic dv;
     }tDecodedBranch;
     parameter tDecodedBranch cDecodedBranch = {eEqual,1'b0};
