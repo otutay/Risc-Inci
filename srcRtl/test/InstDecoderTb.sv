@@ -22,6 +22,7 @@
 `include "testVector.sv"
 `include "logData.sv"
 `include "smallDecoder.sv"
+//import corePckg::*;
 
 module InstDecoderTb();
    localparam integer cRandomSize = 100;
@@ -37,28 +38,29 @@ module InstDecoderTb();
    logic [5:0]	      instTypei1;
    logic [5:0]	      instTypei2;
 
-   tDecodedInst dutInst;
-   tDecodedReg dutRegOp;
-   tDecodedMem dutMemOp;
-   tDecodedBranch dutBranchOp;
+   tDecodedInst dutInst = cDecodedInst;
+   tDecodedReg dutRegOp = cDecodedReg;
+   tDecodedMem dutMemOp = cDecodedMem;
+   tDecodedBranch dutBranchOp = cDecodedBranch;
 
-   tDecodedInst decodedInst;
-   tDecodedInst decodedInsti1;
-   tDecodedInst decodedInsti2;
-
-
-   tDecodedReg regOp;
-   tDecodedReg regOpi1;
-   tDecodedReg regOpi2;
+   tDecodedInst decodedInst = cDecodedInst;
+   tDecodedInst decodedInsti1 = cDecodedInst;
+   tDecodedInst decodedInsti2 = cDecodedInst;
 
 
-   tDecodedMem memOp;
-   tDecodedMem memOpi1;
-   tDecodedMem memOpi2;
+   tDecodedReg regOp = cDecodedReg;
+   tDecodedReg regOpi1 = cDecodedReg;
+   tDecodedReg regOpi2 = cDecodedReg;
 
-   tDecodedBranch branchOp;
-   tDecodedBranch branchOpi1;
-   tDecodedBranch branchOpi2;
+
+   tDecodedMem memOp  = cDecodedMem;
+   tDecodedMem memOpi1 = cDecodedMem;
+   tDecodedMem memOpi2 = cDecodedMem;
+
+   tDecodedBranch branchOp = cDecodedBranch;
+   tDecodedBranch branchOpi1 = cDecodedBranch;
+   tDecodedBranch branchOpi2 = cDecodedBranch;
+
 
    logic [8:0]	      shftReg = 9'b0000001;
 
@@ -155,6 +157,11 @@ module InstDecoderTb();
       instTypei1 <= instType;
       instTypei2 <= instTypei1;
 
+      decodedInsti1 <= decodedInst;
+      decodedInsti2 <= decodedInsti1;
+
+      memOpi1 <= memOp;
+      memOpi2 <= memOpi1;
 
       regOpi1 <= regOp;
       regOpi2 <= regOpi1;
@@ -164,8 +171,6 @@ module InstDecoderTb();
    end
 
 
-
-
    instDecoder #(.cycleNum(2))
    DUT(
        .iClk(clk),
@@ -173,10 +178,36 @@ module InstDecoderTb();
        .iInst(inst),
        .iCurPC(curPC),
        .iFlushPipe(flushPipe),
-       .oDecoded(dutInst),
-       .oMemOp(dutMemOp),
-       .oRegOp(dutRegOp),
-       .oBranchOp(dutBranchOp)
+       // decodedInst
+       .oRs1Addr(dutInst.rs1.addr),
+       .oRs2Addr(dutInst.rs2.addr),
+       .oRdAddr(dutInst.rdAddr),
+       .oF3(dutInst.funct3),
+       .oF7(dutInst.funct7),
+       .oImm(dutInst.imm),
+       .oOpcode(dutInst.opcode),
+       .oCurPc(dutInst.curPc),
+       //oDecodedMem
+       .oLoad(dutMemOp.load),
+       .oStore(dutMemOp.store),
+       .oMemDv(dutMemOp.dv),
+       //oDecodedReg
+       .oAritType(dutRegOp.arithType),
+       .oOpRs1(dutRegOp.opRs1),
+       .oOpRs2(dutRegOp.opRs2),
+       .oOpImm(dutRegOp.opImm),
+       .oOpPc(dutRegOp.opPc),
+       .oOpConst(dutRegOp.opConst),
+       .oOpDv(dutRegOp.dv),
+       //oDecodedBranch
+       .oBrOp(dutBranchOp.op),
+       .oBrDv(dutBranchOp.dv)
+       /* -----\/----- EXCLUDED -----\/-----
+	.oDecoded(),
+	.oMemOp(dutMemOp),
+	.oRegOp(dutRegOp),
+	.oBranchOp(dutBranchOp)
+	-----/\----- EXCLUDED -----/\----- */
        );
 
 

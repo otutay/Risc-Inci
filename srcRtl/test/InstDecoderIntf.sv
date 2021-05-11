@@ -45,7 +45,7 @@ class instDecoderIntf;
       case (shftReg)
 	9'b000000001 : // lbu
 	  begin
-	     iInst[6:0] = eOpLoad;
+	     iInst[6:0] = cOpLoad;
 	     iInst[11:7] = 5'b00001;
 	     iInst[14:12] = 3'b100;
 	     iInst[19:15] = 5'b00011;
@@ -53,7 +53,7 @@ class instDecoderIntf;
 	  end
 	9'b000000010 : // sw
 	  begin
-	     iInst[6:0] = eOpStore;
+	     iInst[6:0] = cOpStore;
 	     iInst[11:7] = 5'b11111;
 	     iInst[14:12] = 3'b010;
 	     iInst[19:15] = 5'b00111;
@@ -62,7 +62,7 @@ class instDecoderIntf;
 	  end
 	9'b000000100 : // slli
 	  begin
-	     iInst[6:0] = eOpImmedi;
+	     iInst[6:0] = cOpImmedi;
 	     iInst[11:7] = 5'b11111;
 	     iInst[14:12] = 3'b001;
 	     iInst[19:15] = 5'b01111;
@@ -70,7 +70,7 @@ class instDecoderIntf;
 	  end
 	9'b000001000 : // sltu
 	  begin
-	     iInst[6:0] = eOpRtype;
+	     iInst[6:0] = cOpRtype;
 	     iInst[11:7] = 5'b00001;
 	     iInst[14:12] = 3'b011;
 	     iInst[19:15] = 5'b00001;
@@ -79,7 +79,7 @@ class instDecoderIntf;
 	  end
 	9'b000010000: // JALR
 	  begin
-	     iInst[6:0] = eOpJalr;
+	     iInst[6:0] = cOpJalr;
 	     iInst[11:7] = 5'b10001;
 	     iInst[14:12] = 3'b000;
 	     iInst[19:15] = 5'b01001;
@@ -87,7 +87,7 @@ class instDecoderIntf;
 	  end
 	9'b000100000: // correct
 	  begin
-	     iInst[6:0] = eOpJal;
+	     iInst[6:0] = cOpJal;
 	     iInst[11:7] = 5'b11001;
 	     iInst[14:12] = 3'b000;
 	     iInst[19:15] = 5'b11101;
@@ -95,19 +95,19 @@ class instDecoderIntf;
 	  end
 	9'b001000000:
 	  begin
-	     iInst[6:0] = eOpLui;
+	     iInst[6:0] = cOpLui;
 	     iInst[11:7] = 5'b11111;
 	     iInst[31:12] = 20'hbeafc;
 	  end
 	9'b010000000:
 	  begin
-	     iInst[6:0] = eOpAuIpc;
+	     iInst[6:0] = cOpAuIpc;
 	     iInst[11:7] = 5'b11100;
 	     iInst[31:12] = 20'habcde;
 	  end
 	9'b100000000 : // BGE
 	  begin
-	     iInst[6:0] = eOpBranch;
+	     iInst[6:0] = cOpBranch;
 	     iInst[11:7] = 5'b11010;
 	     iInst[14:12] = 3'b101;
 	     iInst[19:15] = 5'b10001;
@@ -120,7 +120,7 @@ class instDecoderIntf;
 	  end
 
       endcase
-      $display("opcode %s",tOpcodeEnum'(iInst[6:0]));
+      $display("opcode %s",Inst[6:0]);
    endtask // directedInst
 
    function display();

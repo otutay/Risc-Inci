@@ -43,7 +43,7 @@ class smallDecoder;
       opcode = inst[6:0];
 
       case (opcode)
-	eOpLoad , eOpImmedi , eOpJalr :
+	cOpLoad , cOpImmedi , cOpJalr :
 	  begin
 	     typeOfInst = Itype;
 	     dest = inst[11:7];
@@ -51,7 +51,7 @@ class smallDecoder;
 	     src1 = inst[19:15];
 	     imm = {{20{inst[31]}},inst[31:20]};
 	  end
-	eOpStore:
+	cOpStore:
 	  begin
 	     typeOfInst = Stype;
 	     f3 = inst[14:12];
@@ -59,7 +59,7 @@ class smallDecoder;
 	     src2 = inst[24:20];
 	     imm = {{20{inst[31]}},inst[31:25],inst[11:7]};
 	  end
-	eOpRtype :
+	cOpRtype :
 	  begin
 	     typeOfInst = Rtype;
 	     dest = inst[11:7];
@@ -68,20 +68,20 @@ class smallDecoder;
 	     src2 = inst[24:20];
 	     f7 = inst[31:25];
 	  end
-	eOpLui , eOpAuIpc :
+	cOpLui , cOpAuIpc :
 	  begin
 	     typeOfInst = Utype;
 	     dest = inst[11:7];
 	     imm[31:12] = inst[31:12];
 	     imm[11:0] = {12{1'b0}};
 	  end
-	eOpJal:
+	cOpJal:
 	  begin
 	     typeOfInst = Jtype;
 	     dest = inst[11:7];
 	     imm = {{12{inst[31]}},inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
 	  end
-	eOpBranch  :
+	cOpBranch  :
 	  begin
 	     typeOfInst = Btype;
 	     f3 = inst[14:12];
@@ -106,14 +106,14 @@ class smallDecoder;
 
 
    function tDecodedInst collectInst();
-      tDecodedInst decodedInst;
+      tDecodedInst decodedInst = cDecodedInst;
       decodedInst.rs1.addr = this.src1;
       decodedInst.rs2.addr = this.src2;
       decodedInst.rdAddr  = this.dest;
       decodedInst.funct3 = this.f3;
       decodedInst.funct7 = this.f7;
       decodedInst.imm = this.imm;
-      decodedInst.opcode = tOpcodeEnum'(this.opcode);
+      decodedInst.opcode = this.opcode;
 
       return decodedInst;
    endfunction // collectInst
@@ -123,41 +123,41 @@ class smallDecoder;
       tDecodedReg regOp;
       regOp = cDecodedReg;
       case (opcode)
-	eOpRtype:
+	cOpRtype:
 	  begin
 	     regOp.arithType = tArithEnum'({inst[30], f3});
 	     regOp.opRs1 = 1'b1;
 	     regOp.opRs2 = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
-	eOpImmedi:
+	cOpImmedi:
 	  begin
 	     regOp.arithType =tArithEnum'({inst[30], f3});
 	     regOp.opRs1 = 1'b1;
 	     regOp.opImm = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
-	eOpJal:
+	cOpJal:
 	  begin
 	     regOp.arithType = tArithEnum'("0000");
 	     regOp.opPc = 1'b1;
 	     regOp.opConst = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
-	eOpJalr:
+	cOpJalr:
 	  begin
 	     regOp.arithType = tArithEnum'("0000");
 	     regOp.opPc = 1'b1;
 	     regOp.opConst = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
-	eOpLui:
+	cOpLui:
 	  begin
 	     regOp.arithType = tArithEnum'("1111");
 	     regOp.opImm = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
-	eOpAuIpc:
+	cOpAuIpc:
 	  begin
 	     regOp.arithType = tArithEnum'("0000");
 	     regOp.opImm = 1'b1;
@@ -176,17 +176,17 @@ class smallDecoder;
       tDecodedBranch branchOp = cDecodedBranch;
 
       case (opcode)
-	eOpJal :
+	cOpJal :
 	  begin
 	     branchOp.op = eJal;
 	     branchOp.dv = 1'b1;
 	  end
-	eOpJalr:
+	cOpJalr:
 	  begin
 	     branchOp.op = eJalr;
 	     branchOp.dv = 1'b1;
 	  end
-	eOpBranch:
+	cOpBranch:
 	  begin
 	     branchOp.op = tBranchEnum'(f3);
 	     branchOp.dv = 1'b1;
@@ -201,13 +201,13 @@ class smallDecoder;
    function tDecodedMem decodedMem();
       tDecodedMem memOp = cDecodedMem;
       case (opcode)
-	eOpLoad:
+	cOpLoad:
 	  begin
 	     memOp.load = 1'b1;
 	     memOp.dv = 1'b1;
 
 	  end
-	eOpStore:
+	cOpStore:
 	  begin
 	     memOp.store = 1'b1;
 	     memOp.dv = 1'b1;

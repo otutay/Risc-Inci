@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-10
+-- Last update: 2021-05-11
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -35,10 +35,34 @@ entity instDecoder is
     iInst      : in  std_logic_vector(cXLen-1 downto 0);
     iCurPc     : in  std_logic_vector(cXLen-1 downto 0);
     iFlushPipe : in  std_logic;
-    oDecoded   : out tDecodedInst;
-    oMemOp     : out tDecodedMem;
-    oRegOp     : out tDecodedReg;
-    oBranchOp  : out tDecodedBranch
+    -- decoded params
+    oRs1Addr   : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oRs2Addr   : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oRdAddr    : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oF3        : out std_logic_vector(2 downto 0);
+    oF7        : out std_logic_vector(6 downto 0);
+    oImm       : out std_logic_vector(cXLen-1 downto 0);
+    oOpcode    : out std_logic_vector(6 downto 0);
+    oCurPc     : out std_logic_vector(cXLen-1 downto 0);
+    -- oDecodedMem
+    oLoad      : out std_logic;
+    oStore     : out std_logic;
+    oMemDv     : out std_logic;
+    -- oDecodedReg
+    oAritType  : out std_logic_vector(3 downto 0);
+    oOpRs1     : out std_logic;
+    oOpRs2     : out std_logic;
+    oOpImm     : out std_logic;
+    oOpPc      : out std_logic;
+    oOpConst   : out std_logic;
+    oOpDv      : out std_logic;
+    -- oDecodedBranch
+    oBrOp      : out std_logic_vector(2 downto 0);
+    oBrDv      : out std_logic
+   -- oDecoded   : out tDecodedInst;
+   -- oMemOp     : out tDecodedMem;
+   -- oRegOp     : out tDecodedReg;
+   -- oBranchOp  : out tDecodedBranch
     );
 
 end entity instDecoder;
@@ -61,7 +85,34 @@ begin  -- architecture rtl
   -- assert statements
   assert cycleNum = 1 or cycleNum = 2 report "cycleNum is not supported" severity failure;
 
-  -- entity started
+
+  -- output setting
+-- decoded params
+  oRs1Addr  <= decodedInst.rs1.addr;
+  oRs2Addr  <= decodedInst.rs2.addr;
+  oRdAddr   <= decodedInst.rdAddr;
+  oF3       <= decodedInst.funct3;
+  oF7       <= decodedInst.funct7;
+  oImm      <= decodedInst.imm;
+  oOpcode   <= decodedInst.opcode;
+  oCurPc    <= decodedInst.curPC;
+  -- oDecodedMem
+  oLoad     <= memOp.load;
+  oStore    <= memOp.store;
+  oMemDv    <= memOp.dv;
+  -- oDecodedReg
+  oAritType <= regOp.arithType;
+  oOpRs1    <= regOp.opRs1;
+  oOpRs2    <= regOp.opRs2;
+  oOpImm    <= regOp.opImm;
+  oOpPc     <= regOp.opPc;
+  oOpConst  <= regOp.opConst;
+  oOpDv     <= regOp.dv;
+  -- oDecodedBranch
+  oBrOp     <= branchOp.op;
+  oBrDv     <= branchOp.dv;
+
+
   OneCycleGen : if cycleNum = 1 generate
 
     flop : process (iFlushPipe, iInst, iCurPc) is
@@ -149,7 +200,7 @@ begin  -- architecture rtl
                 end if;
 
               when "010" =>
-                regOp.arithType <= cCompareSigned;    --eCompareSigned; slt
+                regOp.arithType <= cCompareSigned;     --eCompareSigned; slt
               when "011" =>
                 regOp.arithType <= cCompareUnSigned;   --eCompareUnsigned; sltu
               when "100" =>
@@ -174,40 +225,40 @@ begin  -- architecture rtl
             regOp.opPc    <= '0';
             regOp.opConst <= '0';
             regOp.dv      <= '1';
-          when cOpJal =>                              -- eOpJal =>
-            regOp.arithType <= cAdd;--eAdd;
-            regOp.opRs1    <= '0';
-            regOp.opRs2    <= '0';
-            regOp.opImm    <= '0';
-            regOp.opPc     <= '1';
-            regOp.opConst  <= '1';
-            regOp.dv       <= '1';
+          when cOpJal =>                               -- eOpJal =>
+            regOp.arithType <= cAdd;                   --eAdd;
+            regOp.opRs1     <= '0';
+            regOp.opRs2     <= '0';
+            regOp.opImm     <= '0';
+            regOp.opPc      <= '1';
+            regOp.opConst   <= '1';
+            regOp.dv        <= '1';
 
-          when cOpJalR =>               --eOpJalr =>
-            regOp.arithType <= cAdd;--eAdd;
-            regOp.opRs1    <= '0';
-            regOp.opRs2    <= '0';
-            regOp.opImm    <= '0';
-            regOp.opPc     <= '1';
-            regOp.opConst  <= '1';
-            regOp.dv       <= '1';
-          when cOpLui =>                --opLui =>
-            regOp.arithType <= cNoArith;--eNoArithOp;
-            regOp.opRs1    <= '0';
-            regOp.opRs2    <= '0';
-            regOp.opImm    <= '1';
-            regOp.opPc     <= '0';
-            regOp.opConst  <= '0';
-            regOp.dv       <= '1';
+          when cOpJalR =>                 --eOpJalr =>
+            regOp.arithType <= cAdd;      --eAdd;
+            regOp.opRs1     <= '0';
+            regOp.opRs2     <= '0';
+            regOp.opImm     <= '0';
+            regOp.opPc      <= '1';
+            regOp.opConst   <= '1';
+            regOp.dv        <= '1';
+          when cOpLui =>                  --opLui =>
+            regOp.arithType <= cNoArith;  --eNoArithOp;
+            regOp.opRs1     <= '0';
+            regOp.opRs2     <= '0';
+            regOp.opImm     <= '1';
+            regOp.opPc      <= '0';
+            regOp.opConst   <= '0';
+            regOp.dv        <= '1';
 
           when cOpAuIpc =>              --eOpAuIpc =>
-            regOp.arithType <= cAdd;--eAdd;
-            regOp.opRs1    <= '0';
-            regOp.opRs2    <= '0';
-            regOp.opImm    <= '1';
-            regOp.opPc     <= '1';
-            regOp.opConst  <= '0';
-            regOp.dv       <= '1';
+            regOp.arithType <= cAdd;    --eAdd;
+            regOp.opRs1     <= '0';
+            regOp.opRs2     <= '0';
+            regOp.opImm     <= '1';
+            regOp.opPc      <= '1';
+            regOp.opConst   <= '0';
+            regOp.dv        <= '1';
 
           when others =>
             regOp <= cDecodedReg;
@@ -249,13 +300,13 @@ begin  -- architecture rtl
       else
         case opcode is
           when cOpJal =>                --eOpJal =>
-            branchOp.op <= cBrJal;--eJal;
+            branchOp.op <= cBrJal;      --eJal;
             branchOp.dv <= '1';
           when cOpJalR =>               --eOpJalr =>
-            branchOp.op <= cBrJalR;-- eJalr;
+            branchOp.op <= cBrJalR;     -- eJalr;
             branchOp.dv <= '1';
           when cOpBranch =>             --eOpBranch =>
-            branchOp.op <= funct3;--to_branchEnum(funct3);
+            branchOp.op <= funct3;      --to_branchEnum(funct3);
             branchOp.dv <= '1';
           when others =>
             branchOp <= cDecodedBranch;

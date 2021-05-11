@@ -18,7 +18,8 @@
 //-----------------------------------------------------------------------------
 import corePckg::*;
 class InstRandomizer;
-   rand tOpcodeEnum opcode;
+//   rand tOpcodeEnum opcode;
+   rand logic [6:0] opcode;
    rand logic [cRegSelBitW-1:0] src1Addr;
    rand logic [cRegSelBitW-1:0] src2Addr;
    rand logic [cRegSelBitW-1:0] destAddr;
@@ -29,46 +30,46 @@ class InstRandomizer;
 
 
    constraint opcodeConst{
-      opcode inside {eOpLoad,eOpStore,eOpRtype, eOpImmedi, eOpJalr,eOpJal,
-		     eOpLui,eOpAuIpc,eOpBranch,eOpFence,eOpCntrlSt};
+      opcode inside {cOpLoad,cOpStore,cOpRtype, cOpImmedi, cOpJalr,cOpJal,
+		     cOpLui,cOpAuIpc,cOpBranch,cOpFence,cOpCtrlSt};
    };
 
    constraint funct3Const {
-      opcode == eOpJalr -> funct3 inside {3'b000};
-      opcode == eOpBranch -> funct3 inside {3'b000, 3'b001, 3'b100, 3'b101, 3'b110, 3'b111 };
-      opcode == eOpLoad -> funct3 inside {3'b000, 3'b001, 3'b010, 3'b100, 3'b101};
-      opcode == eOpStore -> funct3 inside {3'b000, 3'b001, 3'b010};
-      opcode == eOpImmedi -> funct3 inside {3'b000, 3'b010, 3'b011,3'b100,3'b110,3'b111,3'b001, 3'b101};
-      opcode == eOpRtype -> funct3 inside {3'b000, 3'b001, 3'b010,3'b011,3'b100,3'b101,3'b110, 3'b111};
-      opcode == eOpFence -> funct3 inside {3'b000, 3'b001};
+      opcode == cOpJalr -> funct3 inside {3'b000};
+      opcode == cOpBranch -> funct3 inside {3'b000, 3'b001, 3'b100, 3'b101, 3'b110, 3'b111 };
+      opcode == cOpLoad -> funct3 inside {3'b000, 3'b001, 3'b010, 3'b100, 3'b101};
+      opcode == cOpStore -> funct3 inside {3'b000, 3'b001, 3'b010};
+      opcode == cOpImmedi -> funct3 inside {3'b000, 3'b010, 3'b011,3'b100,3'b110,3'b111,3'b001, 3'b101};
+      opcode == cOpRtype -> funct3 inside {3'b000, 3'b001, 3'b010,3'b011,3'b100,3'b101,3'b110, 3'b111};
+      opcode == cOpFence -> funct3 inside {3'b000, 3'b001};
    };
 
    constraint funct7Const {
-      (opcode == eOpImmedi | opcode == eOpRtype) ->  funct7 inside {7'h00 , 7'h20};
+      (opcode == cOpImmedi | opcode == cOpRtype) ->  funct7 inside {7'h00 , 7'h20};
    };
 
    function logic [cXLEN-1:0] formInst();
       instruction[6:0] = opcode;
-      if (opcode == eOpLui | opcode == eOpAuIpc)
+      if (opcode == cOpLui | opcode == cOpAuIpc)
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[31:12] = imm[31:12];
 	end
 
-      else if (opcode == eOpJal)
+      else if (opcode == cOpJal)
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[31:12] = {imm[20],imm[10:1],imm[11],imm[19:12]};
 	end
 
-      else if (opcode == eOpJalr)
+      else if (opcode == cOpJalr)
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[14:12] = funct3;
 	   instruction[19:15] = src1Addr;
 	   instruction[31:20] = imm[11:0];
 	end
-      else if (opcode == eOpBranch)
+      else if (opcode == cOpBranch)
 	begin
 	   instruction[11:7] = {imm[4:1],imm[11]};
 	   instruction[14:12] = funct3;
@@ -76,14 +77,14 @@ class InstRandomizer;
 	   instruction[24:20] = src2Addr;
 	   instruction[31:25] = {imm[12],imm[10:5]};
 	end
-      else if (opcode == eOpLoad)
+      else if (opcode == cOpLoad)
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[14:12] = funct3;
 	   instruction[19:15] = src1Addr;
 	   instruction[31:20] = imm[11:0];
 	end
-      else if (opcode == eOpStore)
+      else if (opcode == cOpStore)
 	begin
 	   instruction[11:7] = imm[4:0];
 	   instruction[14:12] = funct3;
@@ -91,7 +92,7 @@ class InstRandomizer;
 	   instruction[24:20] = src2Addr;
 	   instruction[31:25] = imm[11:5];
 	end
-      else if (opcode == eOpImmedi )
+      else if (opcode == cOpImmedi )
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[14:12] = funct3;
@@ -101,7 +102,7 @@ class InstRandomizer;
 	   else
 	     instruction[31:20] = imm[11:0];
 	end
-      else if (opcode == eOpRtype)
+      else if (opcode == cOpRtype)
 	begin
 	   instruction[11:7] = destAddr;
 	   instruction[14:12] = funct3;

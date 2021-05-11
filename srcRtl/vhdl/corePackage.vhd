@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-04-27
+-- Last update: 2021-05-11
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ package corePackage is
     funct3 : std_logic_vector(2 downto 0);
     funct7 : std_logic_vector(6 downto 0);
     imm    : std_logic_vector(cXLen-1 downto 0);
-    opCode : std_logic_vector(6 downto 0);
+    opcode : std_logic_vector(6 downto 0);
     curPc  : std_logic_vector(cXLen-1 downto 0);
   end record tDecodedInst;
   constant cDecodedInst : tDecodedInst := (cRegOp, cRegOp, (others => '0'), (others => '0'), (others => '0'),
