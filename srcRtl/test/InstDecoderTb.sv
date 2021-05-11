@@ -142,7 +142,8 @@ module InstDecoderTb();
 		logObj.addTypeError(decoderObj.opcode);
 
 	     end
-	   endcase
+	   endcase // case (instType)
+
 	   decodedInst <= decoderObj.collectInst();
 	   regOp <= decoderObj.decodeReg(inst);
 	   branchOp <= decoderObj.decodedBranch();
@@ -169,6 +170,13 @@ module InstDecoderTb();
       branchOpi1<= branchOp;
       branchOpi2<= branchOpi1;
    end
+
+
+   always_ff @(posedge clk) begin : comparePro
+
+   end
+
+
 
 
    instDecoder #(.cycleNum(2))
