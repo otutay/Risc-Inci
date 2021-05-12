@@ -20,6 +20,8 @@ import corePckg::*;
 
 class logData;
    int fid;
+   int disp = 0;
+
 
    function new (string fileName);
       fid = $fopen(fileName,"w");
@@ -28,7 +30,11 @@ class logData;
 
    function addInstLog(string name,logic [cXLEN-1:0] inst);
       $fwrite(fid,"%0t ns, %s, inst -> %h \n",$time, name, inst);
-      $display("\t\t\t inst -> %h",inst);
+
+      if(disp == 1) begin
+	 $display("\t\t\t inst -> %h",inst);
+      end
+
    endfunction // addInstLog
 
    function addRtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1,logic[cRegSelBitW-1:0] src2,
@@ -37,8 +43,10 @@ class logData;
       $fwrite(fid,"\t Type -> Rtype,opcode-> %s,  src1 -> %h, src2 -> %h, dest %h, f3-> %h, f7-> %h \n",
 	      tOpcodeEnum'(opcode), src1,src2 ,dest,f3,f7);
 
-      $display("\t\t\t Type -> Rtype,,opcode-> %s , src1 -> %h, src2 -> %h, dest %h, f3-> %h, f7-> %h \n",
-	       tOpcodeEnum'(opcode), src1,src2 ,dest,f3,f7);
+      if(disp == 1) begin
+	 $display("\t\t\t Type -> Rtype,,opcode-> %s , src1 -> %h, src2 -> %h, dest %h, f3-> %h, f7-> %h \n",
+		  tOpcodeEnum'(opcode), src1,src2 ,dest,f3,f7);
+      end
 
    endfunction // addRtypeLog
 
@@ -48,8 +56,10 @@ class logData;
       $fwrite(fid,"\t Type -> Itype,opcode-> %s, src1 -> %h, dest %h, f3-> %h, imm-> %h \n",
 	      tOpcodeEnum'(opcode),src1,dest,f3,imm);
 
-      $display("\t\t\t Type -> Itype,opcode-> %s,src1 -> %h, dest %h, f3-> %h, imm-> %h \n",
-	       tOpcodeEnum'(opcode),src1,dest,f3,imm);
+      if(disp == 1) begin
+	 $display("\t\t\t Type -> Itype,opcode-> %s,src1 -> %h, dest %h, f3-> %h, imm-> %h \n",
+		  tOpcodeEnum'(opcode),src1,dest,f3,imm);
+      end
 
    endfunction // addItypeLog
 
@@ -59,23 +69,32 @@ class logData;
       $fwrite(fid,"\t Type -> SBtype,opcode-> %s, src1 -> %h, src2 %h, f3-> %h, imm-> %h \n",
 	      tOpcodeEnum'(opcode),src1,src2,f3,imm);
 
-      $display("\t\t\t Type -> SBtype,opcode-> %s,src1 -> %h, src2 %h, f3-> %h, imm-> %h \n",
-	       tOpcodeEnum'(opcode),src1,src2,f3,imm);
+      if(disp == 1) begin
+	 $display("\t\t\t Type -> SBtype,opcode-> %s,src1 -> %h, src2 %h, f3-> %h, imm-> %h \n",
+		  tOpcodeEnum'(opcode),src1,src2,f3,imm);
+      end
 
    endfunction // addStypeLog
 
    function addUJtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] dest, logic[cXLEN-1:0] imm);
       $fwrite(fid,"\t Type -> UJtype, opcode-> %s, dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
-      $display("\t\t\t Type -> UJType, opcode-> %s,dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
+      if( disp == 1) begin
+	 $display("\t\t\t Type -> UJType, opcode-> %s,dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
+      end
    endfunction // addUtypeLog
 
    function addTypeError(logic [6:0] opcode);
+
       $fwrite(fid,"\t -------------------- ERROR------------------------------- \n");
       $fwrite(fid,"\t ERROR TYPE -> UNKNOWN UJtype, opcode-> %s, \n",tOpcodeEnum'(opcode));
       $fwrite(fid,"\t -------------------- ERROR------------------------------- \n");
-      $display("\t -------------------- ERROR------------------------------- \n");
-      $display("\t\t\t ERROR TYPE -> UNKNOWN, opcode-> %s \n",tOpcodeEnum'(opcode));
-      $display("\t -------------------- ERROR------------------------------- \n");
+
+      if(disp == 1) begin
+	 $display("\t -------------------- ERROR------------------------------- \n");
+	 $display("\t\t\t ERROR TYPE -> UNKNOWN, opcode-> %s \n",tOpcodeEnum'(opcode));
+	 $display("\t -------------------- ERROR------------------------------- \n");
+      end
+
    endfunction // addError
 
 

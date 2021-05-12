@@ -17,6 +17,7 @@
 // 03.05.2021  1.0      osmant  Created
 //-----------------------------------------------------------------------------
 import corePckg::*;
+import packageTb::*;
 
 class smallDecoder;
    logic [6:0] opcode;
@@ -28,19 +29,28 @@ class smallDecoder;
    logic [cXLEN-1:0]	   imm;
 
 
-   logic [5:0]		   typeOfInst;
+   //logic [5:0]		   typeOfInst;
 
+/* -----\/----- EXCLUDED -----\/-----
    localparam logic [5:0]  Rtype = 6'b000001;
    localparam logic [5:0]  Itype = 6'b000010;
    localparam logic [5:0]  Stype = 6'b000100;
    localparam logic [5:0]  Btype = 6'b001000;
    localparam logic [5:0]  Utype = 6'b010000;
    localparam logic [5:0]  Jtype = 6'b100000;
+ -----/\----- EXCLUDED -----/\----- */
 
 
    function logic [5:0] decodeInst(logic [cXLEN-1:0] inst);
-
+      logic [5:0]	   typeOfInst =  {6{1'b0}};
       opcode = inst[6:0];
+
+      src1 = 0;
+      src2 = 0;
+      dest = 0;
+      f3 = 0;
+      f7 = 0;
+      imm = 0;
 
       case (opcode)
 	cOpLoad , cOpImmedi , cOpJalr :
@@ -85,7 +95,7 @@ class smallDecoder;
 	  begin
 	     typeOfInst = Btype;
 	     f3 = inst[14:12];
-	     src1 = inst[19:12];
+	     src1 = inst[19:15];
 	     src2 = inst[24:20];
 	     imm = {{19{inst[31]}},inst[31],inst[7],inst[30:25],inst[11:8],1'b0};
 	  end

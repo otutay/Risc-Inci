@@ -20,6 +20,8 @@ import corePckg::*;
 
 class testVector;
    int fd;
+   int disp = 0;
+
 
    function new (string fileName);
       $display("FileName %s",fileName);
@@ -37,12 +39,14 @@ class testVector;
 
    function logic [cXLEN-1:0] getData();
       logic [cXLEN-1:0] data = 'hdeadbeaf;
-      int	      status;
+      int		status;
       status = $fscanf(fd,"%h",data);
 
       if(!$feof(fd))
 	begin
-	   $display("\t\t TIME ->  %0t, DATA ->  %h \n ",$time,data);
+	   if(disp == 1) begin
+	      $display("\t\t TIME ->  %0t, DATA ->  %h \n ",$time,data);
+	   end
 	   return data;
 	end
       else
@@ -56,7 +60,9 @@ class testVector;
 
 
    function setData(logic [cXLEN-1:0] data);
-      $display("\t\t %0t ns, data %h formed and written \n",$time, data);
+      if(disp == 1) begin
+	 $display("\t\t %0t ns, data %h formed and written \n",$time, data);
+      end
       $fwrite(fd,"%h \n",data);
    endfunction
 

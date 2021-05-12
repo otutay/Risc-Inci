@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-11
+-- Last update: 2021-05-13
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -322,7 +322,7 @@ begin  -- architecture rtl
         decodedInst <= cDecodedInst;
       else
         decodedInst.rs1    <= ('1', src1Addr, (others => '0'));
-        decodedInst.rs2    <= ('1', src1Addr, (others => '0'));
+        decodedInst.rs2    <= ('1', src2Addr, (others => '0'));
         decodedInst.rdAddr <= destAddr;
         decodedInst.funct3 <= funct3;
         decodedInst.funct7 <= funct7;

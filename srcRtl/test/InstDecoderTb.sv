@@ -18,11 +18,10 @@
 //-----------------------------------------------------------------------------
 `timescale 1ns/1ns
 `include "InstRandomizer.sv";
-//`include "InstDecoderIntf.sv";
 `include "testVector.sv"
 `include "logData.sv"
 `include "smallDecoder.sv"
-//import corePckg::*;
+`include "decoderComparator.sv"
 
 module InstDecoderTb();
    localparam integer cRandomSize = 100;
@@ -30,15 +29,21 @@ module InstDecoderTb();
 
 
    logic	      clk;
-   logic	      rst;
+   logic	      rst = 1;
+   logic	      rsti1=1;
+   logic	      rsti2=1;
+   logic	      rsti3=1;
    logic [cXLEN-1:0]  inst;
+   logic [cXLEN-1:0]  insti1;
    logic [cXLEN-1:0]  curPC = 0;
    logic	      flushPipe = 0;
    logic [5:0]	      instType;
    logic [5:0]	      instTypei1;
    logic [5:0]	      instTypei2;
+   logic [5:0]	      instTypei3;
 
    tDecodedInst dutInst = cDecodedInst;
+      tDecodedInst dutInsti1 = cDecodedInst;
    tDecodedReg dutRegOp = cDecodedReg;
    tDecodedMem dutMemOp = cDecodedMem;
    tDecodedBranch dutBranchOp = cDecodedBranch;
@@ -46,6 +51,7 @@ module InstDecoderTb();
    tDecodedInst decodedInst = cDecodedInst;
    tDecodedInst decodedInsti1 = cDecodedInst;
    tDecodedInst decodedInsti2 = cDecodedInst;
+      tDecodedInst decodedInsti3 = cDecodedInst;
 
 
    tDecodedReg regOp = cDecodedReg;
@@ -69,10 +75,15 @@ module InstDecoderTb();
    logData logObj;
    InstRandomizer randInstObj;
    smallDecoder decoderObj;
+   decoderComparator comparatorObj;
 
 
    initial
      begin
+
+	clk = 0;
+	rst = 1;
+
 	if(randomizer == 1)
 	  begin
 	     dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
@@ -86,12 +97,11 @@ module InstDecoderTb();
 
 	  end
 
-	clk <= 0;
-	rst <= 1;
 	logObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt");
 	dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
 	decoderObj = new();
-	#1000 rst <=0;
+	comparatorObj = new();
+	#1000 rst =0;
 
      end // initial begin
 
@@ -106,18 +116,27 @@ module InstDecoderTb();
 	end
    end
 
-
    always_ff @(posedge clk) begin
       if(rst)
+	inst <= 0;
+      else
+	inst <= dataObj.getData();
+   end
+
+
+   always_comb begin
+      if(rsti1)
 	begin
-	   inst <= 0;
+	   instType = 0;
+	   decodedInst = cDecodedInst;
+	   regOp = cDecodedReg;
+	   memOp = cDecodedMem;
+	   branchOp = cDecodedBranch;
 	end
       else
 	begin
-	   inst = dataObj.getData();
-	   logObj.addInstLog("NormalOp", inst);
 	   instType = decoderObj.decodeInst(inst);
-
+	   logObj.addInstLog("NormalOp", inst);
 	   case (instType)
 	     6'b000001:
 	       begin
@@ -143,41 +162,56 @@ module InstDecoderTb();
 
 	     end
 	   endcase // case (instType)
-
-	   decodedInst <= decoderObj.collectInst();
-	   regOp <= decoderObj.decodeReg(inst);
-	   branchOp <= decoderObj.decodedBranch();
-	   memOp <= decoderObj.decodedMem();
+	   decodedInst = decoderObj.collectInst();
+	   regOp = decoderObj.decodeReg(inst);
+	   branchOp = decoderObj.decodedBranch();
+	   memOp = decoderObj.decodedMem();
 
 
 	end
    end
 
+
+
    always_ff @(posedge clk) begin
+      rsti1 <= rst;
+      rsti2 <= rsti1;
+      rsti3 <= rsti2;
       // small Decoder registers
       instTypei1 <= instType;
       instTypei2 <= instTypei1;
+     // instTypei3 <= instTypei2;
+
 
       decodedInsti1 <= decodedInst;
       decodedInsti2 <= decodedInsti1;
+//	    decodedInsti3 <= decodedInsti2;
 
       memOpi1 <= memOp;
       memOpi2 <= memOpi1;
+
 
       regOpi1 <= regOp;
       regOpi2 <= regOpi1;
 
       branchOpi1<= branchOp;
       branchOpi2<= branchOpi1;
+
+
+      dutInsti1 <= dutInst;
+
+
+
+       if(!rsti3)
+	comparatorObj.compareInst(decodedInsti2,dutInst, instTypei2);
    end
 
-
-   always_ff @(posedge clk) begin : comparePro
-
+/* -----\/----- EXCLUDED -----\/-----
+   always_comb begin
+      if(!rsti3)
+	comparatorObj.compareInst(decodedInsti2,dutInst, instTypei2);
    end
-
-
-
+ -----/\----- EXCLUDED -----/\----- */
 
    instDecoder #(.cycleNum(2))
    DUT(
