@@ -26,6 +26,7 @@
 module InstDecoderTb();
    localparam integer cRandomSize = 100;
    localparam integer randomizer = 1;
+   localparam integer disp = 0;
 
 
    logic	      clk;
@@ -35,6 +36,7 @@ module InstDecoderTb();
    logic	      rsti3=1;
    logic [cXLEN-1:0]  inst;
    logic [cXLEN-1:0]  insti1;
+   logic [cXLEN-1:0]  insti2;
    logic [cXLEN-1:0]  curPC = 0;
    logic	      flushPipe = 0;
    logic [5:0]	      instType;
@@ -43,7 +45,7 @@ module InstDecoderTb();
    logic [5:0]	      instTypei3;
 
    tDecodedInst dutInst = cDecodedInst;
-      tDecodedInst dutInsti1 = cDecodedInst;
+   tDecodedInst dutInsti1 = cDecodedInst;
    tDecodedReg dutRegOp = cDecodedReg;
    tDecodedMem dutMemOp = cDecodedMem;
    tDecodedBranch dutBranchOp = cDecodedBranch;
@@ -51,7 +53,7 @@ module InstDecoderTb();
    tDecodedInst decodedInst = cDecodedInst;
    tDecodedInst decodedInsti1 = cDecodedInst;
    tDecodedInst decodedInsti2 = cDecodedInst;
-      tDecodedInst decodedInsti3 = cDecodedInst;
+   tDecodedInst decodedInsti3 = cDecodedInst;
 
 
    tDecodedReg regOp = cDecodedReg;
@@ -71,8 +73,9 @@ module InstDecoderTb();
    logic [8:0]	      shftReg = 9'b0000001;
 
    // test classes
-   testVector dataObj;
-   logData logObj;
+   testVector testObj;
+   logData testDecodeLogObj;
+   logData testCompLogObj;
    InstRandomizer randInstObj;
    smallDecoder decoderObj;
    decoderComparator comparatorObj;
@@ -86,19 +89,22 @@ module InstDecoderTb();
 
 	if(randomizer == 1)
 	  begin
-	     dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
+	     $display("-----------------------------------");
+
+	     testObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",disp);
 	     randInstObj = new();
 	     for (int i = 0; i < cRandomSize; i++) begin
 		assert(randInstObj.randomize());
-		dataObj.setData(randInstObj.formInst());
+		testObj.setData(randInstObj.formInst());
 
 	     end
-	     dataObj.closeFile();
+	     testObj.closeFile();
 
 	  end
 
-	logObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/log.txt");
-	dataObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt");
+	testDecodeLogObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testDecodeLog.txt",disp);
+	testCompLogObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testCompLog.txt",disp);
+	testObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",disp);
 	decoderObj = new();
 	comparatorObj = new();
 	#1000 rst =0;
@@ -120,7 +126,7 @@ module InstDecoderTb();
       if(rst)
 	inst <= 0;
       else
-	inst <= dataObj.getData();
+	inst <= testObj.getData();
    end
 
 
@@ -136,29 +142,29 @@ module InstDecoderTb();
       else
 	begin
 	   instType = decoderObj.decodeInst(inst);
-	   logObj.addInstLog("NormalOp", inst);
+	   testDecodeLogObj.addInstLog("NormalOp", inst);
 	   case (instType)
 	     6'b000001:
 	       begin
-		  logObj.addRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
-				     decoderObj.f3,decoderObj.f7);
+		  testDecodeLogObj.addRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
+					       decoderObj.f3,decoderObj.f7);
 	       end
 	     6'b000010:
 	       begin
-		  logObj.addItypeLog(decoderObj.opcode,decoderObj.src1,decoderObj.dest, decoderObj.f3,
-				     decoderObj.imm);
+		  testDecodeLogObj.addItypeLog(decoderObj.opcode,decoderObj.src1,decoderObj.dest, decoderObj.f3,
+					       decoderObj.imm);
 	       end
 	     6'b000100 , 6'b001000:
 	       begin
-		  logObj.addSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
-				      decoderObj.imm);
+		  testDecodeLogObj.addSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
+						decoderObj.imm);
 	       end
 	     6'b010000 , 6'b100000:
 	       begin
-		  logObj.addUJtypeLog(decoderObj.opcode, decoderObj.dest, decoderObj.imm);
+		  testDecodeLogObj.addUJtypeLog(decoderObj.opcode, decoderObj.dest, decoderObj.imm);
 	       end
 	     default: begin
-		logObj.addTypeError(decoderObj.opcode);
+		testDecodeLogObj.addTypeError(decoderObj.opcode);
 
 	     end
 	   endcase // case (instType)
@@ -177,15 +183,19 @@ module InstDecoderTb();
       rsti1 <= rst;
       rsti2 <= rsti1;
       rsti3 <= rsti2;
+
+      insti1 <= inst;
+      insti2 <= insti1;
+
       // small Decoder registers
       instTypei1 <= instType;
       instTypei2 <= instTypei1;
-     // instTypei3 <= instTypei2;
+      // instTypei3 <= instTypei2;
 
 
       decodedInsti1 <= decodedInst;
       decodedInsti2 <= decodedInsti1;
-//	    decodedInsti3 <= decodedInsti2;
+      //	    decodedInsti3 <= decodedInsti2;
 
       memOpi1 <= memOp;
       memOpi2 <= memOpi1;
@@ -200,18 +210,21 @@ module InstDecoderTb();
 
       dutInsti1 <= dutInst;
 
-
-
-       if(!rsti3)
-	comparatorObj.compareInst(decodedInsti2,dutInst, instTypei2);
    end
 
-/* -----\/----- EXCLUDED -----\/-----
-   always_comb begin
+   always_ff @(posedge clk) begin
       if(!rsti3)
-	comparatorObj.compareInst(decodedInsti2,dutInst, instTypei2);
+	begin
+	   comparatorObj.compareInst(decodedInsti2 , dutInst, instTypei2, insti2);
+	   comparatorObj.compareReg(regOpi2,dutRegOp);
+	   comparatorObj.compareBranch(branchOpi2,dutBranchOp);
+	   comparatorObj.compareMem(memOpi2,dutMemOp);
+
+	end
    end
- -----/\----- EXCLUDED -----/\----- */
+
+
+
 
    instDecoder #(.cycleNum(2))
    DUT(
@@ -244,12 +257,6 @@ module InstDecoderTb();
        //oDecodedBranch
        .oBrOp(dutBranchOp.op),
        .oBrDv(dutBranchOp.dv)
-       /* -----\/----- EXCLUDED -----\/-----
-	.oDecoded(),
-	.oMemOp(dutMemOp),
-	.oRegOp(dutRegOp),
-	.oBranchOp(dutBranchOp)
-	-----/\----- EXCLUDED -----/\----- */
        );
 
 

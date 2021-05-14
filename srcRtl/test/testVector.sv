@@ -20,10 +20,11 @@ import corePckg::*;
 
 class testVector;
    int fd;
-   int disp = 0;
+   int disp;
 
 
-   function new (string fileName);
+   function new (string fileName,integer disp);
+      this.disp = disp;
       $display("FileName %s",fileName);
       fd = $fopen(fileName,"r+");
       if(fd == 0)

@@ -20,10 +20,11 @@ import corePckg::*;
 
 class logData;
    int fid;
-   int disp = 0;
+   int disp;
 
 
-   function new (string fileName);
+   function new (string fileName,integer disp);
+      this.disp = disp;
       fid = $fopen(fileName,"w");
       $fwrite(fid,"%0t ns file -> %s opened  \n",$time,fileName);
    endfunction // new
@@ -78,6 +79,7 @@ class logData;
 
    function addUJtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] dest, logic[cXLEN-1:0] imm);
       $fwrite(fid,"\t Type -> UJtype, opcode-> %s, dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
+
       if( disp == 1) begin
 	 $display("\t\t\t Type -> UJType, opcode-> %s,dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
       end
