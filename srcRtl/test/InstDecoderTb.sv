@@ -141,7 +141,7 @@ module InstDecoderTb();
 	end
       else
 	begin
-	   instType = decoderObj.decodeInst(inst);
+	   instType = decoderObj.decodeInstType(inst);
 	   testDecodeLogObj.addInstLog("NormalOp", inst);
 	   case (instType)
 	     6'b000001:
@@ -168,7 +168,7 @@ module InstDecoderTb();
 
 	     end
 	   endcase // case (instType)
-	   decodedInst = decoderObj.collectInst();
+	   decodedInst = decoderObj.decodeInst();
 	   regOp = decoderObj.decodeReg(inst);
 	   branchOp = decoderObj.decodedBranch();
 	   memOp = decoderObj.decodedMem();

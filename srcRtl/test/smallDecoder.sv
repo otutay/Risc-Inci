@@ -41,7 +41,7 @@ class smallDecoder;
  -----/\----- EXCLUDED -----/\----- */
 
 
-   function logic [5:0] decodeInst(logic [cXLEN-1:0] inst);
+   function logic [5:0] decodeInstType(logic [cXLEN-1:0] inst);
       logic [5:0]	   typeOfInst =  {6{1'b0}};
       opcode = inst[6:0];
 
@@ -115,7 +115,7 @@ class smallDecoder;
    endfunction // decodeInst
 
 
-   function tDecodedInst collectInst();
+   function tDecodedInst decodeInst();
       tDecodedInst decodedInst = cDecodedInst;
       decodedInst.rs1.addr = this.src1;
       decodedInst.rs2.addr = this.src2;
