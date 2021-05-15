@@ -38,7 +38,7 @@ class logData;
 
    endfunction // addInstLog
 
-   function addRtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1,logic[cRegSelBitW-1:0] src2,
+   function addDecodeRtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1,logic[cRegSelBitW-1:0] src2,
 			logic [cRegSelBitW-1:0] dest,logic [2:0] f3, logic[6:0] f7);
 
       $fwrite(fid,"\t Type -> Rtype,opcode-> %s,  src1 -> %h, src2 -> %h, dest %h, f3-> %h, f7-> %h \n",
@@ -51,7 +51,7 @@ class logData;
 
    endfunction // addRtypeLog
 
-   function addItypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1, logic[cRegSelBitW-1:0] dest,
+   function addDecodeItypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1, logic[cRegSelBitW-1:0] dest,
 			logic [2:0] f3,logic[cXLEN-1:0] imm);
 
       $fwrite(fid,"\t Type -> Itype,opcode-> %s, src1 -> %h, dest %h, f3-> %h, imm-> %h \n",
@@ -64,7 +64,7 @@ class logData;
 
    endfunction // addItypeLog
 
-   function addSBtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1,logic[cRegSelBitW-1:0] src2,
+   function addDecodeSBtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] src1,logic[cRegSelBitW-1:0] src2,
 			 logic [2:0] f3, logic[cXLEN-1:0] imm);
 
       $fwrite(fid,"\t Type -> SBtype,opcode-> %s, src1 -> %h, src2 %h, f3-> %h, imm-> %h \n",
@@ -77,7 +77,7 @@ class logData;
 
    endfunction // addStypeLog
 
-   function addUJtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] dest, logic[cXLEN-1:0] imm);
+   function addDecodeUJtypeLog(logic [6:0] opcode, logic[cRegSelBitW-1:0] dest, logic[cXLEN-1:0] imm);
       $fwrite(fid,"\t Type -> UJtype, opcode-> %s, dest -> %h, imm-> %h \n",tOpcodeEnum'(opcode), dest,imm);
 
       if( disp == 1) begin
@@ -85,7 +85,7 @@ class logData;
       end
    endfunction // addUtypeLog
 
-   function addTypeError(logic [6:0] opcode);
+   function addDecodeTypeError(logic [6:0] opcode);
 
       $fwrite(fid,"\t -------------------- ERROR------------------------------- \n");
       $fwrite(fid,"\t ERROR TYPE -> UNKNOWN UJtype, opcode-> %s, \n",tOpcodeEnum'(opcode));

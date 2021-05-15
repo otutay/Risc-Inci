@@ -146,25 +146,25 @@ module InstDecoderTb();
 	   case (instType)
 	     6'b000001:
 	       begin
-		  testDecodeLogObj.addRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
+		  testDecodeLogObj.addDecodeRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
 					       decoderObj.f3,decoderObj.f7);
 	       end
 	     6'b000010:
 	       begin
-		  testDecodeLogObj.addItypeLog(decoderObj.opcode,decoderObj.src1,decoderObj.dest, decoderObj.f3,
+		  testDecodeLogObj.addDecodeItypeLog(decoderObj.opcode,decoderObj.src1,decoderObj.dest, decoderObj.f3,
 					       decoderObj.imm);
 	       end
 	     6'b000100 , 6'b001000:
 	       begin
-		  testDecodeLogObj.addSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
+		  testDecodeLogObj.addDecodeSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
 						decoderObj.imm);
 	       end
 	     6'b010000 , 6'b100000:
 	       begin
-		  testDecodeLogObj.addUJtypeLog(decoderObj.opcode, decoderObj.dest, decoderObj.imm);
+		  testDecodeLogObj.addDecodeUJtypeLog(decoderObj.opcode, decoderObj.dest, decoderObj.imm);
 	       end
 	     default: begin
-		testDecodeLogObj.addTypeError(decoderObj.opcode);
+		testDecodeLogObj.addDecodeTypeError(decoderObj.opcode);
 
 	     end
 	   endcase // case (instType)
