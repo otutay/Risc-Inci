@@ -137,7 +137,7 @@ package corePckg;
       logic		      opConst;
       logic		      dv;
    }tDecodedReg;
-   parameter tDecodedReg cDecodedReg = {cNoArithOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
+   parameter tDecodedReg cDecodedReg = {cNoArithOp,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0};
 
 
    typedef enum		      logic [2:0]{

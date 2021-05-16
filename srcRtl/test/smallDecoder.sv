@@ -135,41 +135,42 @@ class smallDecoder;
       case (opcode)
 	cOpRtype:
 	  begin
-	     regOp.arithType = tArithEnum'({inst[30], f3});
+	     regOp.arithType = {inst[30], f3};
 	     regOp.opRs1 = 1'b1;
 	     regOp.opRs2 = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
 	cOpImmedi:
 	  begin
-	     regOp.arithType =tArithEnum'({inst[30], f3});
+	     // error
+	     regOp.arithType ={inst[30], f3};
 	     regOp.opRs1 = 1'b1;
 	     regOp.opImm = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
 	cOpJal:
 	  begin
-	     regOp.arithType = tArithEnum'("0000");
+	     regOp.arithType = cAdd;
 	     regOp.opPc = 1'b1;
 	     regOp.opConst = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
 	cOpJalr:
 	  begin
-	     regOp.arithType = tArithEnum'("0000");
+	     regOp.arithType = cAdd;
 	     regOp.opPc = 1'b1;
 	     regOp.opConst = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
 	cOpLui:
 	  begin
-	     regOp.arithType = tArithEnum'("1111");
+	     regOp.arithType = cNoArithOp;
 	     regOp.opImm = 1'b1;
 	     regOp.dv = 1'b1;
 	  end
 	cOpAuIpc:
 	  begin
-	     regOp.arithType = tArithEnum'("0000");
+	     regOp.arithType = cAdd;
 	     regOp.opImm = 1'b1;
 	     regOp.opPc = 1'b1;
 	     regOp.dv = 1'b1;

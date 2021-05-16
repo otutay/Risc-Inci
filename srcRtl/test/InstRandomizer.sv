@@ -43,7 +43,7 @@ class InstRandomizer;
       opcode == cOpRtype -> funct3 inside {3'b000, 3'b001, 3'b010,3'b011,3'b100,3'b101,3'b110, 3'b111};
       opcode == cOpFence -> funct3 inside {3'b000, 3'b001};
    };
-
+   // constraint needs to be changed
    constraint funct7Const {
       (opcode == cOpImmedi | opcode == cOpRtype) ->  funct7 inside {7'h00 , 7'h20};
    };

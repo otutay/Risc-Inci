@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-13
+-- Last update: 2021-05-17
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -193,11 +193,11 @@ begin  -- architecture rtl
             -- TODO DUZELT cok yer
             case funct3 is
               when "000" =>
-                if (funct7(5) = '0') then
-                  regOp.arithType <= cSub;  --eSub;
-                else
-                  regOp.arithType <= cAdd;  --eAdd;
-                end if;
+                -- if (funct7(5) = '0') then
+                --   regOp.arithType <= cSub;  --eSub;
+                -- else
+                regOp.arithType <= cAdd; -- eAdd;
+                -- end if;
 
               when "010" =>
                 regOp.arithType <= cCompareSigned;     --eCompareSigned; slt

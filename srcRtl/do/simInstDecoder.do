@@ -13,7 +13,7 @@ vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRt
 vsim -voptargs=+acc work.InstDecoderTb
 add wave -position insertpoint sim:/InstDecoderTb/*
 add wave -divider dutInstDecoder
-add wave -position insertpoint sim:/InstDecoderTb/DUT/*
+add wave -position insertpoint sim:/InstDecoderTb/DUTDecoder/*
 
 #add wave -r /*
 run 1500 ns
