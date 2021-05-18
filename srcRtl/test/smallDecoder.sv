@@ -31,14 +31,14 @@ class smallDecoder;
 
    //logic [5:0]		   typeOfInst;
 
-/* -----\/----- EXCLUDED -----\/-----
-   localparam logic [5:0]  Rtype = 6'b000001;
-   localparam logic [5:0]  Itype = 6'b000010;
-   localparam logic [5:0]  Stype = 6'b000100;
-   localparam logic [5:0]  Btype = 6'b001000;
-   localparam logic [5:0]  Utype = 6'b010000;
-   localparam logic [5:0]  Jtype = 6'b100000;
- -----/\----- EXCLUDED -----/\----- */
+   /* -----\/----- EXCLUDED -----\/-----
+    localparam logic [5:0]  Rtype = 6'b000001;
+    localparam logic [5:0]  Itype = 6'b000010;
+    localparam logic [5:0]  Stype = 6'b000100;
+    localparam logic [5:0]  Btype = 6'b001000;
+    localparam logic [5:0]  Utype = 6'b010000;
+    localparam logic [5:0]  Jtype = 6'b100000;
+    -----/\----- EXCLUDED -----/\----- */
 
 
    function logic [5:0] decodeInstType(logic [cXLEN-1:0] inst);
@@ -135,18 +135,65 @@ class smallDecoder;
       case (opcode)
 	cOpRtype:
 	  begin
-	     regOp.arithType = {inst[30], f3};
 	     regOp.opRs1 = 1'b1;
 	     regOp.opRs2 = 1'b1;
 	     regOp.dv = 1'b1;
+
+	     case (f3)
+	       3'b000: begin
+		  if(f7[5] == 1'b0)
+		    regOp.arithType = cAdd;
+		  else
+		    regOp.arithType = cSub;
+	       end
+	       3'b001 : begin
+		  regOp.arithType = cShftLeft;
+	       end
+	       3'b010 : begin
+		  regOp.arithType = cCompareSigned;
+	       end
+	       3'b011 : begin
+		  regOp.arithType = cCompareUnsigned;
+	       end
+	       3'b100 : begin
+		  regOp.arithType = cXor;
+	       end
+	       3'b101 : begin
+		  if(f7[5]== 1'b0)
+		    regOp.arithType = cShftRight;
+		  else
+		    regOp.arithType = cShftRightArit;
+	       end
+	       3'b110 : begin
+		  regOp.arithType = cOr;
+	       end
+	       3'b111 : begin
+		  regOp.arithType = cAnd;
+	       end
+	       default: begin
+		  regOp.arithType = cNoArithOp;
+	       end
+	     endcase
 	  end
 	cOpImmedi:
 	  begin
-	     // error
-	     regOp.arithType ={inst[30], f3};
 	     regOp.opRs1 = 1'b1;
 	     regOp.opImm = 1'b1;
 	     regOp.dv = 1'b1;
+	     // error
+	     case (f3)
+		3'b000: begin
+		   regOp.arithType = cAdd;
+	       end
+			3'b010: begin
+		   regOp.arithType = ;
+	       end
+	       default: begin
+
+	       end
+	     endcase
+	     regOp.arithType ={inst[30], f3};
+
 	  end
 	cOpJal:
 	  begin

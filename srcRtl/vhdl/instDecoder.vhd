@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-17
+-- Last update: 2021-05-19
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -176,27 +176,61 @@ begin  -- architecture rtl
 
   regOpPro : process (iClk) is
   begin  -- process operationPro
-    if iClk'event and iClk = '1' then       -- rising clock edge
+    if iClk'event and iClk = '1' then   -- rising clock edge
       if(iFlushPipe = '1') then
         regOp <= cDecodedReg;
       else
         case opcode is
           when cOpRType =>
-            regOp.arithType <= rSelection;
-            regOp.opRs1     <= '1';
-            regOp.opRs2     <= '1';
-            regOp.opImm     <= '0';
-            regOp.opPc      <= '0';
-            regOp.opConst   <= '0';
-            regOp.dv        <= '1';
-          when cOpImmedi =>                 --eOpImmedi =>
-            -- TODO DUZELT cok yer
+            regOp.opRs1   <= '1';
+            regOp.opRs2   <= '1';
+            regOp.opImm   <= '0';
+            regOp.opPc    <= '0';
+            regOp.opConst <= '0';
+            regOp.dv      <= '1';
+
+            case funct3 is
+              when "000" =>
+                if (funct7(5) = '0') then
+                  regOp.arithType <= cAdd;
+                else
+                  regOp.arithType <= cSub;
+                end if;
+              when "001" =>
+                regOp.arithType <= cShftLeft;
+              when "010" =>
+                regOp.arithType <= cCompareSigned;
+              when "011" =>
+                regOp.arithType <= cCompareUnSigned;
+              when "100" =>
+                regOp.arithType <= cXor;
+              when "101" =>
+                if(funct7(5) = '0') then
+                  regOp.arithType <= cShftRight;
+                else
+                  regOp.arithType <= cShftRightArith;
+                end if;
+              when "110" =>
+                regOp.arithType <= cOr;
+
+              when "111" =>
+                regOp.arithType <= cAnd;
+              when others =>
+                regOp.arithType <= cNoArith;
+            end case;
+          when cOpImmedi =>               --eOpImmedi =>
+            regOp.opRs1   <= '1';
+            regOp.opRs2   <= '0';
+            regOp.opImm   <= '1';
+            regOp.opPc    <= '0';
+            regOp.opConst <= '0';
+            regOp.dv      <= '1';
             case funct3 is
               when "000" =>
                 -- if (funct7(5) = '0') then
                 --   regOp.arithType <= cSub;  --eSub;
                 -- else
-                regOp.arithType <= cAdd; -- eAdd;
+                regOp.arithType <= cAdd;  -- eAdd;
                 -- end if;
 
               when "010" =>
@@ -213,20 +247,15 @@ begin  -- architecture rtl
                 regOp.arithType <= cShftLeft;          --eShftLeft;
               when "101" =>
                 if(funct7(5) = '1') then
-                  regOp.arithType <= cShftRight;       --eShftRight;
+                  regOp.arithType <= cShftRightArith;  --eShftRight;
                 else
-                  regOp.arithType <= cShftRightArith;  --eShftRightArit;
+                  regOp.arithType <= cShftRight;       --eShftRightArit;
                 end if;
               when others => regOp <= cDecodedReg;
             end case;
-            regOp.opRs1   <= '1';
-            regOp.opRs2   <= '0';
-            regOp.opImm   <= '1';
-            regOp.opPc    <= '0';
-            regOp.opConst <= '0';
-            regOp.dv      <= '1';
-          when cOpJal =>                               -- eOpJal =>
-            regOp.arithType <= cAdd;                   --eAdd;
+
+          when cOpJal =>                -- eOpJal =>
+            regOp.arithType <= cAdd;    --eAdd;
             regOp.opRs1     <= '0';
             regOp.opRs2     <= '0';
             regOp.opImm     <= '0';

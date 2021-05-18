@@ -30,8 +30,12 @@ class InstRandomizer;
 
 
    constraint opcodeConst{
+/* -----\/----- EXCLUDED -----\/-----
       opcode inside {cOpLoad,cOpStore,cOpRtype, cOpImmedi, cOpJalr,cOpJal,
 		     cOpLui,cOpAuIpc,cOpBranch,cOpFence,cOpCtrlSt};
+ -----/\----- EXCLUDED -----/\----- */
+	    opcode inside {cOpLoad,cOpStore,cOpRtype, cOpImmedi, cOpJalr,cOpJal,
+		     cOpLui,cOpAuIpc,cOpBranch};
    };
 
    constraint funct3Const {
@@ -45,7 +49,24 @@ class InstRandomizer;
    };
    // constraint needs to be changed
    constraint funct7Const {
-      (opcode == cOpImmedi | opcode == cOpRtype) ->  funct7 inside {7'h00 , 7'h20};
+       //(opcode == cOpImmedi | opcode == cOpRtype) ->  funct7 inside {7'h00 , 7'h20};
+      (opcode == cOpRtype && (funct3 == 3'b000 || funct3 == 3'b101)) -> funct7 inside {7'h00 , 7'h20};
+
+      (opcode == cOpRtype && (funct3 == 3'b001 || funct3 == 3'b010 ||
+			     funct3 == 3'b011 || funct3 == 3'b100 ||
+			     funct3 == 3'b110 || funct3 == 3'b111)) -> funct7 == 7'h00;
+
+      (opcode == cOpImmedi && (funct3 == 3'b000 || funct3 == 3'b001 ||
+			      funct3 == 3'b010 || funct3 == 3'b011 ||
+			      funct3 == 3'b100 || funct3 == 3'b110 ||
+			      funct3 == 3'b111)) -> funct7 == 7'h00;
+
+      (opcode == cOpImmedi && funct3 == 3'b101 ) -> funct7 inside {7'h00 , 7'h20};
+
+/* -----\/----- EXCLUDED -----\/-----
+      opcode == cOpRtype -> funct7 inside {7'h00, 7'h20};
+      opcode == cOpImmedi -> funct7
+ -----/\----- EXCLUDED -----/\----- */
    };
 
    function logic [cXLEN-1:0] formInst();
