@@ -186,13 +186,34 @@ class smallDecoder;
 		   regOp.arithType = cAdd;
 	       end
 			3'b010: begin
-		   regOp.arithType = ;
-	       end
-	       default: begin
+		   regOp.arithType = cCompareSigned ;
+			end
+		3'b011: begin
+		   regOp.arithType = cCompareUnSigned ;
+		end
+		3'b100: begin
+		   regOp.arithType = cXor;
+		end
+		3'b110: begin
+		   regOp.arithType = cOr;
+		end
+		3'b111: begin
+		   regOp.arithType = cAnd;
+		end
+		3'b001: begin
+		   regOp.arithType = cShftLeft;
+		end
+		3'b101: begin
+		   if(f7[5] == 1'b0)
+		     regOp.arithType = cShftRight;
+		   else
+		     regOp.arithType = cShftRightArit;
+		end
 
+	       default: begin
+		  regOp.arithType = cNoArithOp;
 	       end
 	     endcase
-	     regOp.arithType ={inst[30], f3};
 
 	  end
 	cOpJal:
