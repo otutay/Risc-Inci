@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-22
--- Last update: 2021-04-30
+-- Last update: 2021-05-28
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -27,21 +27,54 @@ use work.corePckg.all;
 entity alu is
 
   port (
-    iClk           : in  std_logic;
-    iRst           : in  std_logic;
-    iDecoded       : in  tDecoded;
-    iDecodedMem    : in  tDecodedMem;
-    iDecodedReg    : in  tDecodedReg;
-    iDecodedBranch : in  tDecodedBranch;
-    oMemWB         : out tMemOp;
-    oRegWB         : out tRegOp;
-    oBranchWB      : out tBranchOp
+    iClk         : in  std_logic;
+    iRst         : in  std_logic;
+    -- iDecoded params
+    iRs1Data     : in  std_logic_vector(cXLen-1 downto 0);
+    iRs2Data     : in  std_logic_vector(cXLen-1 downto 0);
+    iRdAddr      : in  std_logic_vector(cRegSelBitW-1 downto 0);
+    iFunct3      : in  std_logic_vector(2 downto 0);
+    iFunct7      : in  std_logic_vector(6 downto 0);
+    iImm         : in  std_logic_vector(cXLen-1 downto 0);
+    iOpcode      : in  std_logic_vector(6 downto 0);
+    iCurPc       : in  std_logic_vector(cXLen-1 downto 0);
+    -- iDecodedMem params
+    iLoad        : in  std_logic;
+    iStore       : in  std_logic;
+    iMemdv       : in  std_logic;
+    -- iDecodedReg params
+    iArithType   : in  std_logic_vector(3 downto 0);
+    iOpRs1       : in  std_logic;
+    iOpRs2       : in  std_logic;
+    iOpImm       : in  std_logic;
+    iOpPc        : in  std_logic;
+    iOpConst     : in  std_logic;
+    iRegdv       : in  std_logic;
+    -- iDecodedBranch params
+    iBrOp        : in  std_logic_vector(2 downto 0);
+    iBrDv        : in  std_logic;
+    -- oMemWB params
+    oMemReadDv   : out std_logic;
+    oMemWriteDv  : out std_logic;
+    oMemAddr     : out std_logic_vector(cXLen-1 downto 0);
+    oMemData     : out std_logic_vector(cXLen-1 downto 0);
+    oMemOpType   : out std_logic_vector(2 downto 0);
+    oMemRdAddr   : out std_logic_vector(cRegSelBitW-1 downto 0);
+    -- oRegWB params
+    oRegDv       : out std_logic;
+    oRegAddr     : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oRegData     : out std_logic_vector(cXLen-1 downto 0);
+    -- oBranchWB params
+    oBrFlushPipe : out std_logic;
+    oBrNewPc     : out std_logic;
+    oBrPc        : out std_logic_vector(cXLen-1 downto 0);
+    oBrDv        : out std_logic
     );
-
-
 end entity alu;
 
 architecture rtl of alu is
+  -- sverilog 2 vhdl bottleneck
+
   signal memOut      : tMemOp                                   := cMemOp;
   signal memOuti1    : tMemOp                                   := cMemOp;
   signal operand1    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
@@ -59,10 +92,46 @@ architecture rtl of alu is
   signal branchOpi1  : tDecodedBranch                           := cDecodedBranch;
   signal branchOut   : tBranchOp                                := cBranchOp;
 begin  -- architecture rtl
-
-  oMemWB <= memOuti1;
-  oRegWB <= regOut;
-  oBranchWB <= branchOut;
+  -- signal assignments
+  iDecoded.rs1Data      <= iRs1Data;
+  iDecoded.rs2Data      <= iRs2Data;
+  iDecoded.rdAddr       <= iRdAddr;
+  iDecoded.funct3       <= iFunct3;
+  iDecoded.funct7       <= iFunct7;
+  iDecoded.imm          <= iImm;
+  iDecoded.opcode       <= iOpcode;
+  iDecoded.curPc        <= iCurPc;
+  -- iDecodedMem
+  iDecodedMem.load      <= iLoad;
+  iDecodedMem.store     <= iStore;
+  iDecodedMem.dv        <= iMemDv;
+  -- iDecodedReg
+  iDecodedReg.arithType <= iArithType;
+  iDecodedReg.opRs1     <= iOpRs1;
+  iDecodedReg.opRs2     <= iOpRs2;
+  iDecodedReg.opImm     <= iOpImm;
+  iDecodedReg.opPc      <= iOpPc;
+  iDecodedReg.opConst   <= iOpConst;
+  iDecodedReg.dv        <= iRegdv;
+  -- iDecodedBranch params
+  iDecodedBranch.op     <= iBrOp;
+  iDecodedBranch.dv     <= iBrDv;
+  -- memWB
+  oMemReadDv            <= memOuti1.readDv;
+  oMemWriteDv           <= memOuti1.writeDv;
+  oMemAddr              <= memOuti1.addr;
+  oMemData              <= memOuti1.data;
+  oMemOpType            <= memOuti1.opType;
+  oMemRdAddr            <= memOuti1.rdAddr;
+  -- oRegWB params
+  oRegDv                <= regOut.dv;
+  oRegAddr              <= regOut.addr;
+  oRegData              <= regOut.data;
+  -- oBranchWB params
+  oBrFlushPipe          <= branchOut.flushPipe;
+  oBrNewPc              <= branchOut.newPc;
+  oBrPc                 <= branchOut.pc;
+  oBrDv                 <= branchOut.dv;
 
   ---------------------------- load store op  ------------------------------
   loadStorePro : process (iClk) is
@@ -235,7 +304,7 @@ begin  -- architecture rtl
         when eJal =>
           branchOut.flushPipe <= '1';
           branchOut.newPc     <= '1';
-        when  eJalr =>
+        when eJalr =>
           branchOut.flushPipe <= '1';
           branchOut.newPc     <= '1';
         when others =>
@@ -245,15 +314,15 @@ begin  -- architecture rtl
     end if;
   end process branchSelPro;
 
-  branchCompPRo: process (iClk) is
+  branchCompPRo : process (iClk) is
   begin  -- process branchCompPRo
-    if iClk'event and iClk = '1' then  -- rising clock edge
+    if iClk'event and iClk = '1' then   -- rising clock edge
       case branchOpi1.op is
         when eJalr =>
-          branchOut.pc <= signed(data1) + signed(imm);
+          branchOut.pc    <= signed(data1) + signed(imm);
           branchOut.pc(0) <= '0';
         when others =>
           branchOut.pc <= signed(curPc) + signed(imm);
-    end if;
-  end process branchCompPRo;
+      end if;
+end process branchCompPRo;
 end architecture rtl;
