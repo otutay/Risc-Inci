@@ -60,6 +60,8 @@ class smallDecoder;
 	     f3 = inst[14:12];
 	     src1 = inst[19:15];
 	     imm = {{20{inst[31]}},inst[31:20]};
+	     f7 = inst[31:25];
+
 	  end
 	cOpStore:
 	  begin
@@ -189,7 +191,7 @@ class smallDecoder;
 		   regOp.arithType = cCompareSigned ;
 			end
 		3'b011: begin
-		   regOp.arithType = cCompareUnSigned ;
+		   regOp.arithType = cCompareUnsigned ;
 		end
 		3'b100: begin
 		   regOp.arithType = cXor;

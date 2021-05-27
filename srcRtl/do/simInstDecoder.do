@@ -16,4 +16,4 @@ add wave -divider dutInstDecoder
 add wave -position insertpoint sim:/InstDecoderTb/DUTDecoder/*
 
 #add wave -r /*
-run 2500 ns
+run 10 us

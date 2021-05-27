@@ -26,7 +26,7 @@
 module InstDecoderTb();
    localparam realtime cClkPeriod = 10ns;
    localparam realtime cResetTime = 1000ns;
-   localparam integer  cRandomSize = 1000;
+   localparam integer  cRandomSize = 2000;
    localparam integer  cRandomizer = 1;
    localparam integer  cDispOnTerm = 0;
 
