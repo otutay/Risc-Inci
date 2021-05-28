@@ -73,80 +73,83 @@ entity alu is
 end entity alu;
 
 architecture rtl of alu is
- -- sverilog 2 vhdl bottleneck
-
-  signal memOut      : tMemOp                                   := cMemOp;
-  signal memOuti1    : tMemOp                                   := cMemOp;
-  signal operand1    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
-  signal operand2    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  -- sverilog 2 vhdl bottleneck
+  signal decoded       : tDecoded                                 := cDecoded;
+  signal decodedMem    : tDecodedMem                              := cDecodedMem;
+  signal decodedReg    : tDecodedReg                              := cDecodedReg;
+  signal decodedBranch : tDecodedBranch                           := cDecodedBranch;
+  signal memOut        : tMemOp                                   := cMemOp;
+  signal memOuti1      : tMemOp                                   := cMemOp;
+  signal operand1      : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal operand2      : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
   -- signal operation   : tArithEnum                               := eNOOP;
-  signal operation   : std_logic_vector(3 downto 0)             := cNoArith;
-  signal regAddr     : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
-  signal regOpValid  : std_logic                                := '0';
-  signal regOut      : tRegOp                                   := cRegOp;
-  signal equal       : boolean                                  := false;
-  signal lessThanUns : boolean                                  := false;
-  signal lessThan    : boolean                                  := false;
-  signal curPC       : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
-  signal imm         : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
-  signal data1       : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
-  signal branchOpi1  : tDecodedBranch                           := cDecodedBranch;
-  signal branchOut   : tBranchOp                                := cBranchOp;
+  signal operation     : std_logic_vector(3 downto 0)             := cNoArith;
+  signal regAddr       : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
+  signal regOpValid    : std_logic                                := '0';
+  signal regOut        : tRegOp                                   := cRegOp;
+  signal equal         : boolean                                  := false;
+  signal lessThanUns   : boolean                                  := false;
+  signal lessThan      : boolean                                  := false;
+  signal curPC         : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal imm           : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal data1         : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal branchOpi1    : tDecodedBranch                           := cDecodedBranch;
+  signal branchOut     : tBranchOp                                := cBranchOp;
 begin  -- architecture rtl
   -- signal assignments
-  iDecoded.rs1Data      <= iRs1Data;
-  iDecoded.rs2Data      <= iRs2Data;
-  iDecoded.rdAddr       <= iRdAddr;
-  iDecoded.funct3       <= iFunct3;
-  iDecoded.funct7       <= iFunct7;
-  iDecoded.imm          <= iImm;
-  iDecoded.opcode       <= iOpcode;
-  iDecoded.curPc        <= iCurPc;
+  decoded.rs1Data      <= iRs1Data;
+  decoded.rs2Data      <= iRs2Data;
+  decoded.rdAddr       <= iRdAddr;
+  decoded.funct3       <= iFunct3;
+  decoded.funct7       <= iFunct7;
+  decoded.imm          <= iImm;
+  decoded.opcode       <= iOpcode;
+  decoded.curPc        <= iCurPc;
   -- iDecodedMem
-  iDecodedMem.load      <= iLoad;
-  iDecodedMem.store     <= iStore;
-  iDecodedMem.dv        <= iMemDv;
+  decodedMem.load      <= iLoad;
+  decodedMem.store     <= iStore;
+  decodedMem.dv        <= iMemDv;
   -- iDecodedReg
-  iDecodedReg.arithType <= iArithType;
-  iDecodedReg.opRs1     <= iOpRs1;
-  iDecodedReg.opRs2     <= iOpRs2;
-  iDecodedReg.opImm     <= iOpImm;
-  iDecodedReg.opPc      <= iOpPc;
-  iDecodedReg.opConst   <= iOpConst;
-  iDecodedReg.dv        <= iRegdv;
+  decodedReg.arithType <= iArithType;
+  decodedReg.opRs1     <= iOpRs1;
+  decodedReg.opRs2     <= iOpRs2;
+  decodedReg.opImm     <= iOpImm;
+  decodedReg.opPc      <= iOpPc;
+  decodedReg.opConst   <= iOpConst;
+  decodedReg.dv        <= iRegdv;
   -- iDecodedBranch params
-  iDecodedBranch.op     <= iBrOp;
-  iDecodedBranch.dv     <= iBrDv;
+  decodedBranch.op     <= iBrOp;
+  decodedBranch.dv     <= iBrDv;
   -- memWB
-  oMemReadDv            <= memOuti1.readDv;
-  oMemWriteDv           <= memOuti1.writeDv;
-  oMemAddr              <= memOuti1.addr;
-  oMemData              <= memOuti1.data;
-  oMemOpType            <= memOuti1.opType;
-  oMemRdAddr            <= memOuti1.rdAddr;
+  oMemReadDv           <= memOuti1.readDv;
+  oMemWriteDv          <= memOuti1.writeDv;
+  oMemAddr             <= memOuti1.addr;
+  oMemData             <= memOuti1.data;
+  oMemOpType           <= memOuti1.opType;
+  oMemRdAddr           <= memOuti1.rdAddr;
   -- oRegWB params
-  oRegDv                <= regOut.dv;
-  oRegAddr              <= regOut.addr;
-  oRegData              <= regOut.data;
+  oRegDv               <= regOut.dv;
+  oRegAddr             <= regOut.addr;
+  oRegData             <= regOut.data;
   -- oBranchWB params
-  oBrFlushPipe          <= branchOut.flushPipe;
-  oBrNewPc              <= branchOut.newPc;
-  oBrPc                 <= branchOut.pc;
-  oBrDv                 <= branchOut.dv;
+  oBrFlushPipe         <= branchOut.flushPipe;
+  oBrNewPc             <= branchOut.newPc;
+  oBrPc                <= branchOut.pc;
+  oBrDv                <= branchOut.dv;
 
   ---------------------------- load store op  ------------------------------
   loadStorePro : process (iClk) is
   begin  -- process loadStorePro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      if(iDecodedMem.dv = '1' and iDecodedMem.load = '1') then
-        memOut.addr   <= signed(iDecoded.rs1) + signed(iDecoded.imm);
-        memOut.rdAddr <= iDecoded.rdAddr;
-        memOut.opType <= iDecoded.funct3;
+      if(decodedMem.dv = '1' and decodedMem.load = '1') then
+        memOut.addr   <= std_logic_vector(signed(decoded.rs1Data) + signed(decoded.imm));
+        memOut.rdAddr <= decoded.rdAddr;
+        memOut.opType <= decoded.funct3;
         memOut.readDv <= '1';
-      elsif(iDecodedMem.dv = '1' and iDecodedMem.store = '1') then
-        memOut.addr    <= signed(iDecoded.rs1) + signed(iDecoded.imm);
-        memOut.data    <= iDecoded.rs2Data;
-        memOut.opType  <= iDecoded.funct3;
+      elsif(decodedMem.dv = '1' and decodedMem.store = '1') then
+        memOut.addr    <= std_logic_vector(signed(decoded.rs1Data) + signed(decoded.imm));
+        memOut.data    <= decoded.rs2Data;
+        memOut.opType  <= decoded.funct3;
         memOut.writeDv <= '1';
       else
         memOut <= cMemOp;
@@ -167,22 +170,22 @@ begin  -- architecture rtl
   regOpSelPro : process (iClk) is
   begin  -- process regOpSelPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      if(iDecodedReg.opRs1 = '1') then
-        operand1 <= iDecoded.rs1Data;
-      elsif(iDecodedReg.opPc = '1') then
-        operand1 <= iDecoded.curPc;
-      elsif(iDecodedReg.opImm = '1') then
-        operand1 <= iDecoded.imm;
+      if(decodedReg.opRs1 = '1') then
+        operand1 <= decoded.rs1Data;
+      elsif(decodedReg.opPc = '1') then
+        operand1 <= decoded.curPc;
+      elsif(decodedReg.opImm = '1') then
+        operand1 <= decoded.imm;
       end if;
 
-      if(iDecodedReg.opRs2 = '1') then
-        operand2 <= iDecoded.rs2Data;
-      elsif(iDecodedReg.opConst = '1') then
+      if(decodedReg.opRs2 = '1') then
+        operand2 <= decoded.rs2Data;
+      elsif(decodedReg.opConst = '1') then
         operand2 <= std_logic_vector(to_unsigned(4, cXLen));
-      elsif(iDecodedReg.opImm = '1') then
-        operand2 <= iDecoded.imm;
-      elsif(iDecodedReg.opPc = '1') then
-        operand2 <= iDecoded.curPc;
+      elsif(decodedReg.opImm = '1') then
+        operand2 <= decoded.imm;
+      elsif(decodedReg.opPc = '1') then
+        operand2 <= decoded.curPc;
       end if;
 
     end if;
@@ -191,9 +194,9 @@ begin  -- architecture rtl
   regOpRegPro : process (iClk) is
   begin  -- process regOpRegPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      operation  <= iDecodedReg.arithType;
-      regAddr    <= iDecoded.rdAddr;
-      regOpValid <= iDecodedReg.dv;
+      operation  <= decodedReg.arithType;
+      regAddr    <= decoded.rdAddr;
+      regOpValid <= decodedReg.dv;
     end if;
   end process regOpRegPro;
 
@@ -204,16 +207,16 @@ begin  -- architecture rtl
       regOut.addr <= regAddr;
       regOut.dv   <= regOpValid;
       case operation is
-        when eAdd =>
-          regOut.data <= signed(operand1) + signed(operand2);
+        when cAdd =>
+          regOut.data <= std_logic_vector(signed(operand1) + signed(operand2));
 
-        when eSub =>
-          regOut.data <= signed(operand1) - signed(operand2);
+        when cSub =>
+          regOut.data <= std_logic_vector(signed(operand1) - signed(operand2));
 
-        when eShftLeft =>
-          regOut.data <= shift_left(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
+        when cShftLeft =>
+          regOut.data <= std_logic_vector(shift_left(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0)))));
 
-        when eCompareSigned =>
+        when cCompareSigned =>
           if(signed(operand1) < signed(operand2)) then
             regOut.data(0)                <= '1';
             regOut.data(cXLen-1 downto 1) <= (others => '0');
@@ -221,7 +224,7 @@ begin  -- architecture rtl
             regOut.data <= (others => '0');
           end if;
 
-        when eCompareUnsigned =>
+        when cCompareUnsigned =>
           if(unsigned(operand1) < unsigned(operand2)) then
             regOut.data(0)                <= '1';
             regOut.data(cXLen-1 downto 1) <= (others => '0');
@@ -229,22 +232,22 @@ begin  -- architecture rtl
             regOut.data <= (others => '0');
           end if;
 
-        when eXor =>
+        when cXor =>
           regOut.data <= operand1 xor operand2;
 
-        when eShftRight =>
-          regOut.data <= shift_right(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
+        when cShftRight =>
+          regOut.data <= std_logic_vector(shift_right(unsigned(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0)))));
 
-        when eShftRightArit =>
-          regOut.data <= shift_right(signed(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0))));
+        when cShftRightArith =>
+          regOut.data <= std_logic_vector(shift_right(signed(operand1), to_integer(unsigned(operand2(cRegSelBitW-1 downto 0)))));
 
-        when eOr =>
+        when cOr =>
           regOut.data <= operand1 or operand2;
 
-        when eAnd =>
+        when cAnd =>
           regOut.data <= operand1 and operand2;
 
-        when eNOOP =>
+        when cNoArith =>
           regOut.data <= operand1;
 
         when others => null;
@@ -257,17 +260,17 @@ begin  -- architecture rtl
   branchComparePro : process (iClk) is
   begin  -- process branchComparePro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      equal       <= iDecoded.rs1Data = iDecoded.rs2Data;  -- beq and bne comp
-      lessThanUns <= unsigned(iDecoded.rs1Data) <
-                     unsigned(iDecoded.rs2Data);  --bltu and bgeu comparison
-      lessThan <= signed(iDecoded.rs1Data) <
-                  signed(iDecoded.rs2Data);       -- blt and bge comp
+      equal       <= decoded.rs1Data = decoded.rs2Data;  -- beq and bne comp
+      lessThanUns <= unsigned(decoded.rs1Data) <
+                     unsigned(decoded.rs2Data);  --bltu and bgeu comparison
+      lessThan <= signed(decoded.rs1Data) <
+                  signed(decoded.rs2Data);       -- blt and bge comp
 
-      curPC <= iDecoded.curPc;
-      imm   <= iDecoded.imm;
-      data1 <= iDecoded.rs1Data;
+      curPC <= decoded.curPc;
+      imm   <= decoded.imm;
+      data1 <= decoded.rs1Data;
 
-      branchOpi1 <= iDecodedBranch;
+      branchOpi1 <= decodedBranch;
 
     end if;
   end process branchComparePro;
@@ -284,28 +287,28 @@ begin  -- architecture rtl
   begin  -- process branchSelPro
     if iClk'event and iClk = '1' then   -- rising clock edge
       case branchOpi1.op is
-        when eEqual =>
-          branchOut.flushPipe <= equal;
-          branchOut.newPc     <= equal;
-        when eNEqual =>
-          branchOut.flushPipe <= not equal;
-          branchOut.newPc     <= not equal;
-        when eLessThan =>
-          branchOut.flushPipe <= lessThan;
-          branchOut.newPc     <= lessThan;
-        when eGreatEqual =>
-          branchOut.flushPipe <= not lessThan;
-          branchOut.newPc     <= not lessThan;
-        when eLessThanUns =>
-          branchOut.flushPipe <= lessThanUns;
-          branchOut.newPc     <= lessThanUns;
-        when eGreatEqualUns =>
-          branchOut.flushPipe <= not lessThanUns;
-          branchOut.newPc     <= not lessThanUns;
-        when eJal =>
+        when cBrEqual =>
+          branchOut.flushPipe <= bool2Logic(equal);
+          branchOut.newPc     <= bool2Logic(equal);
+        when cBrNEqual =>
+          branchOut.flushPipe <= bool2Logic(not equal);
+          branchOut.newPc     <= bool2Logic(not equal);
+        when cBrLessTh =>
+          branchOut.flushPipe <= bool2Logic(lessThan);
+          branchOut.newPc     <= bool2Logic(lessThan);
+        when cBrGreatEq =>
+          branchOut.flushPipe <= bool2Logic(not lessThan);
+          branchOut.newPc     <= bool2Logic(not lessThan);
+        when cBrLessThUns =>
+          branchOut.flushPipe <= bool2Logic(lessThanUns);
+          branchOut.newPc     <= bool2Logic(lessThanUns);
+        when cBrGreatEqUns =>
+          branchOut.flushPipe <= bool2Logic(not lessThanUns);
+          branchOut.newPc     <= bool2Logic(not lessThanUns);
+        when cBrJal =>
           branchOut.flushPipe <= '1';
           branchOut.newPc     <= '1';
-        when eJalr =>
+        when cBrJalR =>
           branchOut.flushPipe <= '1';
           branchOut.newPc     <= '1';
         when others =>
@@ -319,11 +322,12 @@ begin  -- architecture rtl
   begin  -- process branchCompPRo
     if iClk'event and iClk = '1' then   -- rising clock edge
       case branchOpi1.op is
-        when eJalr =>
-          branchOut.pc    <= signed(data1) + signed(imm);
+        when cBrJalR =>
+          branchOut.pc    <= std_logic_vector(signed(data1) + signed(imm));
           branchOut.pc(0) <= '0';
         when others =>
-          branchOut.pc <= signed(curPc) + signed(imm);
-      end if;
-end process branchCompPRo;
+          branchOut.pc <= std_logic_vector(signed(curPc) + signed(imm));
+      end case;
+    end if;
+  end process branchCompPRo;
 end architecture rtl;

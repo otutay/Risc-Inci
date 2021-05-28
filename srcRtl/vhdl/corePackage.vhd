@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-11
+-- Last update: 2021-05-28
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -187,6 +187,11 @@ package corePackage is
     )
     return natural;
 
+  function bool2Logic(
+    bool : boolean
+    )
+    return std_logic;
+
 end package corePackage;
 
 package body corePackage is
@@ -203,6 +208,16 @@ package body corePackage is
     return width;
   end function log2;
 
+  function bool2Logic( bool : boolean )
+    return std_logic is
+
+  begin
+    if(bool = True) then
+      return '1';
+    else
+      return '0';
+    end if;
+    end function bool2Logic;
 
 
   -- function to_branchEnum(
