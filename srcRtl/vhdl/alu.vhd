@@ -23,7 +23,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.corePckg.all;
+use work.corePackage.all;
 entity alu is
 
   port (
@@ -73,13 +73,14 @@ entity alu is
 end entity alu;
 
 architecture rtl of alu is
-  -- sverilog 2 vhdl bottleneck
+ -- sverilog 2 vhdl bottleneck
 
   signal memOut      : tMemOp                                   := cMemOp;
   signal memOuti1    : tMemOp                                   := cMemOp;
   signal operand1    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
   signal operand2    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
-  signal operation   : tArithEnum                               := eNOOP;
+  -- signal operation   : tArithEnum                               := eNOOP;
+  signal operation   : std_logic_vector(3 downto 0)             := cNoArith;
   signal regAddr     : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
   signal regOpValid  : std_logic                                := '0';
   signal regOut      : tRegOp                                   := cRegOp;

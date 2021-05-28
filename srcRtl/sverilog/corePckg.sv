@@ -173,6 +173,7 @@ package corePckg;
       logic		      flushPipe;
       logic		      newPC;
       logic [cXLEN-1:0]       pc;
+      logic		      dv;
    }tBranchOp;
 
    typedef struct	      packed {

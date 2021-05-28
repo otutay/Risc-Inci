@@ -46,6 +46,7 @@ module InstDecoderTb();
    logic [5:0]	       instTypei2;
    logic [5:0]	       instTypei3;
 
+   // decoder data
    tDecodedInst dutInst = cDecodedInst;
    tDecodedInst dutInsti1 = cDecodedInst;
    tDecodedReg dutRegOp = cDecodedReg;
@@ -70,6 +71,11 @@ module InstDecoderTb();
    tDecodedBranch branchOp = cDecodedBranch;
    tDecodedBranch branchOpi1 = cDecodedBranch;
    tDecodedBranch branchOpi2 = cDecodedBranch;
+
+   //alu output wb stage
+   tMemOp memWB;
+   tRegOp regWB;
+   tBranchOp branchWB;
 
    // test classes
    testVector testVectorObj;
@@ -138,17 +144,17 @@ module InstDecoderTb();
 	     6'b000001:
 	       begin
 		  testLogObj.addDecodeRtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2,decoderObj.dest,
-						 decoderObj.f3,decoderObj.f7);
+					       decoderObj.f3,decoderObj.f7);
 	       end
 	     6'b000010:
 	       begin
 		  testLogObj.addDecodeItypeLog(decoderObj.opcode,decoderObj.src1,decoderObj.dest, decoderObj.f3,
-						 decoderObj.imm);
+					       decoderObj.imm);
 	       end
 	     6'b000100 , 6'b001000:
 	       begin
 		  testLogObj.addDecodeSBtypeLog(decoderObj.opcode, decoderObj.src1,decoderObj.src2, decoderObj.f3,
-						  decoderObj.imm);
+						decoderObj.imm);
 	       end
 	     6'b010000 , 6'b100000:
 	       begin
@@ -220,37 +226,82 @@ module InstDecoderTb();
 
    instDecoder #(.cycleNum(2))
    DUTDecoder(
-       .iClk(clk),
-       .iRst(rst),
-       .iInst(inst),
-       .iCurPC(curPC),
-       .iFlushPipe(flushPipe),
-       // decodedInst
-       .oRs1Addr(dutInst.rs1.addr),
-       .oRs2Addr(dutInst.rs2.addr),
-       .oRdAddr(dutInst.rdAddr),
-       .oF3(dutInst.funct3),
-       .oF7(dutInst.funct7),
-       .oImm(dutInst.imm),
-       .oOpcode(dutInst.opcode),
-       .oCurPc(dutInst.curPc),
-       //oDecodedMem
-       .oLoad(dutMemOp.load),
-       .oStore(dutMemOp.store),
-       .oMemDv(dutMemOp.dv),
-       //oDecodedReg
-       .oAritType(dutRegOp.arithType),
-       .oOpRs1(dutRegOp.opRs1),
-       .oOpRs2(dutRegOp.opRs2),
-       .oOpImm(dutRegOp.opImm),
-       .oOpPc(dutRegOp.opPc),
-       .oOpConst(dutRegOp.opConst),
-       .oOpDv(dutRegOp.dv),
-       //oDecodedBranch
-       .oBrOp(dutBranchOp.op),
-       .oBrDv(dutBranchOp.dv)
-       );
+	      .iClk(clk),
+	      .iRst(rst),
+	      .iInst(inst),
+	      .iCurPC(curPC),
+	      .iFlushPipe(flushPipe),
+	      // decodedInst
+	      .oRs1Addr(dutInst.rs1.addr),
+	      .oRs2Addr(dutInst.rs2.addr),
+	      .oRdAddr(dutInst.rdAddr),
+	      .oF3(dutInst.funct3),
+	      .oF7(dutInst.funct7),
+	      .oImm(dutInst.imm),
+	      .oOpcode(dutInst.opcode),
+	      .oCurPc(dutInst.curPc),
+	      //oDecodedMem
+	      .oLoad(dutMemOp.load),
+	      .oStore(dutMemOp.store),
+	      .oMemDv(dutMemOp.dv),
+	      //oDecodedReg
+	      .oAritType(dutRegOp.arithType),
+	      .oOpRs1(dutRegOp.opRs1),
+	      .oOpRs2(dutRegOp.opRs2),
+	      .oOpImm(dutRegOp.opImm),
+	      .oOpPc(dutRegOp.opPc),
+	      .oOpConst(dutRegOp.opConst),
+	      .oOpDv(dutRegOp.dv),
+	      //oDecodedBranch
+	      .oBrOp(dutBranchOp.op),
+	      .oBrDv(dutBranchOp.dv)
+	      );
 
+   alu
+     DUTAlu(
+	    .iClk(clk),
+	    .iRst(rst),
+	    //iDecoded
+	    .iRs1Data(),
+	    .iRs2Data(),
+	    .iRdAddr(dutInst.rdAddr),
+	    .iFunct3(dutInst.funct3),
+	    .iFunct7(dutInst.funct7),
+	    .iImm(dutInst.imm),
+	    .iOpcode(dutInst.opcode),
+	    .iCurPc(dutInst.curPc),
+	    //iDecodedM
+	    .iLoad(dutMemOp.load),
+	    .iStore(dutMemOp.store),
+	    .iMemdv(dutMemOp.dv),
+	    //iDecodedR
+	    .iArithType(dutRegOp.arithType),
+	    .iOpRs1(dutRegOp.opRs1),
+	    .iOpRs2(dutRegOp.opRs2),
+	    .iOpImm(dutRegOp.opImm),
+	    .iOpPc(dutRegOp.opPc),
+	    .iOpConst(dutRegOp.opConst),
+	    .iRegdv(dutRegOp.dv),
+	    //iDecodedB
+	    .iBrOp(dutBranchOp.op),
+	    .iBrDv(dutBranchOp.dv),
+	    // oMemWB params
+	    .oMemReadDv(memWB.read),
+	    .oMemWriteDv(memWB.write),
+	    .oMemAddr(memWB.addr),
+	    .oMemData(memWB.data),
+	    .oMemOpType(memWB.opType),
+	    .oMemRdAddr(memWB.rdAddr),
+	    // oRegWB params
+	    .oRegDv(regWB.dv),
+	    .oRegAddr(regWB.addr),
+	    .oRegData(regWB.data),
+	    // oBranchWB
+	    .oBrFlushPipe(branchWB.flushPipe),
+	    .oBrNewPc(branchWB.newPC),
+	    .oBrPc(branchWB.pc),
+	    .oBrDv(branchWB.dv)
+	    );
 
 
 endmodule : InstDecoderTb
