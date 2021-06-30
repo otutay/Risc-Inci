@@ -47,11 +47,16 @@ module InstDecoderTb();
    logic [5:0]	       instTypei3;
 
    // decoder data
-   tDecodedInst dutInst = cDecodedInst;
-   tDecodedInst dutInsti1 = cDecodedInst;
-   tDecodedReg dutRegOp = cDecodedReg;
-   tDecodedMem dutMemOp = cDecodedMem;
-   tDecodedBranch dutBranchOp = cDecodedBranch;
+   tDecodedInst dutInst;
+// = cDecodedInst;
+   tDecodedInst dutInsti1;
+// = cDecodedInst;
+   tDecodedReg dutRegOp;
+// = cDecodedReg;
+   tDecodedMem dutMemOp;
+// = cDecodedMem;
+   tDecodedBranch dutBranchOp;
+// = cDecodedBranch;
 
    tDecodedInst decodedInst = cDecodedInst;
    tDecodedInst decodedInsti1 = cDecodedInst;
@@ -71,6 +76,10 @@ module InstDecoderTb();
    tDecodedBranch branchOp = cDecodedBranch;
    tDecodedBranch branchOpi1 = cDecodedBranch;
    tDecodedBranch branchOpi2 = cDecodedBranch;
+
+   // reg file output
+   logic [cXLEN-1:0]   rs1Data;
+   logic [cXLEN-1:0]   rs2Data;
 
    //alu output wb stage
    tMemOp memWB;
@@ -221,9 +230,6 @@ module InstDecoderTb();
 	end
    end
 
-
-
-
    instDecoder #(.cycleNum(2))
    DUTDecoder(
 	      .iClk(clk),
@@ -257,13 +263,35 @@ module InstDecoderTb();
 	      .oBrDv(dutBranchOp.dv)
 	      );
 
+    regFile DutReg(
+		  .iClk(clk),
+		  .iEn(1'b0),
+		  // rs1
+		  .iRs1Addr(dutInst.rs1.addr),
+		  .iRs1Dv(1'b1),
+		  // rs2
+		  .iRs2Addr(dutInst.rs2.addr),
+		  .iRs2Dv(1'b1),
+		  // rd
+		  .iRdAddr(),
+		  .iRdData(),
+		  .iRdDv(),
+		  // rdMem
+		  .iRdMemAddr(),
+		  .iRdMemData(),
+		  .iRdMemDv(),
+		  // outdata
+		  .oRs1Data(rs1Data),
+		  .oRs2Data(rs2Data)
+		  );
+
    alu
      DUTAlu(
 	    .iClk(clk),
 	    .iRst(rst),
 	    //iDecoded
-	    .iRs1Data(),
-	    .iRs2Data(),
+	    .iRs1Data(rs1Data),
+	    .iRs2Data(rs2Data),
 	    .iRdAddr(dutInst.rdAddr),
 	    .iFunct3(dutInst.funct3),
 	    .iFunct7(dutInst.funct7),
@@ -302,6 +330,5 @@ module InstDecoderTb();
 	    .oBrPc(branchWB.pc),
 	    .oBrDv(branchWB.dv)
 	    );
-
 
 endmodule : InstDecoderTb

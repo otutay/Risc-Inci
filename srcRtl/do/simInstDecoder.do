@@ -8,11 +8,14 @@ vlog -work work -vopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/s
 vlog -work work -vopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/InstDecoderIntf.sv
 vlog -work work -vopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/InstDecoderTb.sv
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/corePackage.vhd
+vcom -work work -2008 -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/regFile.vhd
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/instDecoder.vhd
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/alu.vhd
 
 vsim -voptargs=+acc work.InstDecoderTb
 add wave -position insertpoint sim:/InstDecoderTb/*
+add wave -divider dutReg
+add wave -position insertpoint sim:/InstDecoderTb/DUTReg/*
 add wave -divider dutAlu
 add wave -position insertpoint sim:/InstDecoderTb/DUTAlu/*
 add wave -divider dutInstDecoder
