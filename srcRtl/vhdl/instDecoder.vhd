@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-16
--- Last update: 2021-05-19
+-- Last update: 2021-07-02
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -36,33 +36,13 @@ entity instDecoder is
     iCurPc     : in  std_logic_vector(cXLen-1 downto 0);
     iFlushPipe : in  std_logic;
     -- decoded params
-    oRs1Addr   : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oRs2Addr   : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oRdAddr    : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oF3        : out std_logic_vector(2 downto 0);
-    oF7        : out std_logic_vector(6 downto 0);
-    oImm       : out std_logic_vector(cXLen-1 downto 0);
-    oOpcode    : out std_logic_vector(6 downto 0);
-    oCurPc     : out std_logic_vector(cXLen-1 downto 0);
+    oDecoded   : out tDecodedInst;
     -- oDecodedMem
-    oLoad      : out std_logic;
-    oStore     : out std_logic;
-    oMemDv     : out std_logic;
+    oMemOp     : out tDecodedMem;
     -- oDecodedReg
-    oAritType  : out std_logic_vector(3 downto 0);
-    oOpRs1     : out std_logic;
-    oOpRs2     : out std_logic;
-    oOpImm     : out std_logic;
-    oOpPc      : out std_logic;
-    oOpConst   : out std_logic;
-    oOpDv      : out std_logic;
+    oRegOp     : out tDecodedReg;
     -- oDecodedBranch
-    oBrOp      : out std_logic_vector(2 downto 0);
-    oBrDv      : out std_logic
-   -- oDecoded   : out tDecodedInst;
-   -- oMemOp     : out tDecodedMem;
-   -- oRegOp     : out tDecodedReg;
-   -- oBranchOp  : out tDecodedBranch
+    oBranchOp   : out tDecodedBranch
     );
 
 end entity instDecoder;
@@ -85,33 +65,10 @@ begin  -- architecture rtl
   -- assert statements
   assert cycleNum = 1 or cycleNum = 2 report "cycleNum is not supported" severity failure;
 
-
-  -- output setting
--- decoded params
-  oRs1Addr  <= decodedInst.rs1.addr;
-  oRs2Addr  <= decodedInst.rs2.addr;
-  oRdAddr   <= decodedInst.rdAddr;
-  oF3       <= decodedInst.funct3;
-  oF7       <= decodedInst.funct7;
-  oImm      <= decodedInst.imm;
-  oOpcode   <= decodedInst.opcode;
-  oCurPc    <= decodedInst.curPC;
-  -- oDecodedMem
-  oLoad     <= memOp.load;
-  oStore    <= memOp.store;
-  oMemDv    <= memOp.dv;
-  -- oDecodedReg
-  oAritType <= regOp.arithType;
-  oOpRs1    <= regOp.opRs1;
-  oOpRs2    <= regOp.opRs2;
-  oOpImm    <= regOp.opImm;
-  oOpPc     <= regOp.opPc;
-  oOpConst  <= regOp.opConst;
-  oOpDv     <= regOp.dv;
-  -- oDecodedBranch
-  oBrOp     <= branchOp.op;
-  oBrDv     <= branchOp.dv;
-
+  oDecoded  <= decodedInst;
+  oMemOp    <= memOp;
+  oRegOp    <= regOp;
+  oBranchOp <= branchOp;
 
   OneCycleGen : if cycleNum = 1 generate
 

@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-14
--- Last update: 2021-06-30
+-- Last update: 2021-07-02
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -28,28 +28,19 @@ use work.corePackage.all;
 entity regFile is
 
   port (
-    iClk       : in  std_logic;
-    iEn        : in  std_logic;
+    iClk   : in std_logic;
+    iEn    : in std_logic;
     -- src1
-    iRs1Addr   : in  std_logic_vector(cRegSelBitW-1 downto 0);
-    iRs1Dv     : in  std_logic;
+    iRs1   : in tRegOp;
     -- src2
-    iRs2Addr   : in  std_logic_vector(cRegSelBitW-1 downto 0);
-    iRs2Dv     : in  std_logic;
+    iRs2   : in tRegOp;
     -- dest
-    iRdAddr    : in  std_logic_vector(cRegSelBitW-1 downto 0);
-    iRdData    : in  std_logic_vector(cXLen-1 downto 0);
-    iRdDv      : in  std_logic;
+    iRd    : in tRegOp;
     -- mem data
-    iRdMemAddr : in  std_logic_vector(cRegSelBitW-1 downto 0);
-    iRdMemData : in  std_logic_vector(cXLen-1 downto 0);
-    iRdMemDv   : in  std_logic;
-    -- rs1     : in  tRegOp;
-    -- rs2     : in  tRegOp;
-    -- rd      : in  tRegOp;
-    -- rdMem   : in  tRegOp;
-    oRs1Data   : out std_logic_vector(cXLen-1 downto 0);
-    oRs2Data   : out std_logic_vector(cXLen-1 downto 0)
+    iRdMem : in tRegOp;
+    -- out data
+    oRs1Data : out std_logic_vector(cXLen-1 downto 0);
+    oRs2Data : out std_logic_vector(cXLen-1 downto 0)
     );
 
 end entity regFile;
@@ -63,30 +54,15 @@ architecture rtl of regFile is
   signal rdMem : tRegOp   := cRegOp;
 begin  -- architecture rtl
 
-  rs1.addr <= iRs1Addr;
-  rs1.dv   <= iRs1Dv;
-
-  rs2.addr <= iRs2Addr;
-  rs2.dv   <= iRs2Dv;
-
-  rd.addr <= iRdAddr;
-  rd.data <= iRdData;
-  rd.dv   <= iRdDv;
-
-  rdMem.addr <= iRdMemAddr;
-  rdMem.data <= iRdMemData;
-  rdMem.dv   <= iRdMemDv;
-
-
   writeDataPro : process (iClk) is
   begin  -- process writeDataPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      if(rd.dv = '1') then
-        rf(to_integer(unsigned(rd.addr))) <= rd.data;
+      if(iRd.dv = '1') then
+        rf(to_integer(unsigned(iRd.addr))) <= iRd.data;
       end if;
 
-      if(rdMem.dv = '1') then
-        rf(to_integer(unsigned(rd.addr))) <= rdMem.data;
+      if(iRdMem.dv = '1') then
+        rf(to_integer(unsigned(iRdMem.addr))) <= iRdMem.data;
       end if;
 
       rf(0) <= (others => '0');
@@ -96,14 +72,14 @@ begin  -- architecture rtl
 
   outData : process (all) is
   begin  -- process outData
-    if(rs1.dv = '1') then
-      oRs1Data <= rf(to_integer(unsigned(rs1.addr)));
+    if(iRs1.dv = '1') then
+      oRs1Data <= rf(to_integer(unsigned(iRs1.addr)));
     else
       oRs1Data <= (others => '0');
     end if;
 
-    if(rs2.dv = '1') then
-      oRs2Data <= rf(to_integer(unsigned(rs2.addr)));
+    if(iRs2.dv = '1') then
+      oRs2Data <= rf(to_integer(unsigned(iRs2.addr)));
     else
       oRs2Data <= (others => '0');
     end if;

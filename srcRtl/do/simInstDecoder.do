@@ -11,6 +11,7 @@ vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRt
 vcom -work work -2008 -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/regFile.vhd
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/instDecoder.vhd
 vcom -work work -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/alu.vhd
+vcom -work work -2008 -vopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/vhdl/Top.vhd
 
 vsim -voptargs=+acc work.InstDecoderTb
 add wave -position insertpoint sim:/InstDecoderTb/*
