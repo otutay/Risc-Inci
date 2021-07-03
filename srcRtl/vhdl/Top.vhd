@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-03
+-- Last update: 2021-07-04
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -29,32 +29,35 @@ use work.corePackage.all;
 entity Top is
 
   port (
-    iClk      : in  std_logic;
-    iRst      : in  std_logic;
+    iClk        : in  std_logic;
+    iRst        : in  std_logic;
+    -- inst load interface
+    iInst2Write : in  std_logic_vector(cXLen-1 downto 0);
+    iInstWen    : in  std_logic;
     -- instDecode signals for tb
-    oRs1Addr  : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oRs2Addr  : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oRdAddr   : out std_logic_vector(cRegSelBitW-1 downto 0);
-    oF3       : out std_logic_vector(2 downto 0);
-    oF7       : out std_logic_vector(6 downto 0);
-    oImm      : out std_logic_vector(cXLen-1 downto 0);
-    oOpcode   : out std_logic_vector(6 downto 0);
-    oCurPc    : out std_logic_vector(cXLen-1 downto 0);
+    oRs1Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oRs2Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oRdAddr     : out std_logic_vector(cRegSelBitW-1 downto 0);
+    oF3         : out std_logic_vector(2 downto 0);
+    oF7         : out std_logic_vector(6 downto 0);
+    oImm        : out std_logic_vector(cXLen-1 downto 0);
+    oOpcode     : out std_logic_vector(6 downto 0);
+    oCurPc      : out std_logic_vector(cXLen-1 downto 0);
     -- oDecodedMem
-    oLoad     : out std_logic;
-    oStore    : out std_logic;
-    oMemDv    : out std_logic;
+    oLoad       : out std_logic;
+    oStore      : out std_logic;
+    oMemDv      : out std_logic;
     -- oDecodedReg
-    oAritType : out std_logic_vector(3 downto 0);
-    oOpRs1    : out std_logic;
-    oOpRs2    : out std_logic;
-    oOpImm    : out std_logic;
-    oOpPc     : out std_logic;
-    oOpConst  : out std_logic;
-    oOpDv     : out std_logic;
+    oAritType   : out std_logic_vector(3 downto 0);
+    oOpRs1      : out std_logic;
+    oOpRs2      : out std_logic;
+    oOpImm      : out std_logic;
+    oOpPc       : out std_logic;
+    oOpConst    : out std_logic;
+    oOpDv       : out std_logic;
     -- oDecodedBranch
-    oBrOp     : out std_logic_vector(2 downto 0);
-    oBrDv     : out std_logic
+    oBrOp       : out std_logic_vector(2 downto 0);
+    oBrDv       : out std_logic
     -- alu signals for tb
 
     );
@@ -81,7 +84,20 @@ architecture rtl of Top is
   signal rdMem         : tRegOp;
   signal rs1Data       : std_logic_vector(cXLen-1 downto 0);
   signal rs2Data       : std_logic_vector(cXLen-1 downto 0);
+  signal fetchCtrl     : tFetchCtrl;
 begin  -- architecture rtl
+
+  fetchComp : entity work.fetch
+    port map (
+      iClk        => iClk,
+      iRst        => iRst,
+      iFetchCtrl  => fetchCtrl,
+      oCurPc      => curPc,
+      oInstr      => inst,
+      iInst2Write => iInst2Write,
+      iInstWen    => iInstWen
+      );
+
 
   instDecoderComp : entity work.instDecoder
     generic map (
@@ -115,7 +131,7 @@ begin  -- architecture rtl
   begin  -- process dataSelect2Alu
     decoded.rs1Data <= rs1Data;
     decoded.rs2Data <= rs2Data;
-    decoded.rdAddr      <= decodedInst.rdAddr;
+    decoded.rdAddr  <= decodedInst.rdAddr;
     decoded.funct3  <= decodedInst.funct3;
     decoded.funct7  <= decodedInst.funct7;
     decoded.imm     <= decodedInst.imm;
@@ -135,6 +151,12 @@ begin  -- architecture rtl
       oRegWB         => regWB,
       oBranchWB      => branchWB
       );
+
+  fetchCtrl : process (all) is
+  begin  -- process fetchCtrl
+    fetchCtrl.pc    <= branchWB.pc;
+    fetchCtrl.newPc <= branchWB.newPc;
+  end process fetchCtrl;
 
   -- signals2tb
 
