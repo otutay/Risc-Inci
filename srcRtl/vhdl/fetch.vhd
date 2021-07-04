@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-25
--- Last update: 2021-07-04
+-- Last update: 2021-07-05
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -42,46 +42,44 @@ entity fetch is
 end entity fetch;
 
 architecture rtl of fetch is
-  -- signal LSWen       : std_logic                                      := '0';
-  -- signal LSEn        : std_logic                                      := '0';
-  -- signal LSAddr      : std_logic_vector(log2(cRamDepth-1)-1 downto 0) := (others => '0');
-  -- signal LSStoreData : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
-  -- signal LSLoadData  : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
-  -- signal readDv      : std_logic                                      := '0';
-  -- signal rdAddri1    : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
-  -- signal regOp       : tRegOp                                         := cRegOp;
 
-  -- signal readAddr    : std_logic_vector(log2(cRamDepth-1)-1 downto 0) := (others => '0');
+  signal ramAddr     : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal curPc       : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal instruction : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal instWen     : std_logic                                      := '0';
   signal instAddr    : std_logic_vector(log2(cRamDepth-1)-1 downto 0) := (others => '0');
   signal instData    : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
+  signal newPci1     : std_logic                                      := 'O';
 begin  -- architecture rtl
+  oInstr <= instruction;
+  outCurPcPro: process (iClk) is
+  begin  -- process outCurPcPro
+    if iClk'event and iClk = '1' then   -- rising clock edge
+      oCurPc <= curPC;
+    end if;
+  end process outCurPcPro;
 
   pcPro : process (iClk) is
   begin  -- process pcPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      if(iFetchCtrl.noOp = '1') then
-        curPc <= curPc;
-      elsif(iFetchCtrl.newPc = '1') then
-        curPc <= iFetchCtrl.pc;
-      else
+      if(iRst = '1') then
+        curPC <= (others => '0');
+      elsif (iFetchCtrl.newPc = '1') then
+        curPc <= std_logic_vector(unsigned(iFetchCtrl.pc) + 1);
+      elsif(iFetchCtrl.noOp = '0') then
         curPc <= std_logic_vector(unsigned(curPc) + 1);
       end if;
     end if;
   end process pcPro;
 
-  instrOutPro : process (iClk) is
-  begin  -- process instrOutPro
-     if iClk'event and iClk = '1' then   -- rising clock edge
+  ramAddrPro : process (all) is
+  begin  -- process ramAddrPro
     if(iFetchCtrl.newPc = '1') then
-      oInstr <= (others => '0');
+      ramAddr <= iFetchCtrl.curPc;
     else
-      oInstr <= instruction;
+      ramAddr <= curPc;
     end if;
-   end if;
-  end process instrOutPro;
+  end process ramAddrPro;
 
   InstRam : entity work.ram
     generic map (
@@ -94,7 +92,7 @@ begin  -- architecture rtl
       iRstA  => iRst,
       iEnA   => '1',
       iWEnA  => '0',
-      iAddrA => curPc(log2(cRamDepth-1)-1 downto 0),
+      iAddrA => ramAddr(log2(cRamDepth-1)-1 downto 0),
       iDataA => (others => '0'),
       oDataA => instruction,
       iRstB  => '0,
@@ -123,3 +121,35 @@ begin  -- architecture rtl
   end process instr2LoadPro;
 
 end architecture rtl;
+
+
+-- pipelined 2 clk latency
+
+-- pcPro : process (iClk) is
+-- begin  -- process pcPro
+--   if iClk'event and iClk = '1' then   -- rising clock edge
+--     if (iRst = '1') then
+--       curPC <= (others => '0');
+--     elsif(iFetchCtrl.newPc = '1') then
+--       curPc <= iFetchCtrl.pc;
+--     elsif(iFetchCtrl.noOp = '0') then
+--       curPc <= std_logic_vector(unsigned(curPc) + 1);
+--     end if;
+--   end if;
+-- end process pcPro;
+
+-- newPcRegPro : process (iClk) is
+-- begin  -- process newPcRegPro
+--   if iClk'event and iClk = '1' then   -- rising clock edge
+--     newPci1 <= iFetchCtrl.newPc;
+--   end if;
+-- end process newPcRegPro;
+
+-- instrOutPro : process (all) is
+-- begin  -- process instrOutPro
+--   if(newPci1 = '1') then
+--     oInstr <= (others => '0');
+--   else
+--     oInstr <= instruction;
+--   end if;
+-- end process instrOutPro;
