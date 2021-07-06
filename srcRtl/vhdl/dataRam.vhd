@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-04
--- Last update: 2021-07-05
+-- Last update: 2021-07-06
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -27,31 +27,52 @@ use work.corePackage.all;
 entity dataRam is
 
   port (
-    iClk   : in std_logic;
-    iRst   : in std_logic;
-    iMemOp : in tMemOp
+    iClk   : in  std_logic;
+    iRst   : in  std_logic;
+    iMemOp : in  tMemOp;
+    oRegOp : out tRegOp
     );
 
 end entity dataRam;
 architecture rtl of dataRam is
-  signal ramEn      : std_logic                          := '0';
-  signal ramWEn     : std_logic                          := '0';
-  signal ramAddr    : std_logic_vector(cXLen-1 downto 0) := (others => '0');
-  signal ramDataIn  : std_logic_vector(cXLen-1 downto 0) := (others => '0');
-  signal ramDataOut : std_logic_vector(cXLen-1 downto 0) := (others => '0');
-
-
+  signal ramEn      : std_logic                                := '0';
+  signal ramWEn     : std_logic                                := '0';
+  signal ramAddr    : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal ramDataIn  : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal ramDataOut : std_logic_vector(cXLen-1 downto 0)       := (others => '0');
+  signal rdAddri1   : std_logic_vector(cRegSelBitW-1 downto 0) := (others => '0');
+  signal dvi1       : std_logic                                := (others => '0');
 begin  -- architecture rtl
+
+  oRegOp.addr <= rdAddri1;
+  oRegOp.data <= ramDataOut;
+  oRegOp.dv   <= dvi1;
 
   ramCtrlPro : process (all) is
   begin  -- process ramCtrlPro
-    ramEn     <= iMemOp.readDv or iMemOp.writeDv;
-    ramWEn    <= iMemOp.writeDv;
-    ramAddr   <= iMemOp.addr;
-    ramDataIn <= iMemOp.data;
+    ramEn   <= iMemOp.readDv or iMemOp.writeDv;
+    ramWEn  <= iMemOp.writeDv;
+    ramAddr <= iMemOp.addr;
+    case iMemOp.opType is
+      when 3'b000 =>
+        ramDataIn <= std_logic_vector(resize(signed(iMemOp.data(7 downto 0)), cXLen));
+      when 3'b001 =>
+        ramDataIn <= std_logic_vector(resize(signed(iMemOp.data(15 downto 0)), cXLen));
+      when 3'b010 =>
+        ramDataIn <= std_logic_vector(resize(unsigned(iMemOp.data(15 downto 0)), cXLen));
+      when others =>
+        ramDataIn <= (others => '0');
+    end case;
   end process ramCtrlPro;
 
 
+  destRegPro : process (iClk) is
+  begin  -- process destAddrRegPro
+    if iClk'event and iClk = '1' then   -- rising clock edge
+      rdAddri1 <= rdAddr;
+      dvi1     <= iMemOp.readDv and not(iMemOp.writeDv);
+    end if;
+  end process destRegPro;
 
   InstRam : entity work.ram
     generic map (
