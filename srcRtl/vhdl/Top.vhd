@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-04
+-- Last update: 2021-07-06
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -31,6 +31,7 @@ entity Top is
   port (
     iClk        : in  std_logic;
     iRst        : in  std_logic;
+    iStart      : in  std_logic;
     -- inst load interface
     iInst2Write : in  std_logic_vector(cXLen-1 downto 0);
     iInstWen    : in  std_logic;
@@ -91,6 +92,7 @@ begin  -- architecture rtl
     port map (
       iClk        => iClk,
       iRst        => iRst,
+      iStart      => iStart,
       iFetchCtrl  => fetchCtrl,
       oCurPc      => curPc,
       oInstr      => inst,
@@ -150,6 +152,15 @@ begin  -- architecture rtl
       oMemWB         => memWB,
       oRegWB         => regWB,
       oBranchWB      => branchWB
+      );
+
+
+  dataRamComp : entity work.dataRam
+    port map (
+      iClk   => iClk,
+      iRst   => iRst,
+      iMemOp => memOp,
+      oRegOp => rdMem
       );
 
   fetchCtrl : process (all) is

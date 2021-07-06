@@ -41,6 +41,7 @@ class testVector;
    function logic [cXLEN-1:0] getData();
       logic [cXLEN-1:0] data = 'hdeadbeaf;
       int		status;
+
       status = $fscanf(fd,"%h",data);
 
       if(!$feof(fd))
@@ -53,7 +54,7 @@ class testVector;
       else
 	begin
 	   $error("\t\t TIME -> %0t, ERROR: NO DATA READ %h  \n",$time, data);
-	   $finish();
+	   //$finish();
 	end
       return data;
 
