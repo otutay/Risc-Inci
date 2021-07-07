@@ -47,32 +47,25 @@ module CoreTb();
    InstRandomizer randInstObj;
    initial
      begin
+	testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
 	if(cRandomize == 1)
 	  begin
 	     display("---------- Randomization ----------------------");
-	     testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
 	     randInstObj = new();
 	     for (int i = 0; i < cRandomSize; i++) begin
 		assert(randInstObj.randomize());
 		testVectorObj.setData(randInstObj.formInst());
 	     end
-	     testVectorObj.closeFile();
 	     display("---------- Done ----------------------");
 	  end
      end
 
-
    // instruction read from file
-
-   initial
-     begin
-	testVectorObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
-     end
-
    logic instWen;
    logic [cXLEN-1:0] inst2Write;
    logic [cXLEN-1:0] inst2Writei1;
    logic	     readDone;
+   logic	     startExecution;
 
    always_ff @(posedge clk) begin
       if(rst == 1'b1)
@@ -89,17 +82,56 @@ module CoreTb();
       inst2Writei1 <= inst2Write;
       if(rst == 1'b1)
 	begin
-	   inst2Wen <= 1'b0;
+	   instWen <= 1'b0;
+	   startExecution <= 1'b0;
 	end
       else if (inst2Write != 'hdeabbeaf)
 	begin
-	   inst2Wen <= 1'b1;
+	   instWen <= 1'b1;
+	   startExecution <= 1'b0;
 	end
       else
 	begin
-	   inst2Wen <= 1'b0;
+	   instWen <= 1'b0;
+	   startExecution <= 1'b1;
 	end
    end
 
+
+   Top DUTCore(
+	       .iClk(clk),
+	       .iRst(rst),
+	       .iStart(startExecution),
+	       // inst load interface
+	       .iInst2Write(inst2Writei1)
+	       .iInstWen(instWen)
+	       // instDecode signals for tb
+	       .oRs1Addr(dutInst.rs1.addr),
+	       .oRs2Addr(dutInst.rs2.addr),
+	       .oRdAddr(dutInst.rdAddr),
+	       .oF3(dutInst.funct3),
+	       .oF7(dutInst.funct7),
+	       .oImm(dutInst.imm),
+	       .oOpcode(dutInst.opcode),
+	       .oCurPc(dutInst.curPc),
+	       //oDecodedMem
+	       .oLoad(dutMemOp.load),
+	       .oStore(dutMemOp.store),
+	       .oMemDv(dutMemOp.dv),
+	       //oDecodedReg
+	       .oAritType(dutRegOp.arithType),
+	       .oOpRs1(dutRegOp.opRs1),
+	       .oOpRs2(dutRegOp.opRs2),
+	       .oOpImm(dutRegOp.opImm),
+	       .oOpPc(dutRegOp.opPc),
+	       .oOpConst(dutRegOp.opConst),
+	       .oOpDv(dutRegOp.dv),
+	       //oDecodedBranch
+	       .oBrOp(dutBranchOp.op),
+	       .oBrDv(dutBranchOp.dv)
+
+	       // alu signals for tb
+
+	       );
 
 endmodule : CoreTb;
