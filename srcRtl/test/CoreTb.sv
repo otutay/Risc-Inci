@@ -64,7 +64,7 @@ module CoreTb();
 
    // instruction read from file
 
-   initial
+   initial // obj constructed
      begin
 	testVectorObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
      end
@@ -74,6 +74,7 @@ module CoreTb();
    logic [cXLEN-1:0] inst2Writei1;
    logic	     readDone;
 
+    // read from file
    always_ff @(posedge clk) begin
       if(rst == 1'b1)
 	begin
@@ -84,7 +85,7 @@ module CoreTb();
 	   inst2Write <= testVectorObj.getData();
 	end
    end
-
+   // if valid write 2 core
    always_ff @(posedge clk) begin
       inst2Writei1 <= inst2Write;
       if(rst == 1'b1)
