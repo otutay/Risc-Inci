@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-06
+-- Last update: 2021-07-08
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -35,6 +35,9 @@ entity Top is
     -- inst load interface
     iInst2Write : in  std_logic_vector(cXLen-1 downto 0);
     iInstWen    : in  std_logic;
+    -- data load interface
+    iData2Write : in  std_logic_vector(cXLen-1 downto 0);
+    iDataWen    : in  std_logic;
     -- instDecode signals for tb
     oRs1Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
     oRs2Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
@@ -157,17 +160,20 @@ begin  -- architecture rtl
 
   dataRamComp : entity work.dataRam
     port map (
-      iClk   => iClk,
-      iRst   => iRst,
-      iMemOp => memOp,
-      oRegOp => rdMem
+      iClk        => iClk,
+      iRst        => iRst,
+      iMemOp      => memWB,
+      oRegOp      => rdMem,
+      -- data 2 load
+      iData2Write => iData2Write,
+      iWEn        => iDataWen
       );
 
-  fetchCtrl : process (all) is
+  fetchCtrlPro : process (all) is
   begin  -- process fetchCtrl
     fetchCtrl.pc    <= branchWB.pc;
     fetchCtrl.newPc <= branchWB.newPc;
-  end process fetchCtrl;
+  end process fetchCtrlPro;
 
   -- signals2tb
 

@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-25
--- Last update: 2021-07-06
+-- Last update: 2021-07-08
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.corePckg.all;
+use work.corePackage.all;
 
 entity fetch is
 
@@ -32,7 +32,7 @@ entity fetch is
     iRst        : in  std_logic;
     iStart      : in  std_logic;
     -- fetch ctrl interface
-    iFetchCtrl  : in  iFetchCtrl;
+    iFetchCtrl  : in  tFetchCtrl;
     oCurPc      : out std_logic_vector(cXLen-1 downto 0);
     oInstr      : out std_logic_vector(cXLen-1 downto 0);
     -- inst load interface
@@ -50,7 +50,7 @@ architecture rtl of fetch is
   signal instWen     : std_logic                                      := '0';
   signal instAddr    : std_logic_vector(log2(cRamDepth-1)-1 downto 0) := (others => '0');
   signal instData    : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
-  signal newPci1     : std_logic                                      := 'O';
+  signal newPci1     : std_logic                                      := '0';
 begin  -- architecture rtl
 
   -- output signal assignment
@@ -94,7 +94,7 @@ begin  -- architecture rtl
   ramAddrPro : process (all) is
   begin  -- process ramAddrPro
     if(iFetchCtrl.newPc = '1') then
-      ramAddr <= iFetchCtrl.curPc;
+      ramAddr <= iFetchCtrl.pc;
     else
       ramAddr <= curPc;
     end if;
@@ -114,8 +114,8 @@ begin  -- architecture rtl
       iAddrA => ramAddr(log2(cRamDepth-1)-1 downto 0),
       iDataA => (others => '0'),
       oDataA => instruction,
-      iRstB  => '0,
-      iEnB   => '1'
+      iRstB  => '0',
+      iEnB   => '1',
       iWEnB  => instWen,
       iAddrB => instAddr,
       iDataB => instData,

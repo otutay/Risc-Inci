@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-25
--- Last update: 2021-04-01
+-- Last update: 2021-07-08
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.corePckg.all;
+use work.corePackage.all;
 
 entity ram is
 
@@ -39,30 +39,32 @@ entity ram is
     iEnA   : in  std_logic;
     iWEnA  : in  std_logic;
     iAddrA : in  std_logic_vector(log2(cRamDepth-1)-1 downto 0);
-    iDataA : out std_logic_vector(cRamWidth-1 downto 0);
+    iDataA : in std_logic_vector(cRamWidth-1 downto 0);
     oDataA : out std_logic_vector(cRamWidth-1 downto 0);
     -- b port
     iRstB  : in  std_logic;
     iEnB   : in  std_logic;
     iWEnB  : in  std_logic;
     iAddrB : in  std_logic_vector(log2(cRamDepth-1)-1 downto 0);
-    iDataB : out std_logic_vector(cRamWidth-1 downto 0);
+    iDataB : in std_logic_vector(cRamWidth-1 downto 0);
     oDataB : out std_logic_vector(cRamWidth-1 downto 0)
     );
 
 end entity ram;
 architecture rtl of ram is
-  type tRamArray is array ((0 to cRamWidth-1)) of std_logic_vector(cRamDepth-1 downto 0);
+  type tRamArray is array (0 to cRamWidth-1) of std_logic_vector(cRamDepth-1 downto 0);
   signal ram : tRamArray := (others => (others => '0'));
+  signal ramDataA : std_logic_vector(cRamWidth-1 downto 0) :=(others => '0');
+  signal ramDataB : std_logic_vector(cRamWidth-1 downto 0) :=(others => '0');
 begin  -- architecture rtl
   portAPro : process (iClk) is
   begin  -- process portAPro
     if iClk'event and iClk = '1' then   -- rising clock edge
       if(iEnA = '1') then
         if(iWEnA = '1') then
-          ram(iAddrA) <= iDataA;
+          ram(to_integer(unsigned(iAddrA))) <= iDataA;
         else
-          ramDataA <= ram(iAddrA);
+          ramDataA <= ram(to_integer(unsigned(iAddrA)));
         end if;
       end if;
     end if;
@@ -73,9 +75,9 @@ begin  -- architecture rtl
     if iClk'event and iClk = '1' then   -- rising clock edge
       if(iEnB = '1') then
         if(iWEnB = '1') then
-          ram(iAddrB) <= iDataB;
+          ram(to_integer(unsigned(iAddrB))) <= iDataB;
         else
-          ramDataB <= ram(iAddrB);
+          ramDataB <= ram(to_integer(unsigned(iAddrB)));
         end if;
       end if;
     end if;
