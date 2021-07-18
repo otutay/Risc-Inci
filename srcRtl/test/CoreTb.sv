@@ -27,14 +27,14 @@ module CoreTb();
    // parameters for tb
    localparam realtime cClkPeriod = 10ns;
    localparam realtime cResetTime = 1000ns;
-   localparam integer  cRandomSize = 2000;
+   localparam integer  cRandomSize = 10;
    localparam integer  cRandomize = 1;
    localparam integer  cDispOnTerm = 1;
 
    // clk and rst gen
-   logic	       clk;
+   logic	       clk = 0;
    logic	       rst = 1;
-
+   logic	       rsti1 =1;
    always #(cClkPeriod/2) clk =~clk;
 
    initial begin
@@ -42,6 +42,11 @@ module CoreTb();
       #(cResetTime)
       rst = 1'b0;
    end
+
+   always_ff @(posedge clk) begin
+      rsti1 <= rst;
+   end
+
    // random inst created and written 2 a file
    testVector testVectorObj;
    InstRandomizer randInstObj;
@@ -50,13 +55,15 @@ module CoreTb();
 	testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
 	if(cRandomize == 1)
 	  begin
-	     display("---------- Randomization ----------------------");
+	     $display("---------- Randomization ----------------------");
 	     randInstObj = new();
 	     for (int i = 0; i < cRandomSize; i++) begin
 		assert(randInstObj.randomize());
 		testVectorObj.setData(randInstObj.formInst());
 	     end
-	     display("---------- Done ----------------------");
+	     testVectorObj.closeFile();
+	     $display("---------- Done ----------------------");
+	     testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
 	  end
      end
 
@@ -80,12 +87,12 @@ module CoreTb();
 
    always_ff @(posedge clk) begin
       inst2Writei1 <= inst2Write;
-      if(rst == 1'b1)
+      if(rsti1 == 1'b1)
 	begin
 	   instWen <= 1'b0;
 	   startExecution <= 1'b0;
 	end
-      else if (inst2Write != 'hdeabbeaf)
+      else if (inst2Write != 'hdeadbeaf)
 	begin
 	   instWen <= 1'b1;
 	   startExecution <= 1'b0;
@@ -97,14 +104,22 @@ module CoreTb();
 	end
    end
 
+   tDecodedInst dutInst;
+   tDecodedReg dutRegOp;
+   tDecodedMem dutMemOp;
+   tDecodedBranch dutBranchOp;
+
 
    Top DUTCore(
 	       .iClk(clk),
 	       .iRst(rst),
 	       .iStart(startExecution),
 	       // inst load interface
-	       .iInst2Write(inst2Writei1)
-	       .iInstWen(instWen)
+	       .iInst2Write(inst2Writei1),
+	       .iInstWen(instWen),
+	       // data load interface
+	       .iData2Write(),
+	       .iDataWen(),
 	       // instDecode signals for tb
 	       .oRs1Addr(dutInst.rs1.addr),
 	       .oRs2Addr(dutInst.rs2.addr),

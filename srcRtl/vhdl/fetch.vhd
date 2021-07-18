@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-03-25
--- Last update: 2021-07-08
+-- Last update: 2021-07-19
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -47,6 +47,7 @@ architecture rtl of fetch is
   signal ramAddr     : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal curPc       : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal instruction : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
+  signal instEn      : std_logic                                      := '0';
   signal instWen     : std_logic                                      := '0';
   signal instAddr    : std_logic_vector(log2(cRamDepth-1)-1 downto 0) := (others => '0');
   signal instData    : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
@@ -115,7 +116,7 @@ begin  -- architecture rtl
       iDataA => (others => '0'),
       oDataA => instruction,
       iRstB  => '0',
-      iEnB   => '1',
+      iEnB   => instEn,
       iWEnB  => instWen,
       iAddrB => instAddr,
       iDataB => instData,
@@ -133,6 +134,7 @@ begin  -- architecture rtl
       else
         instData <= iInst2Write;
         instWen  <= iInstWen;
+        instEn   <= iInstWen;
         if(iInstWen = '1') then
           instAddr <= std_logic_vector(unsigned(instAddr) + 1);
         end if;

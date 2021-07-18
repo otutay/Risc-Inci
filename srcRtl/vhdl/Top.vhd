@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-08
+-- Last update: 2021-07-19
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -171,8 +171,10 @@ begin  -- architecture rtl
 
   fetchCtrlPro : process (all) is
   begin  -- process fetchCtrl
-    fetchCtrl.pc    <= branchWB.pc;
-    fetchCtrl.newPc <= branchWB.newPc;
+
+    fetchCtrl.pc    <= x"00000"& "00" & branchWB.pc(9 downto 0); -- to be corrected
+    fetchCtrl.newPc <= branchWB.newPc and branchWB.dv;
+    fetchCtrl.noOp  <= '0'; -- to be corrected
   end process fetchCtrlPro;
 
   -- signals2tb
