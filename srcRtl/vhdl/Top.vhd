@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-19
+-- Last update: 2021-07-20
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ entity Top is
   port (
     iClk        : in  std_logic;
     iRst        : in  std_logic;
-    iExecute    : in  std_logic;
+    iStart      : in  std_logic;
     -- inst load interface
     iInst2Write : in  std_logic_vector(cXLen-1 downto 0);
     iInstWen    : in  std_logic;
@@ -95,7 +95,7 @@ begin  -- architecture rtl
     port map (
       iClk        => iClk,
       iRst        => iRst,
-      iExecute    => iExecute,
+      iStart      => iStart,
       iFetchCtrl  => fetchCtrl,
       oCurPc      => curPc,
       oInstr      => inst,

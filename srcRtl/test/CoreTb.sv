@@ -72,9 +72,11 @@ module CoreTb();
    logic [cXLEN-1:0] inst2Write;
    logic [cXLEN-1:0] inst2Writei1;
    logic	     readDone;
+   logic	     start;
 
+   always_ff @(posedge clk)
+     begin : readDataPro
 
-   always_ff @(posedge clk) begin
       if(rst == 1'b1)
 	begin
 	   inst2Write <= 32'h00000000;
@@ -83,48 +85,31 @@ module CoreTb();
 	begin
 	   inst2Write <= testVectorObj.getData();
 	end
-   end
 
-   always_ff @(posedge clk)
+     end // block: readDataPro
+
+
+
+    always_ff @(posedge clk)
      begin : instWritePro
 	inst2Writei1 <= inst2Write;
 	if(rsti1 == 1'b1)
 	  begin
 	     instWen <= 1'b0;
+	     start <= 1'b0;
 	  end
 	else if (inst2Write != 'hdeadbeaf)
 	  begin
 	     instWen <= 1'b1;
+	     start <= 1'b0;
 	  end
 	else
 	  begin
 	     instWen <= 1'b0;
+	     start <= 1'b1;
 	  end
+
      end // block: instWritePro
-
-
-   logic execute;
-   integer execCount = 0;
-   always_ff @(posedge clk)
-     begin : executionPro
-	if(rsti1 == 1'b1)
-	  begin
-	     execute <= 1'b0;
-	  end
-	else if (inst2Write == 'hdeadbeaf)
-	  begin
-	     execCount <= execCount + 1;
-	     if(execCount >= cRandomSize)
-	       execute <= 1'b0;
-	     else
-	       execute <= 1'b1;
-	  end
-	else
-	  begin
-	     execute <= 1'b0;
-	  end
-     end // block: executionPro
-
 
    tDecodedInst dutInst;
    tDecodedReg dutRegOp;
@@ -135,7 +120,7 @@ module CoreTb();
    Top DUTCore(
 	       .iClk(clk),
 	       .iRst(rst),
-	       .iExecute(execute),
+	       .iStart(start),
 	       // inst load interface
 	       .iInst2Write(inst2Writei1),
 	       .iInstWen(instWen),

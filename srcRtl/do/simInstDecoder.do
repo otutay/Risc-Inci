@@ -1,4 +1,5 @@
 quit -sim
+delete wave *
 ## test files
 vlog -work work -novopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/sverilog/corePckg.sv
 vlog -work work -novopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/packageTb.sv
@@ -23,21 +24,18 @@ vcom -work work -2008 -novopt -stats=none /home/otutay/Desktop/tWork/rtl/Risc-In
 vlog -work work -vopt -sv -stats=none /home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/CoreTb.sv
 
 vsim -voptargs=+acc work.CoreTb
-add wave -position insertpoint sim:/CoreTb/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/*
 add wave -divider FetchComp
-add wave -position insertpoint sim:/CoreTb/DUTCore/fetchComp/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/fetchComp/*
 add wave -divider InstRam
-add wave -position insertpoint sim:/CoreTb/DUTCore/fetchComp/InstRam/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/fetchComp/InstRam/*
 add wave -divider instDecoderComp
-add wave -position insertpoint sim:/CoreTb/DUTCore/instDecoderComp/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/instDecoderComp/*
 add wave -divider regFileComp
-add wave -position insertpoint sim:/CoreTb/DUTCore/regFileComp/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/regFileComp/*
 add wave -divider aluComp
-add wave -position insertpoint sim:/CoreTb/DUTCore/aluComp/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/aluComp/*
 add wave -divider dataRamComp
-add wave -position insertpoint sim:/CoreTb/DUTCore/dataRamComp/*
+add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/dataRamComp/*
 
-
-
-#add wave -r /*
 run 2 us
