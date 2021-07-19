@@ -31,7 +31,7 @@ entity Top is
   port (
     iClk        : in  std_logic;
     iRst        : in  std_logic;
-    iStart      : in  std_logic;
+    iExecute    : in  std_logic;
     -- inst load interface
     iInst2Write : in  std_logic_vector(cXLen-1 downto 0);
     iInstWen    : in  std_logic;
@@ -95,7 +95,7 @@ begin  -- architecture rtl
     port map (
       iClk        => iClk,
       iRst        => iRst,
-      iStart      => iStart,
+      iExecute    => iExecute,
       iFetchCtrl  => fetchCtrl,
       oCurPc      => curPc,
       oInstr      => inst,
@@ -172,9 +172,9 @@ begin  -- architecture rtl
   fetchCtrlPro : process (all) is
   begin  -- process fetchCtrl
 
-    fetchCtrl.pc    <= x"00000"& "00" & branchWB.pc(9 downto 0); -- to be corrected
+    fetchCtrl.pc    <= x"00000"& "00" & branchWB.pc(9 downto 0);  -- to be corrected
     fetchCtrl.newPc <= branchWB.newPc and branchWB.dv;
-    fetchCtrl.noOp  <= '0'; -- to be corrected
+    fetchCtrl.noOp  <= '0';             -- to be corrected
   end process fetchCtrlPro;
 
   -- signals2tb

@@ -30,7 +30,7 @@ entity fetch is
   port (
     iClk        : in  std_logic;
     iRst        : in  std_logic;
-    iStart      : in  std_logic;
+    iExecute    : in  std_logic;
     -- fetch ctrl interface
     iFetchCtrl  : in  tFetchCtrl;
     oCurPc      : out std_logic_vector(cXLen-1 downto 0);
@@ -43,9 +43,10 @@ entity fetch is
 end entity fetch;
 
 architecture rtl of fetch is
-  signal execute     : std_logic                                      := '0';
+  --signal execute     : std_logic                                      := '0';
   signal ramAddr     : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal curPc       : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
+  signal curPci1     : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal instruction : std_logic_vector(cXLen-1 downto 0)             := (others => '0');
   signal instEn      : std_logic                                      := '0';
   signal instWen     : std_logic                                      := '0';
@@ -60,21 +61,22 @@ begin  -- architecture rtl
   outCurPcPro : process (iClk) is
   begin  -- process outCurPcPro
     if iClk'event and iClk = '1' then   -- rising clock edge
-      oCurPc <= curPC;
+      curPci1 <= curPC;
+      oCurPc  <= curPCi1;
     end if;
   end process outCurPcPro;
 
   -- start execution
-  startDecidePro : process (iClk) is
-  begin  -- process startDecidePro
-    if iClk'event and iClk = '1' then   -- rising clock edge
-      if(iRst = '1') then
-        execute <= '0';
-      elsif(iStart = '1') then
-        execute <= '1';
-      end if;
-    end if;
-  end process startDecidePro;
+  -- startDecidePro : process (iClk) is
+  -- begin  -- process startDecidePro
+  --   if iClk'event and iClk = '1' then   -- rising clock edge
+  --     if(iRst = '1') then
+  --       execute <= '0';
+  --     elsif(iStart = '1') then
+  --       execute <= '1';
+  --     end if;
+  --   end if;
+  -- end process startDecidePro;
 
 
   -- pc arrangement
@@ -83,9 +85,9 @@ begin  -- architecture rtl
     if iClk'event and iClk = '1' then   -- rising clock edge
       if(iRst = '1') then
         curPC <= (others => '0');
-      elsif (iFetchCtrl.newPc = '1' and execute = '1') then
+      elsif (iFetchCtrl.newPc = '1' and iExecute = '1') then
         curPc <= std_logic_vector(unsigned(iFetchCtrl.pc) + 1);
-      elsif(iFetchCtrl.noOp = '0' and execute = '1') then
+      elsif(iFetchCtrl.noOp = '0' and iExecute = '1') then
         curPc <= std_logic_vector(unsigned(curPc) + 1);
       end if;
     end if;
@@ -110,7 +112,7 @@ begin  -- architecture rtl
     port map (
       iClk   => iClk,
       iRstA  => iRst,
-      iEnA   => execute,
+      iEnA   => iExecute,
       iWEnA  => '0',
       iAddrA => ramAddr(log2(cRamDepth-1)-1 downto 0),
       iDataA => (others => '0'),
@@ -128,7 +130,7 @@ begin  -- architecture rtl
   begin  -- process instr2LoadPro
     if iClk'event and iClk = '1' then   -- rising clock edge
       if(iRst = '1') then
-        instAddr <= (others => '0');
+        instAddr <= (others => '1');    -- start in 0
         instWen  <= '0';
         instData <= (others => '0');
       else
