@@ -23,10 +23,10 @@ class testVector;
    int disp;
 
 
-   function new (string fileName,integer disp);
+   function new (string fileName,integer disp,string openType);
       this.disp = disp;
       $display("FileName %s",fileName);
-      fd = $fopen(fileName,"r+");
+      fd = $fopen(fileName,openType);
       if(fd == 0)
 	begin
 	   $display("\t\t TIME -> %0t, ERROR: FILE CANNOT BE OPENED",$time);

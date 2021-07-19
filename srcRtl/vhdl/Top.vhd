@@ -38,7 +38,11 @@ entity Top is
     -- data load interface
     iData2Write : in  std_logic_vector(cXLen-1 downto 0);
     iDataWen    : in  std_logic;
+    -- fetch ctrl signal for tb
+    oFetchInstr : out std_logic_vector(cXLen-1 downto 0);
+    oFetchPc    : out std_logic_vector(cXLen-1 downto 0);
     -- instDecode signals for tb
+    oInst       : out std_logic_vector(cXLen-1 downto 0);
     oRs1Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
     oRs2Addr    : out std_logic_vector(cRegSelBitW-1 downto 0);
     oRdAddr     : out std_logic_vector(cRegSelBitW-1 downto 0);
@@ -180,30 +184,33 @@ begin  -- architecture rtl
   -- signals2tb
 
   -- synthesis translate_off
+  -- fetch ctrl signal
+  oFetchInstr <= inst;
+  oFetchPc    <= curPc;
   -- InstDecodeSignals
-  oRs1Addr  <= decodedInst.rs1.addr;
-  oRs2Addr  <= decodedInst.rs2.addr;
-  oRdAddr   <= decodedInst.rdAddr;
-  oF3       <= decodedInst.funct3;
-  oF7       <= decodedInst.funct7;
-  oImm      <= decodedInst.imm;
-  oOpcode   <= decodedInst.opcode;
-  oCurPc    <= decodedInst.curPC;
+  oRs1Addr    <= decodedInst.rs1.addr;
+  oRs2Addr    <= decodedInst.rs2.addr;
+  oRdAddr     <= decodedInst.rdAddr;
+  oF3         <= decodedInst.funct3;
+  oF7         <= decodedInst.funct7;
+  oImm        <= decodedInst.imm;
+  oOpcode     <= decodedInst.opcode;
+  oCurPc      <= decodedInst.curPC;
   -- oDecodedMem
-  oLoad     <= memOp.load;
-  oStore    <= memOp.store;
-  oMemDv    <= memOp.dv;
+  oLoad       <= memOp.load;
+  oStore      <= memOp.store;
+  oMemDv      <= memOp.dv;
   -- oDecodedReg
-  oAritType <= regOp.arithType;
-  oOpRs1    <= regOp.opRs1;
-  oOpRs2    <= regOp.opRs2;
-  oOpImm    <= regOp.opImm;
-  oOpPc     <= regOp.opPc;
-  oOpConst  <= regOp.opConst;
-  oOpDv     <= regOp.dv;
+  oAritType   <= regOp.arithType;
+  oOpRs1      <= regOp.opRs1;
+  oOpRs2      <= regOp.opRs2;
+  oOpImm      <= regOp.opImm;
+  oOpPc       <= regOp.opPc;
+  oOpConst    <= regOp.opConst;
+  oOpDv       <= regOp.dv;
   -- oDecodedBranch
-  oBrOp     <= branchOp.op;
-  oBrDv     <= branchOp.dv;
+  oBrOp       <= branchOp.op;
+  oBrDv       <= branchOp.dv;
 -- synthesis translate_on
 
 end architecture rtl;

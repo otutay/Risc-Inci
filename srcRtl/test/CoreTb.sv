@@ -19,7 +19,7 @@
 `timescale 1ns/1ns
 `include "InstRandomizer.sv";
 `include "testVector.sv"
-`include "logData.sv"
+`include "decoderLog.sv"
 `include "smallDecoder.sv"
 `include "decoderComparator.sv"
 
@@ -52,9 +52,10 @@ module CoreTb();
    InstRandomizer randInstObj;
    initial
      begin
-	testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
+
 	if(cRandomize == 1)
 	  begin
+	     testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm,"w");
 	     $display("---------- Randomization ----------------------");
 	     randInstObj = new();
 	     for (int i = 0; i < cRandomSize; i++) begin
@@ -63,11 +64,11 @@ module CoreTb();
 	     end
 	     testVectorObj.closeFile();
 	     $display("---------- Done ----------------------");
-	     testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm);
 	  end
+	testVectorObj = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/testVec.txt",cDispOnTerm,"r");
      end
 
-   // instruction read from file
+   // instruction read from file and written to the core memory
    logic instWen;
    logic [cXLEN-1:0] inst2Write;
    logic [cXLEN-1:0] inst2Writei1;
@@ -77,20 +78,20 @@ module CoreTb();
    always_ff @(posedge clk)
      begin : readDataPro
 
-      if(rst == 1'b1)
-	begin
-	   inst2Write <= 32'h00000000;
-	end
-      else
-	begin
-	   inst2Write <= testVectorObj.getData();
-	end
+	if(rst == 1'b1)
+	  begin
+	     inst2Write <= 32'h00000000;
+	  end
+	else
+	  begin
+	     inst2Write <= testVectorObj.getData();
+	  end
 
      end // block: readDataPro
 
 
-
-    always_ff @(posedge clk)
+   // after write everything execution needs to be started automatically for tb
+   always_ff @(posedge clk)
      begin : instWritePro
 	inst2Writei1 <= inst2Write;
 	if(rsti1 == 1'b1)
@@ -111,6 +112,9 @@ module CoreTb();
 
      end // block: instWritePro
 
+
+
+
    tDecodedInst dutInst;
    tDecodedReg dutRegOp;
    tDecodedMem dutMemOp;
@@ -127,6 +131,9 @@ module CoreTb();
 	       // data load interface
 	       .iData2Write(),
 	       .iDataWen(),
+	       // fetch signals for tb
+	       .oFetchInstr(),
+	       .oFetchPc(),
 	       // instDecode signals for tb
 	       .oRs1Addr(dutInst.rs1.addr),
 	       .oRs2Addr(dutInst.rs2.addr),
@@ -155,5 +162,43 @@ module CoreTb();
 	       // alu signals for tb
 
 	       );
+
+
+   // here comes the automatic control codes.
+   decoderLog decoderLogObj;
+   initial
+     begin : testLogObjInit
+	decoderLogObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/DecoderLog.txt",cDispOnTerm);
+
+     end //testLogObjInit
+
+   logic [5:0]	       instType;
+tDecodedInst decodedInst = cDecodedInst;
+   always_comb
+     begin : decoderLogPro
+	if(rsti1)
+	  begin
+	     instType = {6{1'b0}};
+	     decodedInst = cDecodedInst;
+	     regOp = cDecodedReg;
+	     memOp = cDecodedMem;
+	     branchOp = cDecodedBranch;
+	  end
+	else
+	  begin
+
+	  end
+
+     end // block: decoderLogPro
+
+
+
+
+
+
+
+
+
+
 
 endmodule : CoreTb;

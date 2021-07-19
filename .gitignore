@@ -1,6 +1,7 @@
 /srcRtl/*.do
 /srcRtl/test/*.do
 /srcRtl/test/testLog.txt
+/srcRtl/test/DecoderLog.txt
 /srcRtl/test/testVec.txt
 /srcRtl/do/work
 /srcRtl/do/transcript
