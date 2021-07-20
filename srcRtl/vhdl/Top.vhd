@@ -6,7 +6,7 @@
 -- Author     : osmant  <otutaysalgir@gmail.com>
 -- Company    :
 -- Created    : 2021-07-02
--- Last update: 2021-07-20
+-- Last update: 2021-07-21
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -173,6 +173,8 @@ begin  -- architecture rtl
       iWEn        => iDataWen
       );
 
+
+  -- TODO correct the wrong one
   fetchCtrlPro : process (all) is
   begin  -- process fetchCtrl
 

@@ -19,7 +19,7 @@
 `timescale 1ns/1ns
 `include "InstRandomizer.sv";
 `include "testVector.sv"
-`include "decoderLog.sv"
+
 `include "smallDecoder.sv"
 `include "decoderComparator.sv"
 
@@ -120,6 +120,7 @@ module CoreTb();
    tDecodedMem dutMemOp;
    tDecodedBranch dutBranchOp;
 
+   logic [cXLEN-1:0] f
 
    Top DUTCore(
 	       .iClk(clk),
@@ -163,35 +164,17 @@ module CoreTb();
 
 	       );
 
-
-   // here comes the automatic control codes.
-   decoderLog decoderLogObj;
-   initial
-     begin : testLogObjInit
-	decoderLogObj  = new("/home/otutay/Desktop/tWork/rtl/Risc-Inci/srcRtl/test/DecoderLog.txt",cDispOnTerm);
-
-     end //testLogObjInit
-
-   logic [5:0]	       instType;
-tDecodedInst decodedInst = cDecodedInst;
-   always_comb
-     begin : decoderLogPro
-	if(rsti1)
-	  begin
-	     instType = {6{1'b0}};
-	     decodedInst = cDecodedInst;
-	     regOp = cDecodedReg;
-	     memOp = cDecodedMem;
-	     branchOp = cDecodedBranch;
-	  end
-	else
-	  begin
-
-	  end
-
-     end // block: decoderLogPro
-
-
+   decoderTest decoderTest
+     (
+      .clk				(clk),
+      .rst				(rst),
+      .instr				(),
+      .curPc				(),
+      .dutInst				(dutInst),
+      .dutReg				(dutReg),
+      .dutMemOp				(dutMemOp),
+      .dutBranchOp			(dutBranchOp)
+      );
 
 
 
