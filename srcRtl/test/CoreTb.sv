@@ -120,7 +120,8 @@ module CoreTb();
    tDecodedMem dutMemOp;
    tDecodedBranch dutBranchOp;
 
-   logic [cXLEN-1:0] f
+   logic [cXLEN-1:0] fetchInst;
+   logic [cXLEN-1:0] fetchPc;
 
    Top DUTCore(
 	       .iClk(clk),
@@ -133,8 +134,8 @@ module CoreTb();
 	       .iData2Write(),
 	       .iDataWen(),
 	       // fetch signals for tb
-	       .oFetchInstr(),
-	       .oFetchPc(),
+	       .oFetchInstr(fetchInst),
+	       .oFetchPc(fetchPc),
 	       // instDecode signals for tb
 	       .oRs1Addr(dutInst.rs1.addr),
 	       .oRs2Addr(dutInst.rs2.addr),
@@ -168,8 +169,8 @@ module CoreTb();
      (
       .clk				(clk),
       .rst				(rst),
-      .instr				(),
-      .curPc				(),
+      .instr				(fetchInst),
+      .curPc				(fetchPc),
       .dutInst				(dutInst),
       .dutReg				(dutReg),
       .dutMemOp				(dutMemOp),

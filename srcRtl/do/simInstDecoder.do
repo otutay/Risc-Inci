@@ -33,6 +33,8 @@ add wave -divider InstRam
 add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/fetchComp/InstRam/*
 add wave -divider instDecoderComp
 add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/instDecoderComp/*
+add wave -divider decoderTest
+add wave -position insertpoint -radix unsigned sim:/CoreTb/decoderTest/*
 add wave -divider regFileComp
 add wave -position insertpoint -radix unsigned sim:/CoreTb/DUTCore/regFileComp/*
 add wave -divider aluComp
